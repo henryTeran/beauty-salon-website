@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom"; // Importer useNavigate
+import emailjs from "@emailjs/browser";
+import { useNavigate } from "react-router-dom";
+import { db } from "../firebaseConfig";  // Import Firestore
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function Booking() {
   const { cart, clearCart } = useCart();
@@ -10,25 +13,52 @@ export default function Booking() {
   const [time, setTime] = useState("");
   const [customer, setCustomer] = useState({ name: "", email: "", phone: "" });
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
-  const navigate = useNavigate(); // Initialiser la navigation
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!date || !time || !customer.name || !customer.email || !customer.phone) {
       alert("Veuillez remplir tous les champs.");
       return;
     }
 
-    console.log("Réservation confirmée :", { services: cart, date, time, customer });
+    const reservationData = {
+      services: cart.map((item) => ({ id: item.id, title: item.title, price: item.price })),
+      date: date.toLocaleDateString(),
+      time,
+      customer,
+      createdAt: serverTimestamp(),
+    };
 
-    // Simuler une confirmation de réservation
-    setBookingConfirmed(true);
-    clearCart();
+    try {
+      // Enregistrer dans Firestore
+      await addDoc(collection(db, "reservations"), reservationData);
+      console.log("Réservation enregistrée dans Firestore");
 
-     // Rediriger vers l'accueil après 3 secondes
-    setTimeout(() => {
-      navigate("/");
-    }, 3000);
+      // Envoyer l'email de confirmation
+      const emailParams = {
+        from_name: "Gizo Beauty",
+        user_name: customer.name,
+        user_email: customer.email,
+        reservation_date: date.toLocaleDateString(),
+        reservation_time: time,
+        selected_services: cart.map((item) => item.title).join(", "),
+      };
+
+      await emailjs.send("gizo_serviceId", "gizoBeauty_TemplateId", emailParams, "xZiaWwWG4X44LV4sB");
+      console.log("Email envoyé avec succès !");
+
+      setBookingConfirmed(true);
+      clearCart();
+
+      // Rediriger après 3 secondes
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement :", error);
+      alert("Erreur lors de l'enregistrement de la réservation.");
+    }
   };
 
   return (
@@ -38,7 +68,7 @@ export default function Booking() {
       {bookingConfirmed ? (
         <div className="text-center bg-green-100 p-6 rounded-lg">
           <h2 className="text-2xl font-bold text-green-700">Réservation confirmée !</h2>
-          <p className="mt-4 text-gray-700">Un e-mail de confirmation vous sera envoyé.</p>
+          <p className="mt-4 text-gray-700">Un e-mail de confirmation vous a été envoyé.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6">
