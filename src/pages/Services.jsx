@@ -1,12 +1,15 @@
 import { useCart } from "../context/CartContext";
+import fotoMassageRelaxant from "../assets/images/services/MassageRelaxant.jpg";
+import fotoSoinDuVisage from "../assets/images/services/SoinDuVisage.jpg";
+import fotoManucurePedicure from "../assets/images/services/ManucurePedicure.jpg";
 
 export default function Services() {
   const { addToCart } = useCart();
 
   const services = [
-    { id: 1, title: "Massage Relaxant", price: 50, img: "https://source.unsplash.com/400x300/?massage" },
-    { id: 2, title: "Soin du Visage", price: 70, img: "https://source.unsplash.com/400x300/?facial" },
-    { id: 3, title: "Manucure & Pédicure", price: 40, img: "https://source.unsplash.com/400x300/?nails" },
+    { id: 1, title: "Massage Relaxant", price: 50, img: fotoMassageRelaxant },
+    { id: 2, title: "Soin du Visage", price: 70, img: fotoSoinDuVisage },
+    { id: 3, title: "Manucure & Pédicure", price: 40, img: fotoManucurePedicure },
   ];
 
   return (

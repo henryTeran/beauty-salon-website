@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Testimonials from "../components/Testimonials";
-import fotoBackGround from "../assets/home.jpg";
+import fotoBackGround from "../assets/images/home/Home.jpg";
 
 export default function Home() {
   return (
