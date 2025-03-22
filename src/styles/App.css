@@ -1,11 +1,14 @@
-
-
-/* Personnalisation des couleurs */
 :root {
   --gold: #c7a86f;
   --dark-gold: #b28a5b;
   --white: #fff;
-  --dark: #111;
+  --dark: #222;
+}
+
+body {
+  font-family: "Playfair Display", serif;
+  background-color: var(--white);
+  color: var(--dark);
 }
 
 .text-gold {
@@ -16,18 +19,6 @@
   background-color: var(--gold);
 }
 
-.hover\:bg-dark-gold:hover {
-  background-color: var(--dark-gold);
-}
-
-/* Fonts et styles globaux */
-body {
-  font-family: "Playfair Display", serif;
-  background-color: var(--white);
-  color: var(--dark);
-}
-
-/* Effet sur les boutons */
 .btn {
   padding: 12px 24px;
   border-radius: 50px;
