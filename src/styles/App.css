@@ -1,42 +1,45 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+
+
+/* Personnalisation des couleurs */
+:root {
+  --gold: #c7a86f;
+  --dark-gold: #b28a5b;
+  --white: #fff;
+  --dark: #111;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.text-gold {
+  color: var(--gold);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.bg-gold {
+  background-color: var(--gold);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.hover\:bg-dark-gold:hover {
+  background-color: var(--dark-gold);
 }
 
-.card {
-  padding: 2em;
+/* Fonts et styles globaux */
+body {
+  font-family: "Playfair Display", serif;
+  background-color: var(--white);
+  color: var(--dark);
 }
 
-.read-the-docs {
-  color: #888;
+/* Effet sur les boutons */
+.btn {
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-gold {
+  background-color: var(--gold);
+  color: white;
+}
+
+.btn-gold:hover {
+  background-color: var(--dark-gold);
 }
