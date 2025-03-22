@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext"; // Importer useCart
+
 
 export default function Navbar() {
+  const { cart } = useCart(); // Récupérer le panier depuis le contexte
+
   return (
     <nav className="bg-white shadow-md py-4 fixed top-0 left-0 w-full z-50">
       <div className="container mx-auto flex justify-between items-center px-6">
@@ -13,8 +17,13 @@ export default function Navbar() {
           <Link to="/booking" className="text-gray-700 hover:text-gold transition duration-300">Corps</Link>
           <Link to="/epilation" className="text-gray-700 hover:text-gold transition duration-300">Épilation</Link>
           <Link to="/contact" className="text-gray-700 hover:text-gold transition duration-300">Contact</Link>
-          <Link to="/cart" className="relative text-gray-700 hover:text-gold transition duration-300">
+          <Link to="/cart" className="relative">
             🛒
+            {cart.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2">
+                {cart.reduce((total, item) => total + item.quantity, 0)}
+              </span>
+            )}
           </Link>
         </div>
       </div>
