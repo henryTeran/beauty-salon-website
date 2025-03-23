@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --gold: #c7a86f;
+    --dark-gold: #b28a5b;
+    --white: #fff;
+    --dark: #222;
+  }
+  
+  body {
+    font-family: "Playfair Display", serif;
+    background-color: var(--white);
+    color: var(--dark);
+  }
+  
+  .text-gold {
+    color: var(--gold);
+  }
+  
+  .bg-gold {
+    background-color: var(--gold);
+  }
+  
+  .btn {
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-gold {
+    background-color: var(--gold);
+    color: white;
+  }
+  
+  .btn-gold:hover {
+    background-color: var(--dark-gold);
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: white;
+    z-index: 1000;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  body {
+    padding-top: 80px; /* Ajuste selon la hauteur de la navbar */
+  }
+  
+  
