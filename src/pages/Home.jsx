@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section with 3D Background */}
-      <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gold/10">
         <Scene3D />
         
         <div className="relative z-10 flex flex-col items-center justify-center text-center p-6 max-w-6xl mx-auto">
@@ -28,7 +28,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-6xl md:text-7xl text-white font-bold mb-6 leading-tight"
+            className="text-6xl md:text-7xl text-gray-900 font-bold mb-6 leading-tight"
           >
             {t('home.welcome')} <span className="text-gold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">GiZo Beauty</span>
           </motion.h1>
@@ -37,7 +37,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl leading-relaxed"
+            className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl leading-relaxed"
           >
             {t('home.subtitle')}
           </motion.p>
@@ -59,7 +59,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="container mx-auto py-20 text-center bg-gradient-to-b from-white to-gray-50">
+      <section className="container mx-auto py-20 text-center bg-white">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -125,7 +125,7 @@ export default function Home() {
       {/* Stats Section */}
       <section className="bg-gradient-to-r from-gold to-yellow-400 py-16">
         <div className="container mx-auto text-center">
-          <div className="grid md:grid-cols-3 gap-8 text-white">
+          <div className="grid md:grid-cols-3 gap-8 text-black">
             {[
               { number: "500+", label: "Clients satisfaits" },
               { number: "5", label: "Années d'expérience" },
@@ -148,7 +148,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-900 py-20 text-center">
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -156,10 +156,10 @@ export default function Home() {
           viewport={{ once: true }}
           className="container mx-auto px-6"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Prêt pour une expérience unique ?
           </h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
             Réservez dès maintenant votre soin personnalisé
           </p>
           <Link 
