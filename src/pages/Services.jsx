@@ -74,7 +74,9 @@ export default function Services() {
               <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r ${category.gradient} text-white mb-4`}>
                 {category.icon}
                 <h2 className="text-2xl font-bold">{category.title}</h2>
+                <h2 className="text-2xl font-bold">{category.title}</h2>
               </div>
+            </div>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
