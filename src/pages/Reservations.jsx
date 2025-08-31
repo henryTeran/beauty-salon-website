@@ -9,7 +9,8 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { User, Mail, Phone, Calendar, Clock, Trash2, DollarSign, CalendarDays } from 'lucide-react';
+import { User, Mail, Phone, Calendar, Clock, Trash2, DollarSign, CalendarDays, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Reservations() {
   const { t } = useTranslation();
@@ -236,16 +237,6 @@ export default function Reservations() {
             Réserver un nouveau soin
           </Link>
         </motion.div>
-      </div>
-    </div>
-  );
-}
-
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
       </div>
     </div>
   );
