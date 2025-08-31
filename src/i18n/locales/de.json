@@ -1,0 +1,87 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "services": "Dienstleistungen",
+    "booking": "Buchung",
+    "contact": "Kontakt",
+    "cart": "Warenkorb",
+    "reservations": "Reservierungen"
+  },
+  "home": {
+    "welcome": "Willkommen bei",
+    "subtitle": "Gönnen Sie sich einen Moment des Wohlbefindens und der Entspannung mit unseren Expertenbehandlungen",
+    "discover": "Entdecken Sie unsere Behandlungen",
+    "exceptional_services": "Unsere außergewöhnlichen Behandlungen",
+    "services_description": "Entdecken Sie unsere Premium-Behandlungen für Gesicht, Körper und Haarentfernung, durchgeführt mit Expertise",
+    "face": "Gesicht",
+    "face_desc": "Feuchtigkeitsspendende, Anti-Aging- und Strahlungsbehandlungen",
+    "body": "Körper",
+    "body_desc": "Entspannende, schlankheitsfördernde und Wellness-Massage",
+    "epilation": "Haarentfernung",
+    "epilation_desc": "Sanfte und effektive Haarentfernung",
+    "learn_more": "Mehr erfahren"
+  },
+  "services": {
+    "title": "Unsere Dienstleistungen",
+    "face_care": "Gesichtspflege",
+    "body_care": "Körperpflege",
+    "hands_feet": "Hand- / Fußpflege",
+    "relaxing_massage": "Entspannende Massage",
+    "facial_treatment": "Gesichtsbehandlung",
+    "manicure_pedicure": "Maniküre & Pediküre",
+    "add_to_cart": "In den Warenkorb",
+    "book_service": "Behandlung buchen"
+  },
+  "booking": {
+    "title": "Buchen Sie Ihre Behandlung",
+    "selected_service": "Ausgewählte Behandlung",
+    "empty_cart": "Ihr Warenkorb ist leer",
+    "choose_date": "Wählen Sie ein Datum:",
+    "choose_time": "Wählen Sie eine Zeit:",
+    "select_time": "Zeit auswählen",
+    "your_info": "Ihre Informationen",
+    "full_name": "Vollständiger Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "confirm_booking": "Buchung bestätigen",
+    "booking_confirmed": "Buchung bestätigt!",
+    "confirmation_email": "Eine Bestätigungs-E-Mail wurde an Sie gesendet"
+  },
+  "cart": {
+    "title": "Ihr Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "total": "Gesamt",
+    "clear_cart": "Warenkorb leeren",
+    "proceed_payment": "Zur Zahlung"
+  },
+  "payment": {
+    "secure_payment": "Sichere Zahlung",
+    "total_amount": "Gesamtbetrag",
+    "pay": "Bezahlen",
+    "processing": "Zahlung läuft..."
+  },
+  "success": {
+    "payment_success": "Zahlung erfolgreich!",
+    "thank_you": "Vielen Dank für Ihre Buchung. Sie erhalten eine Bestätigungs-E-Mail."
+  },
+  "reservations": {
+    "title": "Meine Reservierungen",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "services": "Dienstleistung(en)",
+    "total_price": "Gesamtpreis",
+    "date": "Datum",
+    "time": "Zeit",
+    "action": "Aktion",
+    "delete": "Löschen",
+    "no_reservations": "Keine Reservierungen gefunden",
+    "no_service": "Keine Dienstleistung"
+  },
+  "testimonials": {
+    "title": "Kundenbewertungen"
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten"
+  }
+}

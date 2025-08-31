@@ -1,0 +1,87 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "booking": "Booking",
+    "contact": "Contact",
+    "cart": "Cart",
+    "reservations": "Reservations"
+  },
+  "home": {
+    "welcome": "Welcome to",
+    "subtitle": "Treat yourself to a moment of well-being and relaxation with our expert treatments",
+    "discover": "Discover our treatments",
+    "exceptional_services": "Our exceptional treatments",
+    "services_description": "Discover our premium treatments for face, body and hair removal, performed with expertise",
+    "face": "Face",
+    "face_desc": "Moisturizing, anti-aging and radiance treatments",
+    "body": "Body",
+    "body_desc": "Relaxing, slimming and wellness massage",
+    "epilation": "Hair Removal",
+    "epilation_desc": "Gentle and effective hair removal",
+    "learn_more": "Learn more"
+  },
+  "services": {
+    "title": "Our Services",
+    "face_care": "Facial Care",
+    "body_care": "Body Care",
+    "hands_feet": "Hands / Feet Care",
+    "relaxing_massage": "Relaxing Massage",
+    "facial_treatment": "Facial Treatment",
+    "manicure_pedicure": "Manicure & Pedicure",
+    "add_to_cart": "Add to cart",
+    "book_service": "Book a treatment"
+  },
+  "booking": {
+    "title": "Book your treatment",
+    "selected_service": "Selected treatment",
+    "empty_cart": "Your cart is empty",
+    "choose_date": "Choose a date:",
+    "choose_time": "Choose a time:",
+    "select_time": "Select a time",
+    "your_info": "Your information",
+    "full_name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "confirm_booking": "Confirm booking",
+    "booking_confirmed": "Booking confirmed!",
+    "confirmation_email": "A confirmation email has been sent to you"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "clear_cart": "Clear cart",
+    "proceed_payment": "Proceed to payment"
+  },
+  "payment": {
+    "secure_payment": "Secure Payment",
+    "total_amount": "Total amount",
+    "pay": "Pay",
+    "processing": "Payment in progress..."
+  },
+  "success": {
+    "payment_success": "Payment Successful!",
+    "thank_you": "Thank you for your booking. You will receive a confirmation email."
+  },
+  "reservations": {
+    "title": "My Reservations",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "services": "Service(s)",
+    "total_price": "Total Price",
+    "date": "Date",
+    "time": "Time",
+    "action": "Action",
+    "delete": "Delete",
+    "no_reservations": "No reservations found",
+    "no_service": "No service"
+  },
+  "testimonials": {
+    "title": "Customer Reviews"
+  },
+  "footer": {
+    "rights": "All rights reserved"
+  }
+}

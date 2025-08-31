@@ -1,0 +1,87 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "services": "Services",
+    "booking": "Réservation",
+    "contact": "Contact",
+    "cart": "Panier",
+    "reservations": "Réservations"
+  },
+  "home": {
+    "welcome": "Bienvenue chez",
+    "subtitle": "Offrez-vous un moment de bien-être et de relaxation avec nos soins experts",
+    "discover": "Découvrir nos soins",
+    "exceptional_services": "Nos soins d'exception",
+    "services_description": "Découvrez nos soins premium pour le visage, le corps et l'épilation, réalisés avec expertise",
+    "face": "Visage",
+    "face_desc": "Soin hydratant, anti-âge et éclat",
+    "body": "Corps",
+    "body_desc": "Massage relaxant, minceur et bien-être",
+    "epilation": "Épilation",
+    "epilation_desc": "Épilation douce et efficace",
+    "learn_more": "En savoir plus"
+  },
+  "services": {
+    "title": "Nos Services",
+    "face_care": "Soin du Visage",
+    "body_care": "Soins du Corps",
+    "hands_feet": "Soins des mains / pieds",
+    "relaxing_massage": "Massage relaxant",
+    "facial_treatment": "Soin du Visage",
+    "manicure_pedicure": "Manucure & Pédicure",
+    "add_to_cart": "Ajouter au panier",
+    "book_service": "Réserver un soin"
+  },
+  "booking": {
+    "title": "Réservez votre soin",
+    "selected_service": "Soin sélectionné",
+    "empty_cart": "Votre panier est vide",
+    "choose_date": "Choisissez une date :",
+    "choose_time": "Choisissez une heure :",
+    "select_time": "Sélectionnez une heure",
+    "your_info": "Vos informations",
+    "full_name": "Nom complet",
+    "email": "Email",
+    "phone": "Téléphone",
+    "confirm_booking": "Confirmer la réservation",
+    "booking_confirmed": "Réservation confirmée !",
+    "confirmation_email": "Un e-mail de confirmation vous a été envoyé"
+  },
+  "cart": {
+    "title": "Votre Panier",
+    "empty": "Votre panier est vide",
+    "total": "Total",
+    "clear_cart": "Vider le panier",
+    "proceed_payment": "Procéder au paiement"
+  },
+  "payment": {
+    "secure_payment": "Paiement sécurisé",
+    "total_amount": "Montant total",
+    "pay": "Payer",
+    "processing": "Paiement en cours..."
+  },
+  "success": {
+    "payment_success": "Paiement Réussi !",
+    "thank_you": "Merci pour votre réservation. Vous recevrez une confirmation par e-mail."
+  },
+  "reservations": {
+    "title": "Mes Réservations",
+    "name": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "services": "Soin(s)",
+    "total_price": "Prix Total",
+    "date": "Date",
+    "time": "Heure",
+    "action": "Action",
+    "delete": "Supprimer",
+    "no_reservations": "Aucune réservation trouvée",
+    "no_service": "Aucun soin"
+  },
+  "testimonials": {
+    "title": "Avis de nos clients"
+  },
+  "footer": {
+    "rights": "Tous droits réservés"
+  }
+}
