@@ -77,7 +77,6 @@ export default function Services() {
                 <h2 className="text-2xl font-bold">{category.title}</h2>
               </div>
             </div>
-            </div>
             
             <div className="grid md:grid-cols-3 gap-8">
               {category.services.map((service, serviceIndex) => (
