@@ -135,6 +135,6 @@ export default function Navbar() {
           </Link>
         </div>
       </motion.div>
-    </nav>
+    </motion.nav>
   );
 }

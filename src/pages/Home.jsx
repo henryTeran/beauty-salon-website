@@ -11,8 +11,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section with 3D Background */}
-      <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black"
-      >
+      <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         <Scene3D />
         
         <div className="relative z-10 flex flex-col items-center justify-center text-center p-6 max-w-6xl mx-auto">

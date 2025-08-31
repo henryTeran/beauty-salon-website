@@ -123,7 +123,7 @@ export default function Services() {
                       {t('services.add_to_cart')}
                     </motion.button>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>

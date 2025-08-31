@@ -28,7 +28,7 @@ export default function Reservations() {
           phone: data.customer?.phone || "Non spécifié",
           date: data.date || "Non spécifié",
           time: data.time || "Non spécifié",
-          services: data.services || [], // Tableau d'objets {title, price}
+          services: data.services || [],
           totalPrice: data.services
             ? data.services.reduce((acc, service) => acc + (service.price || 0), 0)
             : 0,
@@ -47,7 +47,6 @@ export default function Reservations() {
     }
   };
 
-  // Définition des colonnes
   const columns = useMemo(
     () => [
       {
@@ -148,7 +147,6 @@ export default function Reservations() {
     [t]
   );
 
-  // Utilisation de React Table v8
   const table = useReactTable({
     data: reservations,
     columns,
