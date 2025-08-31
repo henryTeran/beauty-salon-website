@@ -79,9 +79,6 @@ export default function Cart() {
                     <h2 className="text-3xl font-bold text-dark">{t('cart.total')} :</h2>
                     <span className="text-4xl font-bold text-gold">{totalAmount} CHF</span>
                   </div>
-    </div>
-  );
-}
 
                   <div className="flex flex-col md:flex-row gap-4 justify-between">
                     <motion.button
@@ -108,3 +105,6 @@ export default function Cart() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
