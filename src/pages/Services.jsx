@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FaSpa, FaHeart, FaCut, FaLeaf } from "react-icons/fa";
 
 import fotoMassageRelaxant from "../assets/images/services/MassageRelaxant.jpg";
-import fotoSoinDuVisage from "../assets/images/services/SoinDuVisage.jpg";
+import fotoSoinDuVisage from "../assets/images/services/SoinduVisage.jpg";
 import fotoManucurePedicure from "../assets/images/services/ManucurePedicure.jpg";
 
 export default function Services() {
