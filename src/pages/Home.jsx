@@ -178,29 +178,3 @@ export default function Home() {
     </div>
   );
 }
-
-        </p>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white shadow-lg rounded-lg p-6">
-            <h3 className="text-2xl font-bold text-gold">Visage</h3>
-            <p className="text-gray-700 mt-2">Soin hydratant, anti-âge et éclat</p>
-            <Link to="/services#visage" className="text-gold mt-4 inline-block">En savoir plus →</Link>
-          </div>
-          <div className="bg-white shadow-lg rounded-lg p-6">
-            <h3 className="text-2xl font-bold text-gold">Corps</h3>
-            <p className="text-gray-700 mt-2">Massage relaxant, minceur et bien-être</p>
-            <Link to="/services#corps" className="text-gold mt-4 inline-block">En savoir plus →</Link>
-          </div>
-          <div className="bg-white shadow-lg rounded-lg p-6">
-            <h3 className="text-2xl font-bold text-gold">Épilation</h3>
-            <p className="text-gray-700 mt-2">Épilation douce et efficace</p>
-            <Link to="/services#epilation" className="text-gold mt-4 inline-block">En savoir plus →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Témoignages Clients */}
-      <Testimonials />
-    </div>
-  );
-}
