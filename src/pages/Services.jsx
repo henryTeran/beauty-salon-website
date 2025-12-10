@@ -3,46 +3,71 @@ import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Sparkles, Heart, Scissors, Leaf, Plus, Star } from 'lucide-react';
-import fotoMassageRelaxant from "../assets/images/services/MassageRelaxant.jpg";
-import fotoSoinDuVisage from "../assets/images/services/SoinduVisage.jpg";
-import fotoManucurePedicure from "../assets/images/services/ManucurePedicure.jpg";
+import SEO from '../components/SEO';
 
 export default function Services() {
   const { addToCart } = useCart();
   const { t } = useTranslation();
 
   const categories = [
-    { 
-      id: "visage", 
-      title: t('services.face_care'), 
-      icon: <Sparkles className="w-6 h-6" />, 
-      gradient: "from-pink-400 to-rose-400",
+    {
+      id: "visage",
+      title: t('services.face_care'),
+      icon: <Sparkles className="w-6 h-6" />,
+      gradient: "from-rose-400 to-pink-400",
       services: [
-        { id: 1, title: t('services.facial_treatment'), price: 70, img: fotoSoinDuVisage, duration: "60 min" }
+        {
+          id: 1,
+          title: t('services.facial_treatment'),
+          price: 70,
+          img: "https://images.pexels.com/photos/3764013/pexels-photo-3764013.jpeg?auto=compress&cs=tinysrgb&w=800",
+          duration: "60 min",
+          alt: "Soin du visage professionnel avec masque relaxant"
+        }
       ]
     },
-    { 
-      id: "corps", 
-      title: t('services.body_care'), 
-      icon: <Heart className="w-6 h-6" />, 
-      gradient: "from-purple-400 to-indigo-400",
+    {
+      id: "corps",
+      title: t('services.body_care'),
+      icon: <Heart className="w-6 h-6" />,
+      gradient: "from-gold to-yellow-400",
       services: [
-        { id: 2, title: t('services.relaxing_massage'), price: 40, img: fotoMassageRelaxant, duration: "45 min" }
+        {
+          id: 2,
+          title: t('services.relaxing_massage'),
+          price: 40,
+          img: "https://images.pexels.com/photos/3997985/pexels-photo-3997985.jpeg?auto=compress&cs=tinysrgb&w=800",
+          duration: "45 min",
+          alt: "Massage relaxant aux huiles essentielles"
+        }
       ]
     },
-    { 
-      id: "mains_pieds", 
-      title: t('services.hands_feet'), 
-      icon: <Leaf className="w-6 h-6" />, 
-      gradient: "from-emerald-400 to-teal-400",
+    {
+      id: "mains_pieds",
+      title: t('services.hands_feet'),
+      icon: <Leaf className="w-6 h-6" />,
+      gradient: "from-amber-400 to-orange-400",
       services: [
-        { id: 3, title: t('services.manicure_pedicure'), price: 40, img: fotoManucurePedicure, duration: "90 min" }
+        {
+          id: 3,
+          title: t('services.manicure_pedicure'),
+          price: 40,
+          img: "https://images.pexels.com/photos/1115128/pexels-photo-1115128.jpeg?auto=compress&cs=tinysrgb&w=800",
+          duration: "90 min",
+          alt: "Manucure et pédicure premium avec vernis"
+        }
       ]
     }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <SEO
+        title="Nos Services - GiZo Beauty | Soins Premium Genève"
+        description="Découvrez notre gamme de soins premium : soins du visage anti-âge, massages relaxants aux huiles essentielles, manucure & pédicure. Prix à partir de 40 CHF."
+        keywords="soins visage genève, massage relaxant, manucure pédicure, épilation, beauté genève, esthéticienne professionnelle"
+        canonical="/services"
+      />
       {/* Header Section */}
       <div className="container mx-auto px-6 pt-20 pb-12 text-center">
         <motion.div
@@ -74,7 +99,6 @@ export default function Services() {
               <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r ${category.gradient} text-white mb-4`}>
                 {category.icon}
                 <h2 className="text-2xl font-bold">{category.title}</h2>
-                <h2 className="text-2xl font-bold">{category.title}</h2>
               </div>
             </div>
             
@@ -90,10 +114,11 @@ export default function Services() {
                   className="group relative bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500"
                 >
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={service.img} 
-                      alt={service.title} 
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700" 
+                    <img
+                      src={service.img}
+                      alt={service.alt || service.title}
+                      loading="lazy"
+                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-700">

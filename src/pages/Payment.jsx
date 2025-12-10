@@ -1,7 +1,8 @@
 import { useCart } from "../context/CartContext";
+import { useBooking } from "../context/BookingContext";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { CreditCard, Lock, Shield } from 'lucide-react';
+import { CreditCard, Lock, Shield, Calendar, Clock, User } from 'lucide-react';
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useState, useEffect } from "react";
@@ -9,15 +10,18 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import emailjs from "@emailjs/browser";
 
-const stripePromise = loadStripe("pk_test_51R1db7FMBmNofPohDc4SoHISZIpztqsowxCwhJy2TQeB6MxBBHXKOpEUJhkJFxi6U4Nq8GlIrCVpIBzfB94wHAkd00YkpIw1Dc");
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 function CheckoutForm() {
   const { cart, clearCart } = useCart();
+  const { bookingData, clearBookingData } = useBooking();
   const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+  const hasBookingData = bookingData.date && bookingData.time && bookingData.customer.name;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState("");

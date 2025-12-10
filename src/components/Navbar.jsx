@@ -33,7 +33,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center space-x-8">
-          <div className="flex space-x-8 text-lg font-medium">
+          <div className="flex space-x-6 text-lg font-medium">
             <Link to="/" className="text-gray-700 hover:text-gold transition duration-300 relative group">
               {t('nav.home')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
@@ -42,12 +42,16 @@ export default function Navbar() {
               {t('nav.services')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link to="/booking" className="text-gray-700 hover:text-gold transition duration-300 relative group">
-              {t('nav.booking')}
+            <Link to="/about" className="text-gray-700 hover:text-gold transition duration-300 relative group">
+              À propos
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link to="/reservations" className="text-gray-700 hover:text-gold transition duration-300 relative group">
-              {t('nav.reservations')}
+            <Link to="/contact" className="text-gray-700 hover:text-gold transition duration-300 relative group">
+              Contact
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link to="/booking" className="text-gray-700 hover:text-gold transition duration-300 relative group">
+              {t('nav.booking')}
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full"></span>
             </Link>
           </div>
@@ -98,40 +102,47 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <motion.div
         initial={{ height: 0, opacity: 0 }}
-        animate={{ 
+        animate={{
           height: isMenuOpen ? 'auto' : 0,
           opacity: isMenuOpen ? 1 : 0
         }}
         className="lg:hidden overflow-hidden bg-white border-t border-gray-200"
       >
         <div className="container mx-auto px-6 py-4 space-y-4">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="block text-gray-700 hover:text-gold transition duration-300 py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             {t('nav.home')}
           </Link>
-          <Link 
-            to="/services" 
+          <Link
+            to="/services"
             className="block text-gray-700 hover:text-gold transition duration-300 py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             {t('nav.services')}
           </Link>
-          <Link 
-            to="/booking" 
+          <Link
+            to="/about"
+            className="block text-gray-700 hover:text-gold transition duration-300 py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            À propos
+          </Link>
+          <Link
+            to="/contact"
+            className="block text-gray-700 hover:text-gold transition duration-300 py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Contact
+          </Link>
+          <Link
+            to="/booking"
             className="block text-gray-700 hover:text-gold transition duration-300 py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             {t('nav.booking')}
-          </Link>
-          <Link 
-            to="/reservations" 
-            className="block text-gray-700 hover:text-gold transition duration-300 py-2"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {t('nav.reservations')}
           </Link>
         </div>
       </motion.div>

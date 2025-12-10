@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Sparkles, Star, Award } from 'lucide-react';
 import { lazy, Suspense, useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 
 const Scene3D = lazy(() => import('../components/Scene3D'));
 
@@ -23,6 +24,12 @@ export default function Home() {
 
   return (
     <div>
+      <SEO
+        title="GiZo Beauty - Institut de Beauté Premium à Genève | Soins du Visage & Massages"
+        description="Découvrez GiZo Beauty, votre institut de beauté premium à Genève. Soins du visage personnalisés, massages relaxants, manucure & pédicure. Réservez en ligne votre moment de détente."
+        keywords="institut beauté genève, spa genève, massage relaxant, soin du visage, manucure pédicure, esthéticienne genève, beauté suisse"
+        canonical="/"
+      />
       {/* Hero Section with 3D Background */}
       <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gold/10">
         {isDesktop && (

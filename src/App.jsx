@@ -4,28 +4,35 @@ import Services from "./pages/Services";
 import Booking from "./pages/Booking";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import CartPage from "./pages/Cart";  // Nouvelle page Panier
-import { CartProvider } from "./context/CartContext";  // Contexte panier
+import CartPage from "./pages/Cart";
+import { CartProvider } from "./context/CartContext";
+import { BookingProvider } from "./context/BookingContext";
 import Reservations from "./pages/Reservations";
 import Payment from "./pages/Payment";
 import Success from "./pages/Success";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 export default function App() {
   return (
     <CartProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/booking" element={<Booking />} />
-          <Route path="/cart" element={<CartPage />} />  {/* Ajout de la route panier */}
-          <Route path="/reservations" element={<Reservations />} /> {/* Nouvelle Route */}
-          <Route path="/payment" element={<Payment />} /> {/* Nouvelle route */}
-          <Route path="/success" element={<Success />} />
-        </Routes>
-        <Footer />
-      </Router>
+      <BookingProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/reservations" element={<Reservations />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/success" element={<Success />} />
+          </Routes>
+          <Footer />
+        </Router>
+      </BookingProvider>
     </CartProvider>
   );
 }

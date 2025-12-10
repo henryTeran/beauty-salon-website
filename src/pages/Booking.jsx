@@ -1,72 +1,53 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
+import { useBooking } from "../context/BookingContext";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Mail, Phone, CheckCircle, Star } from 'lucide-react';
+import { Calendar, Clock, User, Mail, Phone, ArrowRight, Star } from 'lucide-react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import emailjs from "@emailjs/browser";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebaseConfig";  // Import Firestore
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import SEO from '../components/SEO';
 
 export default function Booking() {
-  const { cart, clearCart } = useCart();
+  const { cart } = useCart();
+  const { updateBookingData } = useBooking();
   const { t } = useTranslation();
   const [date, setDate] = useState(null);
   const [time, setTime] = useState("");
   const [customer, setCustomer] = useState({ name: "", email: "", phone: "" });
-  const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!date || !time || !customer.name || !customer.email || !customer.phone) {
       alert("Veuillez remplir tous les champs.");
       return;
     }
 
-    const reservationData = {
-      services: cart.map((item) => ({ id: item.id, title: item.title, price: item.price })),
-      date: date.toLocaleDateString(),
-      time,
-      customer,
-      createdAt: serverTimestamp(),
-    };
-
-    try {
-      // Enregistrer dans Firestore
-      await addDoc(collection(db, "reservations"), reservationData);
-      console.log("Réservation enregistrée dans Firestore");
-
-      // Envoyer l'email de confirmation
-      const emailParams = {
-        from_name: "Gizo Beauty",
-        user_name: customer.name,
-        user_email: customer.email,
-        reservation_date: date.toLocaleDateString(),
-        reservation_time: time,
-        selected_services: cart.map((item) => item.title).join(", "),
-      };
-
-      await emailjs.send("gizo_serviceId", "gizoBeauty_TemplateId", emailParams, "xZiaWwWG4X44LV4sB");
-      console.log("Email envoyé avec succès !");
-
-      setBookingConfirmed(true);
-      clearCart();
-
-      // Rediriger après 3 secondes
-      setTimeout(() => {
-        navigate("/");
-      }, 3000);
-    } catch (error) {
-      console.error("Erreur lors de l'enregistrement :", error);
-      alert("Erreur lors de l'enregistrement de la réservation.");
+    if (cart.length === 0) {
+      alert("Votre panier est vide. Veuillez ajouter des services avant de réserver.");
+      return;
     }
+
+    updateBookingData({
+      date,
+      time,
+      customer
+    });
+
+    navigate("/payment");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
+      <SEO
+        title="Réservation - GiZo Beauty | Prendre Rendez-vous en Ligne"
+        description="Réservez votre soin de beauté en ligne à Genève. Choisissez votre créneau et réservez en quelques clics. Confirmation immédiate par email."
+        keywords="réservation beauté genève, rendez-vous esthéticienne, booking institut beauté, prendre rdv genève"
+        canonical="/booking"
+      />
       <div className="container mx-auto px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -77,18 +58,25 @@ export default function Booking() {
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent mb-4">
             {t('booking.title')}
           </h1>
+          <p className="text-lg text-gray-600">
+            Choisissez votre créneau et passez au paiement
+          </p>
         </motion.div>
 
-        {bookingConfirmed ? (
+        {cart.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
-            className="max-w-2xl mx-auto text-center bg-gradient-to-br from-green-50 to-emerald-50 p-12 rounded-3xl border border-green-200"
+            className="max-w-2xl mx-auto text-center bg-white p-12 rounded-3xl shadow-xl"
           >
-            <CheckCircle className="w-20 h-20 text-green-600 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold text-green-700 mb-4">{t('booking.booking_confirmed')}</h2>
-            <p className="text-lg text-gray-700">{t('booking.confirmation_email')}</p>
+            <p className="text-xl text-gray-600 mb-6">Votre panier est vide</p>
+            <a
+              href="/services"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-full text-lg font-bold hover:shadow-xl transition-all duration-300"
+            >
+              Découvrir nos services
+            </a>
           </motion.div>
         ) : (
           <div className="max-w-4xl mx-auto">
@@ -111,7 +99,12 @@ export default function Booking() {
                     {cart.map((item) => (
                       <div key={item.id} className="flex items-center justify-between bg-white/20 backdrop-blur-sm p-4 rounded-2xl">
                         <div className="flex items-center gap-4">
-                          <img src={item.img} alt={item.title} className="w-16 h-16 object-cover rounded-xl" />
+                          <img
+                            src={item.img}
+                            alt={item.alt || item.title}
+                            loading="lazy"
+                            className="w-16 h-16 object-cover rounded-xl"
+                          />
                           <h3 className="text-lg font-bold text-black">{item.title}</h3>
                         </div>
                         <p className="text-xl font-bold text-black">{item.price} CHF</p>
@@ -208,13 +201,19 @@ export default function Booking() {
                   type="submit"
                   className="w-full bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-xl text-xl font-bold hover:shadow-2xl hover:shadow-gold/25 transition-all duration-300 flex items-center justify-center gap-3"
                 >
-                  <CheckCircle className="w-6 h-6" />
-                  {t('booking.confirm_booking')}
+                  Continuer vers le paiement
+                  <ArrowRight className="w-6 h-6" />
                 </motion.button>
               </form>
             </motion.div>
           </div>
         )}
+
+        <div className="max-w-2xl mx-auto mt-8 text-center text-gray-600">
+          <p className="text-sm">
+            Après validation, vous serez redirigé vers le paiement sécurisé
+          </p>
+        </div>
       </div>
     </div>
   );
