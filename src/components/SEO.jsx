@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 export default function SEO({
   title = "GiZo Beauty - Institut de Beauté Premium à Genève",
@@ -10,29 +10,38 @@ export default function SEO({
   const siteUrl = "https://gizobeauty.ch";
   const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
 
-  return (
-    <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
-      <link rel="canonical" href={fullCanonical} />
+  useEffect(() => {
+    document.title = title;
 
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:url" content={fullCanonical} />
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="GiZo Beauty" />
+    const updateMetaTag = (selector, attribute, value) => {
+      let element = document.querySelector(selector);
+      if (!element) {
+        element = document.createElement('meta');
+        if (attribute === 'name') element.setAttribute('name', selector.replace('meta[name="', '').replace('"]', ''));
+        if (attribute === 'property') element.setAttribute('property', selector.replace('meta[property="', '').replace('"]', ''));
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', value);
+    };
 
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+    updateMetaTag('meta[name="description"]', 'name', description);
+    updateMetaTag('meta[name="keywords"]', 'name', keywords);
+    updateMetaTag('meta[property="og:title"]', 'property', title);
+    updateMetaTag('meta[property="og:description"]', 'property', description);
+    updateMetaTag('meta[property="og:image"]', 'property', ogImage);
+    updateMetaTag('meta[property="og:url"]', 'property', fullCanonical);
+    updateMetaTag('meta[name="twitter:title"]', 'name', title);
+    updateMetaTag('meta[name="twitter:description"]', 'name', description);
+    updateMetaTag('meta[name="twitter:image"]', 'name', ogImage);
 
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="robots" content="index, follow" />
-      <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
-      <meta name="language" content="French" />
-    </Helmet>
-  );
+    let linkElement = document.querySelector('link[rel="canonical"]');
+    if (!linkElement) {
+      linkElement = document.createElement('link');
+      linkElement.setAttribute('rel', 'canonical');
+      document.head.appendChild(linkElement);
+    }
+    linkElement.setAttribute('href', fullCanonical);
+  }, [title, description, keywords, ogImage, fullCanonical]);
+
+  return null;
 }
