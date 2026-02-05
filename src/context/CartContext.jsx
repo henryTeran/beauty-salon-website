@@ -26,8 +26,16 @@ export function CartProvider({ children }) {
   // Vider complètement le panier
   const clearCart = () => setCart([]);
 
+  // Calculer le prix total
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => {
+      const price = item.price * (item.quantity || 1);
+      return total + price;
+    }, 0);
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, getTotalPrice }}>
       {children}
     </CartContext.Provider>
   );
