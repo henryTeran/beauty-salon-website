@@ -15,6 +15,7 @@
     "@react-three/fiber": "^9.3.0",
     "@stripe/react-stripe-js": "^3.4.0",
     "@stripe/stripe-js": "^6.0.0",
+    "@supabase/supabase-js": "^2.94.1",
     "@tanstack/react-table": "^8.21.2",
     "axios": "^1.8.2",
     "firebase": "^11.4.0",

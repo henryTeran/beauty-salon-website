@@ -5,89 +5,65 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, Heart, Leaf, Plus, Star, Clock, Check,
-  Award, Shield, Zap, Filter, X, ChevronRight
+  Award, Shield, Zap, Filter, ChevronRight, Loader2
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useServices } from '../hooks/useServices';
 
 export default function Services() {
   const { addToCart } = useCart();
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [hoveredService, setHoveredService] = useState(null);
+  const { services: dbServices, loading, error } = useServices();
 
-  const categories = [
-    {
-      id: "visage",
-      title: t('services.face_care'),
-      icon: <Sparkles className="w-6 h-6" />,
-      gradient: "from-rose-400 to-pink-400",
-      description: "Révélez l'éclat naturel de votre peau",
-      services: [
-        {
-          id: 1,
-          title: t('services.facial_treatment'),
-          price: 70,
-          img: "https://images.pexels.com/photos/3764013/pexels-photo-3764013.jpeg?auto=compress&cs=tinysrgb&w=800",
-          duration: "60 min",
-          alt: "Soin du visage professionnel avec masque relaxant",
-          description: "Un soin complet pour nettoyer, hydrater et revitaliser votre peau en profondeur",
-          benefits: ["Nettoyage en profondeur", "Hydratation intense", "Éclat instantané", "Anti-âge"],
-          popular: true
-        }
-      ]
-    },
-    {
-      id: "corps",
-      title: t('services.body_care'),
-      icon: <Heart className="w-6 h-6" />,
-      gradient: "from-gold to-yellow-400",
-      description: "Détendez-vous et rechargez vos énergies",
-      services: [
-        {
-          id: 2,
-          title: t('services.relaxing_massage'),
-          price: 40,
-          img: "https://images.pexels.com/photos/3997985/pexels-photo-3997985.jpeg?auto=compress&cs=tinysrgb&w=800",
-          duration: "45 min",
-          alt: "Massage relaxant aux huiles essentielles",
-          description: "Massage thérapeutique aux huiles essentielles pour libérer les tensions",
-          benefits: ["Soulage le stress", "Améliore la circulation", "Détente musculaire", "Bien-être total"],
-          popular: false
-        }
-      ]
-    },
-    {
-      id: "mains_pieds",
-      title: t('services.hands_feet'),
-      icon: <Leaf className="w-6 h-6" />,
-      gradient: "from-amber-400 to-orange-400",
-      description: "Beauté et soin jusqu'au bout des doigts",
-      services: [
-        {
-          id: 3,
-          title: t('services.manicure_pedicure'),
-          price: 40,
-          img: "https://images.pexels.com/photos/1115128/pexels-photo-1115128.jpeg?auto=compress&cs=tinysrgb&w=800",
-          duration: "90 min",
-          alt: "Manucure et pédicure premium avec vernis",
-          description: "Soin complet des mains et pieds avec vernis longue durée",
-          benefits: ["Manucure complète", "Pédicure spa", "Vernis premium", "Résultat longue durée"],
-          popular: true
-        }
-      ]
-    }
-  ];
+  const getCategoryInfo = (categoryId) => {
+    const categoryMap = {
+      visage: {
+        title: t('services.face_care'),
+        icon: <Sparkles className="w-6 h-6" />,
+        gradient: "from-rose-400 to-pink-400",
+        description: "Révélez l'éclat naturel de votre peau"
+      },
+      corps: {
+        title: t('services.body_care'),
+        icon: <Heart className="w-6 h-6" />,
+        gradient: "from-gold to-yellow-400",
+        description: "Détendez-vous et rechargez vos énergies"
+      },
+      mains_pieds: {
+        title: t('services.hands_feet'),
+        icon: <Leaf className="w-6 h-6" />,
+        gradient: "from-amber-400 to-orange-400",
+        description: "Beauté et soin jusqu'au bout des doigts"
+      }
+    };
+    return categoryMap[categoryId] || {};
+  };
+
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(dbServices.map(s => s.category))];
+    return uniqueCategories.map(catId => ({
+      id: catId,
+      ...getCategoryInfo(catId)
+    }));
+  }, [dbServices, t]);
 
   const allServices = useMemo(() => {
-    return categories.flatMap(cat =>
-      cat.services.map(service => ({
+    return dbServices.map(service => {
+      const categoryInfo = getCategoryInfo(service.category);
+      return {
         ...service,
-        categoryId: cat.id,
-        categoryTitle: cat.title,
-        categoryGradient: cat.gradient
-      }))
-    );
-  }, [categories]);
+        categoryId: service.category,
+        categoryTitle: categoryInfo.title,
+        categoryGradient: categoryInfo.gradient,
+        img: service.image_url,
+        duration: `${service.duration} min`,
+        popular: service.is_popular,
+        benefits: service.benefits || []
+      };
+    });
+  }, [dbServices, t]);
 
   const filteredServices = useMemo(() => {
     if (selectedCategory === "all") return allServices;
@@ -111,6 +87,36 @@ export default function Services() {
       description: "Des effets immédiats et durables garantis"
     }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 text-gold animate-spin mx-auto mb-4" />
+          <p className="text-xl text-slate-600">Chargement des services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold text-red-800 mb-4">Erreur de chargement</h2>
+            <p className="text-red-600 mb-6">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-gradient-to-r from-gold to-yellow-400 text-black px-6 py-3 rounded-full font-bold hover:shadow-lg transition-all duration-300"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
