@@ -1,13 +1,19 @@
+import { useState, useMemo } from "react";
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { Sparkles, Heart, Scissors, Leaf, Plus, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Sparkles, Heart, Leaf, Plus, Star, Clock, Check,
+  Award, Shield, Zap, Filter, X, ChevronRight
+} from 'lucide-react';
 import SEO from '../components/SEO';
 
 export default function Services() {
   const { addToCart } = useCart();
   const { t } = useTranslation();
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [hoveredService, setHoveredService] = useState(null);
 
   const categories = [
     {
@@ -15,6 +21,7 @@ export default function Services() {
       title: t('services.face_care'),
       icon: <Sparkles className="w-6 h-6" />,
       gradient: "from-rose-400 to-pink-400",
+      description: "Révélez l'éclat naturel de votre peau",
       services: [
         {
           id: 1,
@@ -22,7 +29,10 @@ export default function Services() {
           price: 70,
           img: "https://images.pexels.com/photos/3764013/pexels-photo-3764013.jpeg?auto=compress&cs=tinysrgb&w=800",
           duration: "60 min",
-          alt: "Soin du visage professionnel avec masque relaxant"
+          alt: "Soin du visage professionnel avec masque relaxant",
+          description: "Un soin complet pour nettoyer, hydrater et revitaliser votre peau en profondeur",
+          benefits: ["Nettoyage en profondeur", "Hydratation intense", "Éclat instantané", "Anti-âge"],
+          popular: true
         }
       ]
     },
@@ -31,6 +41,7 @@ export default function Services() {
       title: t('services.body_care'),
       icon: <Heart className="w-6 h-6" />,
       gradient: "from-gold to-yellow-400",
+      description: "Détendez-vous et rechargez vos énergies",
       services: [
         {
           id: 2,
@@ -38,7 +49,10 @@ export default function Services() {
           price: 40,
           img: "https://images.pexels.com/photos/3997985/pexels-photo-3997985.jpeg?auto=compress&cs=tinysrgb&w=800",
           duration: "45 min",
-          alt: "Massage relaxant aux huiles essentielles"
+          alt: "Massage relaxant aux huiles essentielles",
+          description: "Massage thérapeutique aux huiles essentielles pour libérer les tensions",
+          benefits: ["Soulage le stress", "Améliore la circulation", "Détente musculaire", "Bien-être total"],
+          popular: false
         }
       ]
     },
@@ -47,6 +61,7 @@ export default function Services() {
       title: t('services.hands_feet'),
       icon: <Leaf className="w-6 h-6" />,
       gradient: "from-amber-400 to-orange-400",
+      description: "Beauté et soin jusqu'au bout des doigts",
       services: [
         {
           id: 3,
@@ -54,128 +69,340 @@ export default function Services() {
           price: 40,
           img: "https://images.pexels.com/photos/1115128/pexels-photo-1115128.jpeg?auto=compress&cs=tinysrgb&w=800",
           duration: "90 min",
-          alt: "Manucure et pédicure premium avec vernis"
+          alt: "Manucure et pédicure premium avec vernis",
+          description: "Soin complet des mains et pieds avec vernis longue durée",
+          benefits: ["Manucure complète", "Pédicure spa", "Vernis premium", "Résultat longue durée"],
+          popular: true
         }
       ]
     }
   ];
 
+  const allServices = useMemo(() => {
+    return categories.flatMap(cat =>
+      cat.services.map(service => ({
+        ...service,
+        categoryId: cat.id,
+        categoryTitle: cat.title,
+        categoryGradient: cat.gradient
+      }))
+    );
+  }, [categories]);
+
+  const filteredServices = useMemo(() => {
+    if (selectedCategory === "all") return allServices;
+    return allServices.filter(service => service.categoryId === selectedCategory);
+  }, [selectedCategory, allServices]);
+
+  const features = [
+    {
+      icon: <Award className="w-8 h-8" />,
+      title: "Expertise Certifiée",
+      description: "Esthéticiennes diplômées avec plus de 10 ans d'expérience"
+    },
+    {
+      icon: <Shield className="w-8 h-8" />,
+      title: "Produits Premium",
+      description: "Soins biologiques et produits haut de gamme uniquement"
+    },
+    {
+      icon: <Zap className="w-8 h-8" />,
+      title: "Résultats Visibles",
+      description: "Des effets immédiats et durables garantis"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <SEO
         title="Nos Services - GiZo Beauty | Soins Premium Genève"
         description="Découvrez notre gamme de soins premium : soins du visage anti-âge, massages relaxants aux huiles essentielles, manucure & pédicure. Prix à partir de 40 CHF."
         keywords="soins visage genève, massage relaxant, manucure pédicure, épilation, beauté genève, esthéticienne professionnelle"
         canonical="/services"
       />
-      {/* Header Section */}
-      <div className="container mx-auto px-6 pt-20 pb-12 text-center">
+
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
+
+        <div className="container mx-auto px-6 pt-32 pb-24 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-gold/20 to-yellow-400/20 backdrop-blur-sm px-6 py-3 rounded-full border border-gold/30 mb-8"
+            >
+              <Sparkles className="w-5 h-5 text-gold" />
+              <span className="text-gold font-semibold">Excellence & Bien-être</span>
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              Découvrez nos
+              <span className="block bg-gradient-to-r from-gold via-yellow-300 to-gold bg-clip-text text-transparent">
+                Soins d'Exception
+              </span>
+            </h1>
+
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-12">
+              Une expérience unique alliant techniques professionnelles, produits premium
+              et expertise reconnue pour sublimer votre beauté naturelle
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                to="/booking"
+                className="group inline-flex items-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-full text-lg font-bold hover:shadow-2xl hover:shadow-gold/40 transition-all duration-300 transform hover:scale-105"
+              >
+                <span>Réserver maintenant</span>
+                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <a
+                href="#services"
+                className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white/20 transition-all duration-300 border border-white/20"
+              >
+                Découvrir les soins
+              </a>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-50 to-transparent"></div>
+      </div>
+
+      {/* Features Section */}
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="text-center p-6 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-200/50 hover:border-gold/30 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-yellow-400/20 text-gold mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">{feature.title}</h3>
+              <p className="text-slate-600">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Category Filter */}
+      <div id="services" className="container mx-auto px-6 py-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-wrap items-center justify-center gap-4"
         >
-          <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent mb-6">
-            {t('services.title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Découvrez notre gamme complète de soins premium, conçus pour révéler votre beauté naturelle
-          </p>
+          <div className="flex items-center gap-2 text-slate-600 font-semibold">
+            <Filter className="w-5 h-5" />
+            <span>Filtrer par:</span>
+          </div>
+
+          <button
+            onClick={() => setSelectedCategory("all")}
+            className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+              selectedCategory === "all"
+                ? "bg-gradient-to-r from-gold to-yellow-400 text-black shadow-lg shadow-gold/25"
+                : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+            }`}
+          >
+            Tous les services
+          </button>
+
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                selectedCategory === category.id
+                  ? `bg-gradient-to-r ${category.gradient} text-white shadow-lg`
+                  : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+              }`}
+            >
+              {category.icon}
+              {category.title}
+            </button>
+          ))}
         </motion.div>
       </div>
-      
-      {/* Services Categories */}
+
+      {/* Services Grid */}
       <div className="container mx-auto px-6 pb-20">
-        {categories.map((category, categoryIndex) => (
-          <motion.div 
-            key={category.id} 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: categoryIndex * 0.2 }}
-            viewport={{ once: true }}
-            className="mb-16"
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCategory}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            <div className="text-center mb-12">
-              <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r ${category.gradient} text-white mb-4`}>
-                {category.icon}
-                <h2 className="text-2xl font-bold">{category.title}</h2>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              {category.services.map((service, serviceIndex) => (
-                <motion.div 
-                  key={service.id} 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: serviceIndex * 0.1 }}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  viewport={{ once: true }}
-                  className="group relative bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500"
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={service.img}
-                      alt={service.alt || service.title}
-                      loading="lazy"
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-700">
-                      {service.duration}
-                    </div>
+            {filteredServices.map((service, index) => (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1 }}
+                onMouseEnter={() => setHoveredService(service.id)}
+                onMouseLeave={() => setHoveredService(null)}
+                className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500"
+                style={{ willChange: 'transform' }}
+              >
+                {service.popular && (
+                  <div className="absolute top-4 left-4 z-10 bg-gradient-to-r from-gold to-yellow-400 text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                    <Star className="w-4 h-4 fill-current" />
+                    Populaire
                   </div>
-                  
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold text-dark mb-3 group-hover:text-gold transition-colors">
-                      {service.title}
-                    </h3>
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="text-3xl font-bold text-gold">{service.price} CHF</span>
-                      <div className="flex items-center gap-1 text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-current" />
-                        ))}
+                )}
+
+                <div className="relative h-72 overflow-hidden">
+                  <motion.img
+                    src={service.img}
+                    alt={service.alt || service.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    animate={{
+                      scale: hoveredService === service.id ? 1.1 : 1
+                    }}
+                    transition={{ duration: 0.6 }}
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 ${
+                    hoveredService === service.id ? 'opacity-100' : 'opacity-60'
+                  }`}></div>
+
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${service.categoryGradient} text-white text-sm font-semibold`}>
+                        <Clock className="w-4 h-4" />
+                        {service.duration}
                       </div>
                     </div>
-                    
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-gold transition-colors">
+                    {service.title}
+                  </h3>
+
+                  <p className="text-slate-600 mb-4 leading-relaxed">
+                    {service.description}
+                  </p>
+
+                  <div className="mb-6 space-y-2">
+                    {service.benefits.slice(0, 3).map((benefit, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm text-slate-600">
+                        <Check className="w-4 h-4 text-gold flex-shrink-0" />
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between mb-6 pb-6 border-b border-slate-100">
+                    <div>
+                      <div className="text-sm text-slate-500 mb-1">À partir de</div>
+                      <div className="text-3xl font-bold bg-gradient-to-r from-gold to-yellow-600 bg-clip-text text-transparent">
+                        {service.price} CHF
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-full bg-gradient-to-r from-gold to-yellow-400 text-black px-6 py-3 rounded-full font-bold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300 flex items-center justify-center gap-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full bg-gradient-to-r from-gold to-yellow-400 text-black px-6 py-4 rounded-2xl font-bold hover:shadow-xl hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2"
                       onClick={() => addToCart(service)}
                     >
                       <Plus className="w-5 h-5" />
-                      {t('services.add_to_cart')}
+                      Ajouter au panier
                     </motion.button>
+
+                    <Link
+                      to="/booking"
+                      className="block w-full text-center bg-slate-100 text-slate-700 px-6 py-4 rounded-2xl font-semibold hover:bg-slate-200 transition-all duration-300"
+                    >
+                      Réserver ce soin
+                    </Link>
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
-        ))}
+        </AnimatePresence>
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-black py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="container mx-auto px-6"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Prêt à vous faire chouchouter ?
-          </h2>
-          <Link 
-            to="/booking" 
-            className="inline-flex items-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-full text-lg font-bold hover:shadow-2xl hover:shadow-gold/25 transition-all duration-300 transform hover:scale-105"
-          >
-            <Star className="w-5 h-5" />
-            {t('services.book_service')}
-          </Link>
-        </motion.div>
+      {/* Trust Section */}
+      <div className="bg-slate-900 py-20">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="inline-flex items-center gap-3 bg-gold/10 backdrop-blur-sm px-6 py-3 rounded-full border border-gold/30 mb-8">
+                <Shield className="w-5 h-5 text-gold" />
+                <span className="text-gold font-semibold">Garantie Satisfaction</span>
+              </div>
+
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Votre satisfaction, notre priorité
+              </h2>
+
+              <p className="text-xl text-gray-300 mb-12 leading-relaxed">
+                Nous nous engageons à vous offrir une expérience exceptionnelle.
+                Si vous n'êtes pas entièrement satisfait, nous reprenons le soin gratuitement.
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-8 mb-12">
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                  <div className="text-4xl font-bold text-gold mb-2">500+</div>
+                  <div className="text-gray-300">Clientes satisfaites</div>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                  <div className="text-4xl font-bold text-gold mb-2">10+</div>
+                  <div className="text-gray-300">Ans d'expérience</div>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                  <div className="text-4xl font-bold text-gold mb-2">98%</div>
+                  <div className="text-gray-300">Taux de satisfaction</div>
+                </div>
+              </div>
+
+              <Link
+                to="/booking"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-10 py-5 rounded-full text-lg font-bold hover:shadow-2xl hover:shadow-gold/40 transition-all duration-300 transform hover:scale-105"
+              >
+                <Star className="w-6 h-6" />
+                Réserver maintenant
+                <ChevronRight className="w-5 h-5" />
+              </Link>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );
