@@ -1,9 +1,17 @@
+import { lazy, Suspense } from 'react';
 import SEO from '../components/SEO';
 import HeroSection from '../components/HeroSection';
-import ServicesPreview from '../components/ServicesPreview';
-import WhyChooseUs from '../components/WhyChooseUs';
-import LuxuryGallery from '../components/LuxuryGallery';
-import LuxuryTestimonials from '../components/LuxuryTestimonials';
+
+const ServicesPreview = lazy(() => import('../components/ServicesPreview'));
+const WhyChooseUs = lazy(() => import('../components/WhyChooseUs'));
+const LuxuryGallery = lazy(() => import('../components/LuxuryGallery'));
+const LuxuryTestimonials = lazy(() => import('../components/LuxuryTestimonials'));
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center py-16">
+    <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 export default function Home() {
   return (
@@ -16,10 +24,22 @@ export default function Home() {
       />
 
       <HeroSection />
-      <ServicesPreview />
-      <WhyChooseUs />
-      <LuxuryGallery />
-      <LuxuryTestimonials />
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <ServicesPreview />
+      </Suspense>
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <WhyChooseUs />
+      </Suspense>
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <LuxuryGallery />
+      </Suspense>
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <LuxuryTestimonials />
+      </Suspense>
     </div>
   );
 }

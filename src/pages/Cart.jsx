@@ -1,109 +1,172 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { ShoppingBag, Trash2, CreditCard, Package } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingBag, Trash2, X, Package, Sparkles, Calendar, ArrowRight } from 'lucide-react';
 
 export default function Cart() {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, removeFromCart } = useCart();
   const { t } = useTranslation();
 
   const totalAmount = cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20">
-      <div className="container mx-auto px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="flex items-start justify-end min-h-screen">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-12"
+          initial={{ x: 400, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: "spring", damping: 30, stiffness: 300 }}
+          className="w-full max-w-xl lg:max-w-2xl min-h-screen bg-white shadow-2xl"
         >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-4">
-            <ShoppingBag className="w-12 h-12 text-gold" />
-            {t('cart.title')}
-          </h1>
-        </motion.div>
-      
-        <div className="max-w-4xl mx-auto">
-          {cart.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              className="text-center bg-white rounded-3xl shadow-xl p-12"
-            >
-              <Package className="w-20 h-20 text-gray-300 mx-auto mb-6" />
-              <p className="text-2xl text-gray-600 mb-8">{t('cart.empty')}</p>
-              <Link 
-                to="/services"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-full text-lg font-bold hover:shadow-xl transition-all duration-300"
-              >
-                Découvrir nos services
-              </Link>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-white rounded-3xl shadow-2xl overflow-hidden"
-            >
-              <div className="p-8">
-                <div className="space-y-6">
-                  {cart.map((item, index) => (
-                    <motion.div 
-                      key={item.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300"
-                    >
-                      <div className="flex items-center gap-6">
-                        <img src={item.img} alt={item.title} className="w-20 h-20 object-cover rounded-xl shadow-md" />
-                        <div className="text-left">
-                          <h2 className="text-xl font-bold text-dark">{item.title}</h2>
-                          <p className="text-gray-500">Durée: {item.duration || '60 min'}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-gold">{item.price} CHF</p>
-                      </div>
-                    </motion.div>
-                  ))}
+          <div className="sticky top-0 z-10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-8 py-6 border-b border-slate-700">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-gold/20 to-yellow-400/20 rounded-xl backdrop-blur-sm">
+                  <ShoppingBag className="w-7 h-7 text-gold" />
                 </div>
-
-                {/* Total and Actions */}
-                <div className="border-t border-gray-200 pt-8 mt-8">
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-bold text-dark">{t('cart.total')} :</h2>
-                    <span className="text-4xl font-bold text-gold">{totalAmount} CHF</span>
-                  </div>
-
-                  <div className="flex flex-col md:flex-row gap-4 justify-between">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center justify-center gap-2 bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition duration-300 font-semibold"
-                      onClick={clearCart}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                      {t('cart.clear_cart')}
-                    </motion.button>
-                    
-                    <Link 
-                      to="/payment" 
-                      className="flex items-center justify-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-3 rounded-xl hover:shadow-xl hover:shadow-gold/25 transition-all duration-300 font-bold text-lg"
-                    >
-                      <CreditCard className="w-5 h-5" />
-                      {t('cart.proceed_payment')}
-                    </Link>
-                  </div>
+                <div>
+                  <h1 className="text-3xl font-bold">{t('cart.title')}</h1>
+                  <p className="text-sm text-slate-300">{cart.length} service{cart.length > 1 ? 's' : ''} sélectionné{cart.length > 1 ? 's' : ''}</p>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </div>
+              <Link
+                to="/services"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Fermer"
+              >
+                <X className="w-6 h-6" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex flex-col h-[calc(100vh-120px)]">
+            {cart.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex-1 flex flex-col items-center justify-center px-8 py-16"
+              >
+                <div className="relative mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-yellow-400/20 rounded-full blur-2xl"></div>
+                  <div className="relative p-8 bg-gradient-to-br from-slate-50 to-white rounded-full shadow-xl">
+                    <Package className="w-24 h-24 text-slate-300" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-3">Votre panier est vide</h2>
+                <p className="text-slate-600 text-center mb-8 max-w-sm">
+                  Découvrez nos soins d'exception et ajoutez vos services préférés
+                </p>
+                <Link
+                  to="/services"
+                  className="inline-flex items-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-2xl text-lg font-bold hover:shadow-2xl hover:shadow-gold/30 transition-all duration-300 transform hover:scale-105"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Découvrir nos services
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </motion.div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4">
+                  <AnimatePresence mode="popLayout">
+                    {cart.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20, height: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                        layout
+                        className="group relative bg-gradient-to-br from-slate-50 to-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-slate-100"
+                      >
+                        <div className="flex gap-4 p-4">
+                          <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-lg">
+                            <img
+                              src={item.img || item.image_url}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <h3 className="text-lg font-bold text-slate-900 line-clamp-2 group-hover:text-gold transition-colors">
+                                {item.title}
+                              </h3>
+                              <button
+                                onClick={() => removeFromCart(item.id)}
+                                className="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-500 transition-all duration-300 flex-shrink-0"
+                                aria-label="Supprimer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm text-slate-600 mb-3">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span>{item.duration || '60 min'}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <div className="text-2xl font-bold bg-gradient-to-r from-gold to-yellow-600 bg-clip-text text-transparent">
+                                {item.price} CHF
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                <div className="border-t border-slate-200 bg-white px-8 py-6 space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span>Sous-total</span>
+                      <span className="font-semibold">{totalAmount} CHF</span>
+                    </div>
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span>Services</span>
+                      <span className="font-semibold">{cart.length}</span>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent"></div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xl font-bold text-slate-900">Total</span>
+                    <span className="text-3xl font-bold bg-gradient-to-r from-gold to-yellow-600 bg-clip-text text-transparent">
+                      {totalAmount} CHF
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Link
+                      to="/booking"
+                      className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-2xl hover:shadow-2xl hover:shadow-gold/30 transition-all duration-300 font-bold text-lg group"
+                    >
+                      <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                      Réserver maintenant
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+
+                    <button
+                      className="flex items-center justify-center gap-2 w-full bg-slate-100 text-slate-700 px-6 py-3 rounded-xl hover:bg-slate-200 transition-all duration-300 font-semibold"
+                      onClick={clearCart}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Vider le panier
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </motion.div>
       </div>
     </div>
   );

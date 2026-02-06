@@ -16,10 +16,10 @@ export default function LanguageSwitcher() {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
+        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-gold/90 to-yellow-400/90 backdrop-blur-sm border border-gold/40 text-slate-900 hover:from-gold hover:to-yellow-400 transition-all duration-300 shadow-lg shadow-gold/20"
       >
-        <Globe size={18} />
-        <span className="hidden md:block">
+        <Globe size={20} className="text-slate-900" />
+        <span className="hidden md:block text-xl font-semibold">
           {languages.find(lang => lang.code === i18n.language)?.flag}
         </span>
       </motion.button>

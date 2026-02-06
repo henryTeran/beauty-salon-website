@@ -335,24 +335,15 @@ export default function Services() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full bg-gradient-to-r from-gold to-yellow-400 text-black px-6 py-4 rounded-2xl font-bold hover:shadow-xl hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2"
-                      onClick={() => addToCart(service)}
-                    >
-                      <Plus className="w-5 h-5" />
-                      Ajouter au panier
-                    </motion.button>
-
-                    <Link
-                      to="/booking"
-                      className="block w-full text-center bg-slate-100 text-slate-700 px-6 py-4 rounded-2xl font-semibold hover:bg-slate-200 transition-all duration-300"
-                    >
-                      Réserver ce soin
-                    </Link>
-                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-gradient-to-r from-gold to-yellow-400 text-black px-6 py-4 rounded-2xl font-bold hover:shadow-xl hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2"
+                    onClick={() => addToCart(service)}
+                  >
+                    <Plus className="w-5 h-5" />
+                    Ajouter au panier
+                  </motion.button>
                 </div>
               </motion.div>
             ))}
