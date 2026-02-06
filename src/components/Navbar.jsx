@@ -3,33 +3,19 @@ import { useCart } from "../context/CartContext";
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
-  const { cart } = useCart();
+  const { cart, toggleCart } = useCart();
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${
-        scrolled
-          ? 'bg-luxury-white/95 backdrop-blur-md shadow-luxury border-b border-luxury-gold/20'
-          : 'bg-transparent'
-      }`}
+      className="fixed top-0 left-0 w-full z-50 bg-luxury-white/95 backdrop-blur-md shadow-luxury border-b border-luxury-gold/20 transition-all duration-300"
     >
       <div className="luxury-container py-6">
         <div className="flex justify-between items-center">
@@ -43,7 +29,7 @@ export default function Navbar() {
               </div>
               <h1 className="font-serif text-2xl tracking-wider">
                 <span className="text-luxury-gold">GiZo</span>
-                <span className={`ml-2 ${scrolled ? 'text-luxury-black' : 'text-luxury-black'}`}>Beauty</span>
+                <span className="ml-2 text-luxury-black">Beauty</span>
               </h1>
             </motion.div>
           </Link>
@@ -52,52 +38,42 @@ export default function Navbar() {
             <div className="flex gap-10 font-sans text-sm uppercase tracking-widest">
               <Link
                 to="/"
-                className={`relative transition-colors duration-500 group ${
-                  scrolled ? 'text-luxury-black-soft hover:text-luxury-gold' : 'text-luxury-black hover:text-luxury-gold'
-                }`}
+                className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
               >
                 {t('nav.home')}
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-500 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/services"
-                className={`relative transition-colors duration-500 group ${
-                  scrolled ? 'text-luxury-black-soft hover:text-luxury-gold' : 'text-luxury-black hover:text-luxury-gold'
-                }`}
+                className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
               >
                 {t('nav.services')}
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-500 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/about"
-                className={`relative transition-colors duration-500 group ${
-                  scrolled ? 'text-luxury-black-soft hover:text-luxury-gold' : 'text-luxury-black hover:text-luxury-gold'
-                }`}
+                className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
               >
                 À propos
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-500 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 to="/contact"
-                className={`relative transition-colors duration-500 group ${
-                  scrolled ? 'text-luxury-black-soft hover:text-luxury-gold' : 'text-luxury-black hover:text-luxury-gold'
-                }`}
+                className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
               >
                 Contact
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-500 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </div>
 
             <div className="flex items-center gap-6">
-              <Link to="/cart" className="relative group">
+              <button onClick={toggleCart} className="relative group">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className="relative"
                 >
-                  <ShoppingBag className={`w-5 h-5 transition-colors duration-500 ${
-                    scrolled ? 'text-luxury-gold' : 'text-luxury-gold'
-                  }`} />
+                  <ShoppingBag className="w-5 h-5 transition-colors duration-300 text-luxury-gold" />
                   {cart.length > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
@@ -108,7 +84,7 @@ export default function Navbar() {
                     </motion.span>
                   )}
                 </motion.div>
-              </Link>
+              </button>
               <LanguageSwitcher />
               <Link to="/booking" className="luxury-btn text-xs py-2 px-6">
                 Réserver
@@ -117,14 +93,14 @@ export default function Navbar() {
           </div>
 
           <div className="lg:hidden flex items-center gap-4">
-            <Link to="/cart" className="relative">
+            <button onClick={toggleCart} className="relative">
               <ShoppingBag className="w-5 h-5 text-luxury-gold" />
               {cart.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-luxury-gold text-luxury-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                   {cart.reduce((total, item) => total + item.quantity, 0)}
                 </span>
               )}
-            </Link>
+            </button>
             <LanguageSwitcher />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}

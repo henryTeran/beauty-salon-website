@@ -4,7 +4,7 @@ import Services from "./pages/Services";
 import Booking from "./pages/Booking";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import CartPage from "./pages/Cart";
+import CartDrawer from "./components/CartDrawer";
 import { CartProvider } from "./context/CartContext";
 import { BookingProvider } from "./context/BookingContext";
 import Reservations from "./pages/Reservations";
@@ -19,13 +19,13 @@ export default function App() {
       <BookingProvider>
         <Router>
           <Navbar />
+          <CartDrawer />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/booking" element={<Booking />} />
-            <Route path="/cart" element={<CartPage />} />
             <Route path="/reservations" element={<Reservations />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/success" element={<Success />} />
