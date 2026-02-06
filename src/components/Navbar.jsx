@@ -44,17 +44,17 @@ export default function Navbar() {
                 <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
-                to="/services"
-                className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
-              >
-                {t('nav.services')}
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
                 to="/about"
                 className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
               >
                 À propos
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link
+                to="/services"
+                className="relative transition-colors duration-300 group text-luxury-black-soft hover:text-luxury-gold"
+              >
+                {t('nav.services')}
                 <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-gold transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
