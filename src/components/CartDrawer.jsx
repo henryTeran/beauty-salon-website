@@ -80,14 +80,16 @@ export default function CartDrawer() {
                   <p className="text-slate-600 text-center mb-8 max-w-sm">
                     Découvrez nos soins d'exception et ajoutez vos services préférés
                   </p>
-                  <button
-                    onClick={closeCart}
-                    className="inline-flex items-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-2xl text-lg font-bold hover:shadow-2xl hover:shadow-gold/30 transition-all duration-300 transform hover:scale-105"
-                  >
-                    <Sparkles className="w-5 h-5" />
+                   <Link
+                        to="/services"
+                        onClick={closeCart}
+                        className="inline-flex items-center gap-3 bg-gradient-to-r from-gold to-yellow-400 text-black px-8 py-4 rounded-2xl text-lg font-bold hover:shadow-2xl hover:shadow-gold/30 transition-all duration-300 transform hover:scale-105"
+                   >
+                   <Sparkles className="w-5 h-5" />
                     Découvrir nos services
                     <ArrowRight className="w-5 h-5" />
-                  </button>
+                   </Link>
+      
                 </motion.div>
               ) : (
                 <>
