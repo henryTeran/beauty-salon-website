@@ -391,4 +391,8 @@ export default {
   "Plus d’heure disponible ce jour-là pour cette durée.": "No quedan horas disponibles ese día para esta duración.",
   "Autres soins": "Otros tratamientos",
   "Langue": "Idioma",
+  "Votre créneau est pré-réservé. Envoyez maintenant votre demande par WhatsApp pour recevoir la confirmation.": "Tu hora queda prerreservada. Envía ahora tu solicitud por WhatsApp para recibir la confirmación.",
+  "Vérifiez votre adresse e-mail.": "Revisa tu dirección de correo.",
+  "E-mail (pour recevoir la confirmation)": "Correo (para recibir la confirmación)",
+  "Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp. Le rendez-vous est validé après confirmation.": "Tu solicitud se guarda en la agenda y después la envías por WhatsApp. La cita queda validada tras la confirmación.",
 };

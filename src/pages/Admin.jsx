@@ -3,18 +3,21 @@ import { CalendarDays, ChevronLeft, ChevronRight, Clock, Loader2, LogOut, MapPin
 import { adminEmails } from '../config/firebase.js';
 import {
   authApi, loadSchedule, saveSchedule, loadBookings, loadBusy, setBookingStatus, deleteBusy,
-  createEntries, deleteSeries, loadCustomServices, saveService, deleteService,
+  createEntries, deleteSeries, loadCustomServices, saveService, deleteService, sendMail,
 } from '../lib/firebase.js';
 import { defaultSchedule, dayNames, weekOrder, dateKey, addDays, formatDate, parseDate, toMin, toTime } from '../lib/schedule.js';
 import { categories, allServices, allServicesWith, bookingMinutes, formatDuration } from '../data/services.js';
 import { resetCustomServices } from '../lib/useCustomServices.js';
-import { site } from '../config/site.js';
+import { confirmWhatsApp, emailToClient } from '../lib/messages.js';
+import { prefix } from '../i18n/index.js';
 
 const field = 'rounded-xl border border-gold/35 bg-cream px-3 py-2 text-ink focus:border-bordeaux focus:outline-none';
 const card = 'rounded-[1.5rem] border border-gold/30 bg-cream p-6 shadow-card';
 const pill = (on) => `rounded-full border px-3.5 py-2 text-sm transition-colors ${on ? 'border-bordeaux bg-bordeaux text-cream' : 'border-gold/40 hover:border-bordeaux'}`;
 const hm = (min) => toTime(min).replace(':', 'h');
 const statusLabel = { pending: 'À confirmer', confirmed: 'Confirmé', cancelled: 'Annulé' };
+/** Noms des prestations tels qu'affichés dans l'espace privé (catalogue en français), quelle que soit la langue de la cliente */
+const namesOf = (b, services) => (b.services || []).map((s) => services.find((x) => x.id === s.id)?.name || s.name).join(', ');
 const PX = 1.1; // pixels par minute dans la grille
 
 function Login({ onError, error }) {
@@ -50,22 +53,11 @@ function Login({ onError, error }) {
   );
 }
 
-/** Message WhatsApp de confirmation envoyé à la cliente, avec la date et l'heure */
-const confirmText = (b) =>
-  [
-    `Bonjour ${b.name}, je vous confirme votre rendez-vous :`,
-    `📅 ${formatDate(b.date)}`,
-    `🕐 ${hm(b.start)} – ${hm(b.end)}`,
-    `💆 ${(b.services || []).map((s) => s.name).join(', ')}`,
-    b.address && `📍 ${b.address}`,
-    '',
-    `À bientôt ! ${site.owner}`,
-  ].filter((l) => typeof l === 'string').join('\n');
 const waNumber = (phone) => String(phone || '').replace(/\D/g, '').replace(/^00/, '').replace(/^0(?=[1-9])/, '41');
 
 /** Formulaire d'ajout : rendez-vous (durée calculée selon les prestations) ou indisponibilité, répétable */
 function EntryForm({ initial, services, onClose, onSaved, notify }) {
-  const [f, setF] = useState({ type: 'rdv', date: initial.date, start: initial.start, end: toTime(Math.min(toMin(initial.start) + 60, 1439)), ids: [], name: '', phone: '', address: '', repeat: false, days: [parseDate(initial.date).getDay()], until: addDays(initial.date, 28) });
+  const [f, setF] = useState({ type: 'rdv', date: initial.date, start: initial.start, end: toTime(Math.min(toMin(initial.start) + 60, 1439)), ids: [], name: '', phone: '', email: '', address: '', repeat: false, days: [parseDate(initial.date).getDay()], until: addDays(initial.date, 28) });
   const [saving, setSaving] = useState(false);
   const set = (k) => (e) => setF((c) => ({ ...c, [k]: e.target.value }));
   const chosen = services.filter((s) => f.ids.includes(s.id));
@@ -88,7 +80,7 @@ function EntryForm({ initial, services, onClose, onSaved, notify }) {
     if (!dates.length) return notify('Aucune date ne correspond à la répétition choisie.');
     setSaving(true);
     const booking = f.type === 'rdv'
-      ? { name: f.name.trim(), phone: f.phone.trim(), address: f.address.trim(), message: '', services: chosen.map((s) => ({ id: s.id, name: s.name, price: Number(s.price) })), total: chosen.reduce((t, s) => t + Number(s.price), 0) }
+      ? { name: f.name.trim(), phone: f.phone.trim(), email: f.email.trim(), address: f.address.trim(), message: '', lang: 'fr', services: chosen.map((s) => ({ id: s.id, name: s.name, price: Number(s.price), minutes: bookingMinutes(s) })), total: chosen.reduce((t, s) => t + Number(s.price), 0) }
       : null;
     try {
       await createEntries(dates.map((date) => ({ date, start, end, booking })), f.repeat ? `s-${Date.now().toString(36)}` : null);
@@ -130,6 +122,7 @@ function EntryForm({ initial, services, onClose, onSaved, notify }) {
             <div className="grid gap-3 sm:grid-cols-2">
               <input aria-label="Nom de la cliente" placeholder="Nom de la cliente *" value={f.name} onChange={set('name')} className={field} />
               <input aria-label="Téléphone" placeholder="Téléphone" type="tel" value={f.phone} onChange={set('phone')} className={field} />
+              <input aria-label="E-mail" placeholder="E-mail (facultatif)" type="email" value={f.email} onChange={set('email')} className={`${field} sm:col-span-2`} />
               <input aria-label="Adresse" placeholder="Adresse du soin" value={f.address} onChange={set('address')} className={`${field} sm:col-span-2`} />
             </div>
           </>
@@ -226,6 +219,13 @@ function Planning({ notify, services }) {
   const pending = bookings.filter((b) => b.status === 'pending').length;
   const selected = sel && (bookings.find((b) => b.id === sel) || blocks.find((b) => b.id === sel));
 
+  // Change le statut et prévient la cliente par e-mail si elle a laissé une adresse et que l'envoi est activé
+  const mailable = (b) => schedule.emailEnabled && !!b.email;
+  const setStatus = async (b, status) => {
+    await setBookingStatus(b.id, status);
+    if (mailable(b)) await sendMail(emailToClient(b, status)).catch(() => {});
+  };
+
   const clickGrid = (date) => (e) => {
     if (e.target !== e.currentTarget) return;
     const y = e.clientY - e.currentTarget.getBoundingClientRect().top;
@@ -295,7 +295,7 @@ function Planning({ notify, services }) {
                       <button type="button" key={b.id} onClick={() => setSel(b.id)} style={{ top: (b.start - from) * PX, height: Math.max((b.end - b.start) * PX, 22) }}
                         className={`absolute inset-x-1 overflow-hidden rounded-lg px-2 py-0.5 text-left text-xs leading-tight shadow-sm ${b.status === 'pending' ? 'border border-dashed border-gold-dark bg-gold-pale text-bordeaux' : 'bg-bordeaux text-cream'} ${sel === b.id ? 'ring-2 ring-gold-dark ring-offset-1' : ''}`}>
                         <span className="font-medium">{hm(b.start)} {b.name}</span>
-                        <span className="block opacity-80">{(b.services || []).map((s) => s.name).join(', ')}</span>
+                        <span className="block opacity-80">{namesOf(b, services)}</span>
                       </button>
                     ))}
                   </div>
@@ -320,7 +320,7 @@ function Planning({ notify, services }) {
           {selected && selected.manual && (
             <>
               <p className="font-serif text-2xl text-bordeaux">Indisponibilité</p>
-              <p className="mt-1 capitalize">{formatDate(selected.date)} · {hm(selected.start)} – {hm(selected.end)}</p>
+              <p className="mt-1 first-letter:uppercase">{formatDate(selected.date)} · {hm(selected.start)} – {hm(selected.end)}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <button type="button" onClick={() => act(() => deleteBusy(selected.id), 'Indisponibilité supprimée.')} className={pill(false)}>Supprimer</button>
                 {selected.series && <button type="button" onClick={() => window.confirm('Supprimer cette indisponibilité et toutes les suivantes de la série ?') && act(() => deleteSeries(selected.series, selected.date), 'Série supprimée.')} className={pill(false)}>Supprimer la série</button>}
@@ -333,19 +333,20 @@ function Planning({ notify, services }) {
                 <span className="font-serif text-2xl text-bordeaux">{selected.name}</span>
                 <span className="rounded-full bg-gold-pale px-2.5 py-1 text-[0.7rem] uppercase tracking-wide text-gold-dark">{statusLabel[selected.status]}</span>
               </p>
-              <p className="mt-1 font-serif text-xl capitalize">{formatDate(selected.date)} · {hm(selected.start)} – {hm(selected.end)}</p>
-              <p className="mt-2 text-taupe">{(selected.services || []).map((s) => s.name).join(', ')} · {selected.total} CHF</p>
+              <p className="mt-1 font-serif text-xl first-letter:uppercase">{formatDate(selected.date)} · {hm(selected.start)} – {hm(selected.end)}</p>
+              <p className="mt-2 text-taupe">{namesOf(selected, services)} · {selected.total} CHF</p>
               {selected.address && <p className="mt-1 flex items-start gap-1.5 text-taupe"><MapPin size={14} className="mt-1 shrink-0" aria-hidden="true" /> {selected.address}</p>}
+              {selected.email && <p className="mt-1 text-taupe">{selected.email}</p>}
               {selected.message && <p className="mt-1 italic text-taupe">« {selected.message} »</p>}
               {selected.phone && (
                 <p className="mt-3 flex flex-wrap gap-2">
                   <a href={`tel:${selected.phone}`} className={`${pill(false)} inline-flex items-center gap-1`}><Phone size={13} aria-hidden="true" /> {selected.phone}</a>
-                  <a href={`https://wa.me/${waNumber(selected.phone)}?text=${encodeURIComponent(confirmText(selected))}`} target="_blank" rel="noopener" className={`${pill(false)} inline-flex items-center gap-1`}><MessageCircle size={13} aria-hidden="true" /> Envoyer la confirmation</a>
+                  <a href={`https://wa.me/${waNumber(selected.phone)}?text=${encodeURIComponent(confirmWhatsApp(selected))}`} target="_blank" rel="noopener" className={`${pill(false)} inline-flex items-center gap-1`}><MessageCircle size={13} aria-hidden="true" /> Envoyer la confirmation</a>
                 </p>
               )}
               <div className="mt-4 flex flex-wrap gap-2">
-                {selected.status === 'pending' && <button type="button" onClick={() => act(() => setBookingStatus(selected.id, 'confirmed'), 'Rendez-vous confirmé.')} className={pill(true)}>Confirmer</button>}
-                <button type="button" onClick={() => window.confirm('Annuler ce rendez-vous et libérer le créneau ?') && act(() => setBookingStatus(selected.id, 'cancelled'), 'Rendez-vous annulé, créneau libéré.')} className={pill(false)}>Annuler</button>
+                {selected.status === 'pending' && <button type="button" onClick={() => act(() => setStatus(selected, 'confirmed'), mailable(selected) ? 'Rendez-vous confirmé, e-mail envoyé à la cliente.' : 'Rendez-vous confirmé.')} className={pill(true)}>Confirmer</button>}
+                <button type="button" onClick={() => window.confirm('Annuler ce rendez-vous et libérer le créneau ?') && act(() => setStatus(selected, 'cancelled'), mailable(selected) ? 'Rendez-vous annulé, cliente prévenue par e-mail.' : 'Rendez-vous annulé, créneau libéré.')} className={pill(false)}>Annuler</button>
                 {selected.series && <button type="button" onClick={() => window.confirm('Supprimer ce rendez-vous et tous les suivants de la série ?') && act(() => deleteSeries(selected.series, selected.date), 'Série supprimée.')} className={pill(false)}>Supprimer la série</button>}
               </div>
             </>
@@ -370,6 +371,16 @@ function Hours({ notify }) {
   if (!s) return <p className="flex items-center gap-2 text-taupe"><Loader2 size={16} className="animate-spin" /> Chargement…</p>;
 
   const setDay = (i, patch) => setS((cur) => ({ ...cur, days: { ...cur.days, [i]: { ...cur.days[i], ...patch } } }));
+  const testMail = async () => {
+    const d = dateKey(new Date());
+    const sample = { name: 'Cliente Test', phone: '+41 79 000 00 00', email: adminEmails[0], address: 'Rue de l’Exemple 1, Genève', message: '', date: d, start: 600, end: 690, total: 100, lang: 'fr', services: [{ name: 'Lifting coréen des cils', price: 100, minutes: 90 }] };
+    try {
+      await sendMail(emailToClient(sample, 'confirmed'));
+      notify(`E-mail de test mis en file d’envoi vers ${adminEmails[0]}. S’il n’arrive pas, l’extension n’est pas encore installée.`);
+    } catch {
+      notify('Envoi impossible (règles Firestore à mettre à jour ?).');
+    }
+  };
   const copyAll = (i) => setS((cur) => ({ ...cur, days: Object.fromEntries(Object.entries(cur.days).map(([k, d]) => [k, d.open ? { ...d, start: cur.days[i].start, end: cur.days[i].end } : d])) }));
   const save = async () => {
     const bad = weekOrder.find((i) => s.days[i].open && toMin(s.days[i].end) <= toMin(s.days[i].start));
@@ -426,6 +437,16 @@ function Hours({ notify }) {
               {[0, 15, 30, 45, 60].map((v) => <option key={v} value={v}>{v} min</option>)}
             </select>
           </label>
+        </section>
+
+        <section className={`${card} space-y-3`}>
+          <h2 className="font-serif text-2xl text-bordeaux">E-mails automatiques</h2>
+          <label className="flex items-start gap-3">
+            <input type="checkbox" checked={!!s.emailEnabled} onChange={(e) => setS((c) => ({ ...c, emailEnabled: e.target.checked }))} className="mt-1 h-5 w-5 accent-[#4A1A22]" />
+            <span>Activer les e-mails : avis à chaque nouvelle demande, et confirmation ou annulation envoyée à la cliente.</span>
+          </label>
+          <p className="text-sm text-taupe">À activer une fois l’envoi SMTP installé dans Firebase (extension « Trigger Email »). Enregistrez, puis testez.</p>
+          <button type="button" onClick={testMail} className={pill(false)}>Envoyer un e-mail de test</button>
         </section>
 
         <section className={`${card} space-y-3`}>
@@ -585,6 +606,11 @@ export default function Admin() {
     window.clearTimeout(notify.t);
     notify.t = window.setTimeout(() => setNote(''), 5000);
   }, []);
+  // L'espace privé n'existe qu'en français : /es/admin et /en/admin y renvoient
+  useEffect(() => {
+    if (prefix) window.location.replace(`${import.meta.env.BASE_URL}admin`);
+  }, []);
+
   const logout = async () => {
     const { m, auth } = await authApi();
     await m.signOut(auth);

@@ -391,4 +391,8 @@ export default {
   "Plus d’heure disponible ce jour-là pour cette durée.": "No times left that day for this duration.",
   "Autres soins": "Other treatments",
   "Langue": "Language",
+  "Votre créneau est pré-réservé. Envoyez maintenant votre demande par WhatsApp pour recevoir la confirmation.": "Your slot is provisionally held. Now send your request by WhatsApp to receive confirmation.",
+  "Vérifiez votre adresse e-mail.": "Please check your email address.",
+  "E-mail (pour recevoir la confirmation)": "Email (to receive the confirmation)",
+  "Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp. Le rendez-vous est validé après confirmation.": "Your request is saved in the diary, then you send it by WhatsApp. The appointment is valid once confirmed.",
 };

@@ -1,15 +1,16 @@
-import { t, locale, clock } from '../i18n/index.js';
+import { t, lang, locale, clock } from '../i18n/index.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, CheckCircle2, ChevronLeft, ChevronRight, Clock, Loader2, Mail, MessageCircle, Phone, Plus, Trash2 } from 'lucide-react';
+import { Check, CheckCircle2, ChevronLeft, ChevronRight, Clock, Loader2, MessageCircle, Phone, Plus, Trash2 } from 'lucide-react';
 import { allServicesWith, bookingMinutes, formatDuration } from '../data/services.js';
 import { site, telHref, waHref } from '../config/site.js';
 import { getRouteMeta } from '../seo/routes.js';
 import { PageHero } from '../components/blocks.jsx';
 import { ease } from '../components/ui.jsx';
 import { defaultSchedule, freeSlots, toTime, dateKey, addDays, formatDate, parseDate } from '../lib/schedule.js';
-import { loadSchedule, loadBusy, createBooking } from '../lib/firebase.js';
+import { loadSchedule, loadBusy, createBooking, sendMail } from '../lib/firebase.js';
+import { requestWhatsApp, emailToOwner } from '../lib/messages.js';
 import { useCustomServices } from '../lib/useCustomServices.js';
 
 const meta = getRouteMeta('/reservation');
@@ -37,7 +38,7 @@ function MonthCalendar({ month, setMonth, selected, onSelect, isFree, min, max, 
     <div>
       <div className="flex items-center justify-between">
         <button type="button" aria-label={t("Mois précédent")} disabled={month <= monthStart(min)} onClick={() => shift(-1)} className={nav}><ChevronLeft size={18} aria-hidden="true" /></button>
-        <p className="font-serif text-2xl capitalize text-bordeaux" aria-live="polite">
+        <p className="font-serif text-2xl text-bordeaux first-letter:uppercase" aria-live="polite">
           {formatDate(month, { month: 'long', year: 'numeric' })}
           {loading && <Loader2 size={14} className="ml-2 inline animate-spin text-gold-dark" aria-hidden="true" />}
         </p>
@@ -89,7 +90,7 @@ export default function Reservation() {
   const [selected, setSelected] = useState([]);
   const [picker, setPicker] = useState(true);
   const [month, setMonth] = useState(monthStart(today));
-  const [form, setForm] = useState({ name: '', phone: '', date: '', time: null, adresse: '', message: '' });
+  const [form, setForm] = useState({ name: '', phone: '', date: '', time: null, adresse: '', message: '', email: '' });
   const [schedule, setSchedule] = useState(defaultSchedule);
   const [busy, setBusy] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -146,31 +147,13 @@ export default function Reservation() {
   const toggle = (id) => setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const buildMessage = () =>
-    [
-      `Bonjour ${site.owner}, je souhaite prendre rendez-vous.`,
-      '',
-      `Date : ${formatDate(form.date)}`,
-      `Heure : ${hm(form.time)} – ${hm(form.time + duration)}`,
-      '',
-      'Prestations :',
-      ...chosen.map((s) => `• ${s.name} (${formatDuration(bookingMinutes(s))}) – ${s.price} CHF`),
-      `Total indicatif : ${total} CHF`,
-      '',
-      `Adresse (soin à domicile) : ${form.adresse}`,
-      `Nom : ${form.name}`,
-      `Téléphone : ${form.phone}`,
-      form.message && `Message : ${form.message}`,
-    ]
-      .filter((l) => typeof l === 'string')
-      .join('\n');
-
   const validate = () => {
     if (!chosen.length) return t("Sélectionnez au moins une prestation.");
     if (!form.date || form.time === null) return t("Choisissez une date et une heure.");
     if (!form.adresse.trim()) return t("Indiquez la commune ou l’adresse du soin.");
     if (!form.name.trim()) return t("Indiquez votre nom.");
     if (!form.phone.trim()) return t("Indiquez votre numéro de téléphone.");
+    if (form.email.trim() && !/^\S+@\S+\.\S+$/.test(form.email.trim())) return t('Vérifiez votre adresse e-mail.');
     return '';
   };
 
@@ -180,20 +163,25 @@ export default function Reservation() {
     setError(err);
     if (err || sending) return;
     setSending(true);
-    const text = buildMessage();
+    const booking = {
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      address: form.adresse.trim(),
+      message: form.message.trim(),
+      date: form.date,
+      start: form.time,
+      end: form.time + duration,
+      services: chosen.map((s) => ({ id: s.id, name: s.name, price: Number(s.price), minutes: bookingMinutes(s) })),
+      total,
+      lang,
+    };
+    const text = requestWhatsApp(booking);
     let saved = true;
     try {
-      await createBooking({
-        name: form.name.trim(),
-        phone: form.phone.trim(),
-        address: form.adresse.trim(),
-        message: form.message.trim(),
-        date: form.date,
-        start: form.time,
-        end: form.time + duration,
-        services: chosen.map((s) => ({ id: s.id, name: s.name, price: Number(s.price) })),
-        total,
-      });
+      await createBooking(booking);
+      // Avis par e-mail à l'esthéticienne (si l'envoi est activé) ; un échec ne bloque pas la demande
+      if (schedule.emailEnabled) sendMail(emailToOwner(booking)).catch(() => {});
     } catch {
       saved = false; // le planning est indisponible : la demande part quand même par WhatsApp
     }
@@ -215,19 +203,14 @@ export default function Reservation() {
               <h2 className="display mt-5 text-3xl md:text-4xl">{done.saved ? t("Demande enregistrée") : t("Dernière étape")}</h2>
               <p className="mt-4 max-w-xl text-taupe">
                 {done.saved
-                  ? t("Votre créneau est pré-réservé. Envoyez maintenant votre demande pour recevoir la confirmation.")
+                  ? t("Votre créneau est pré-réservé. Envoyez maintenant votre demande par WhatsApp pour recevoir la confirmation.")
                   : t("Le planning en ligne est momentanément indisponible. Envoyez votre demande directement : le créneau vous sera confirmé.")}
               </p>
-              <p className="mt-4 font-serif text-2xl capitalize text-bordeaux">{formatDate(form.date)} · {hm(form.time)}</p>
+              <p className="mt-4 font-serif text-2xl text-bordeaux first-letter:uppercase">{formatDate(form.date)} · {hm(form.time)}</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={waHref(done.text)} target="_blank" rel="noopener" className="btn-primary">
                   <span className="flex items-center gap-2"><MessageCircle size={16} aria-hidden="true" />{" "}{t("Envoyer par WhatsApp")}</span>
                 </a>
-                {site.email && (
-                  <a href={`mailto:${site.email}?subject=${encodeURIComponent('Demande de rendez-vous')}&body=${encodeURIComponent(done.text)}`} className="btn-ghost">
-                    <Mail size={15} aria-hidden="true" />{" "}{t("Envoyer par e-mail")}
-                  </a>
-                )}
               </div>
             </div>
           ) : (
@@ -358,6 +341,12 @@ export default function Reservation() {
                     <span className="kicker">{t("Téléphone *")}</span>
                     <input required type="tel" autoComplete="tel" inputMode="tel" value={form.phone} onChange={set('phone')} placeholder="+41…" className={`${field} mt-2`} />
                   </label>
+                  {schedule.emailEnabled && (
+                    <label className="block md:col-span-2">
+                      <span className="kicker">{t('E-mail (pour recevoir la confirmation)')}</span>
+                      <input type="email" autoComplete="email" inputMode="email" value={form.email} onChange={set('email')} className={`${field} mt-2`} />
+                    </label>
+                  )}
                   <label className="block md:col-span-2">
                     <span className="kicker">{t("Commune / adresse du soin à domicile *")}</span>
                     <input required type="text" autoComplete="street-address" value={form.adresse} onChange={set('adresse')} placeholder={t("Ex. Carouge, rue…")} className={`${field} mt-2`} />
@@ -376,12 +365,12 @@ export default function Reservation() {
                     </span>
                   </button>
                   {form.date && form.time !== null && (
-                    <p className="font-serif text-2xl capitalize text-bordeaux">{formatDate(form.date)} · {hm(form.time)}</p>
+                    <p className="font-serif text-2xl text-bordeaux first-letter:uppercase">{formatDate(form.date)} · {hm(form.time)}</p>
                   )}
                 </div>
                 <p role="alert" className={`mt-4 text-bordeaux-soft ${error ? '' : 'hidden'}`}>{error}</p>
                 <p className="mt-4 max-w-xl text-sm text-taupe">
-                  {t("Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp ou e-mail. Le rendez-vous est validé après confirmation.")}
+                  {t('Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp. Le rendez-vous est validé après confirmation.')}
                 </p>
                 <p className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-taupe">
                   <a href={telHref} className="flex items-center gap-2"><Phone size={16} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">{site.phoneDisplay}</span></a>

@@ -61,3 +61,19 @@ Firebase Hosting : `npm run build && firebase deploy --only hosting`.
 ## Espace privé : prestations
 
 L'onglet « Prestations » ajoute des soins et modifie prix, durée et description (collection Firestore `services`). Le site et la réservation les affichent dès le chargement de la page ; les textes prérendus pour Google (HTML, données structurées, `llms.txt`) reprennent `src/data/services.js` et ne changent qu'au prochain `npm run build`.
+
+## E-mails automatiques (SMTP)
+
+Le site ne parle pas directement à un serveur SMTP (impossible depuis un navigateur) : il dépose les e-mails dans la collection Firestore `mail`, et l'extension Firebase **Trigger Email from Firestore** les envoie par SMTP.
+
+1. Passer le projet Firebase au forfait **Blaze** (obligatoire pour installer une extension).
+2. Sur le compte Gmail d'envoi : activer la validation en deux étapes, puis créer un **mot de passe d'application**.
+3. Console Firebase → Extensions → installer « Trigger Email from Firestore » :
+   - SMTP connection URI : `smtps://rodmafer6@gmail.com@smtp.gmail.com:465`
+   - SMTP password : le mot de passe d'application
+   - Email documents collection : `mail`
+   - Default FROM address : `María Fernanda Beauté & Bien-être <rodmafer6@gmail.com>`
+4. Publier `firestore.rules`.
+5. Espace privé → Horaires → « E-mails automatiques » : cocher, enregistrer, puis « Envoyer un e-mail de test ».
+
+Modèles et textes (e-mails et WhatsApp, en français, espagnol et anglais) : `src/lib/messages.js`.

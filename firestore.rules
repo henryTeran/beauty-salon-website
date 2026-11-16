@@ -37,6 +37,20 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // E-mails à envoyer (extension « Trigger Email ») : un visiteur ne peut écrire qu'à l'adresse
+    // de l'esthéticienne (avis de nouvelle demande) ; seule l'admin peut écrire à une cliente
+    match /mail/{id} {
+      allow create: if isAdmin() || (
+        request.resource.data.keys().hasOnly(['to', 'replyTo', 'message'])
+        && request.resource.data.to == 'rodmafer6@gmail.com'
+        && request.resource.data.message.keys().hasOnly(['subject', 'html', 'text'])
+        && request.resource.data.message.subject.size() <= 300
+        && request.resource.data.message.html.size() <= 30000
+        && request.resource.data.message.text.size() <= 5000
+      );
+      allow read: if isAdmin();
+    }
+
     // Demandes de rendez-vous : tout le monde peut en créer une, seul l'admin peut les lire
     match /bookings/{id} {
       allow create: if isAdmin() || request.resource.data.status == 'pending'
