@@ -64,7 +64,8 @@ const hhmm = (min, lang) => {
   const s = `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
   return lang === 'fr' ? s.replace(':', 'h') : s;
 };
-const fmtTime = (b, lang) => `${hhmm(b.start, lang)} – ${hhmm(b.end, lang)}`;
+// Seule l'heure de début est communiquée (pas d'heure de fin dans les messages)
+const fmtTime = (b, lang) => hhmm(b.start, lang);
 const dur = (min) => (min ? (min < 60 ? `${min} min` : `${Math.floor(min / 60)} h${min % 60 ? ` ${min % 60}` : ''}`) : '');
 const serviceLine = (s) => `${s.name}${s.minutes ? ` (${dur(s.minutes)})` : ''}${s.price !== undefined ? ` · ${s.price} CHF` : ''}`;
 // Deux-points : précédés d'une espace en français uniquement
