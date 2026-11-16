@@ -34,3 +34,19 @@ scripts/prerender.mjs Génère les .html, sitemap.xml, robots.txt, llms.txt
 ## Avant la mise en ligne
 
 Compléter les `TODO` de `src/config/site.js` : domaine, adresse, e-mail, horaires, coordonnées GPS, Instagram, fiche Google.
+
+## Planning et horaires (Firebase)
+
+- Réservation : `/reservation` affiche les créneaux libres selon les horaires et les rendez-vous déjà pris.
+- Espace privé : `/admin` (connexion e-mail + mot de passe) pour voir le planning, confirmer ou annuler, bloquer un créneau et modifier les horaires.
+- Code : `src/lib/schedule.js` (calcul des créneaux), `src/lib/firebase.js` (accès aux données), `src/pages/Admin.jsx`.
+
+Mise en service, une seule fois, dans la console Firebase du projet `beautybooker-25c9d` :
+
+1. **Authentication** → activer « E-mail/Mot de passe », puis ajouter l'utilisateur `rodmafer6@gmail.com` avec un mot de passe.
+2. **Firestore Database** → créer la base si besoin, puis coller le contenu de `firestore.rules` dans l'onglet Règles et publier (ou `firebase deploy --only firestore:rules`).
+
+Pour autoriser un autre compte : l'ajouter dans `firestore.rules` et dans `src/config/firebase.js` (`adminEmails`).
+
+Version de validation (GitHub Pages) : `npm run build:preview`, puis publier `dist/` sur la branche `gh-pages`.
+Firebase Hosting : `npm run build && firebase deploy --only hosting`.

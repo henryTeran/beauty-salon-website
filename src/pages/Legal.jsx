@@ -57,8 +57,8 @@ export function Confidentialite() {
       </div>
       <div>
         <h2>Données collectées</h2>
-        <p>Ce site ne dépose aucun cookie publicitaire et n’enregistre aucune donnée du formulaire de réservation : votre demande est transmise directement via WhatsApp, e-mail ou téléphone, à votre initiative.</p>
-        <p>Les informations que vous communiquez ainsi (nom, téléphone, soin souhaité, adresse pour un soin à domicile) sont utilisées uniquement pour organiser votre rendez-vous.</p>
+        <p>Ce site ne dépose aucun cookie publicitaire. Lorsque vous demandez un rendez-vous, les informations saisies (nom, téléphone, soins souhaités, date et heure, adresse du soin à domicile, message) sont enregistrées dans le planning de {site.owner} et utilisées uniquement pour organiser votre rendez-vous.</p>
+        <p>Seul le créneau horaire réservé, sans aucune donnée personnelle, est visible des autres visiteurs afin d’afficher les disponibilités.</p>
       </div>
       <div>
         <h2>Vos droits</h2>
@@ -67,6 +67,7 @@ export function Confidentialite() {
       <div>
         <h2>Services tiers</h2>
         <ul>
+          <li>Google Firebase (Firestore) pour l’enregistrement des demandes de rendez-vous et du planning.</li>
           <li>WhatsApp (Meta) pour l’envoi de votre demande, selon leurs propres conditions.</li>
           <li>Hébergeur du site : journaux techniques standards (adresse IP, date) à des fins de sécurité.</li>
         </ul>

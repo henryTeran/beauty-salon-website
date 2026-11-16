@@ -10,7 +10,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
 const ssr = await import(pathToFileURL(path.join(root, 'dist-ssr/entry-server.js')).href);
-const { render, routes, notFoundMeta, buildHead, site, categories, renataFranca, packages, generalFaq, formatDuration } = ssr;
+const { render, routes, notFoundMeta, adminMeta, buildHead, site, categories, renataFranca, packages, generalFaq, formatDuration } = ssr;
 
 const base = process.env.BASE_PATH || '/';
 const noindex = process.env.VITE_NOINDEX === '1';
@@ -33,6 +33,7 @@ const writePage = (meta, file) => {
 console.log('Prérendu des pages :');
 for (const r of routes) writePage(r, r.path === '/' ? 'index.html' : `${r.path.slice(1)}.html`);
 writePage(notFoundMeta, '404.html');
+writePage(adminMeta, 'admin.html');
 
 // ---------- sitemap.xml ----------
 const today = new Date().toISOString().split('T')[0];
@@ -58,6 +59,7 @@ fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap);
 const aiBots = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot', 'MistralAI-User'];
 const robots = noindex ? 'User-agent: *\nDisallow: /\n' : `User-agent: *
 Allow: /
+Disallow: /admin
 
 ${aiBots.map((b) => `User-agent: ${b}\nAllow: /`).join('\n\n')}
 

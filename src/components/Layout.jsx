@@ -51,7 +51,7 @@ export default function Layout({ children }) {
     else window.scrollTo(0, 0);
   }, [pathname, lenisRef]);
 
-  const onReservation = pathname === '/reservation';
+  const onReservation = pathname === '/reservation' || pathname === '/admin';
 
   return (
     <MotionConfig reducedMotion="user">

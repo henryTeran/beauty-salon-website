@@ -9,6 +9,7 @@ import About from './pages/About.jsx';
 import Reservation from './pages/Reservation.jsx';
 import { MentionsLegales, Confidentialite } from './pages/Legal.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Admin from './pages/Admin.jsx';
 import { categories, renataFranca } from './data/services.js';
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/reservation" element={<Reservation />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/confidentialite" element={<Confidentialite />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>

@@ -96,7 +96,15 @@ export const notFoundMeta = {
   noindex: true,
 };
 
+export const adminMeta = {
+  path: '/admin',
+  title: `Espace privé${brand}`,
+  description: 'Espace privé : planning et horaires.',
+  noindex: true,
+};
+
 export const getRouteMeta = (pathname) => {
   const p = pathname.length > 1 ? pathname.replace(/\/$/, '') : pathname;
+  if (p === '/admin') return adminMeta;
   return routes.find((r) => r.path === p) || notFoundMeta;
 };
