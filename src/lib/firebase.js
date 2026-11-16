@@ -71,3 +71,48 @@ export async function deleteBusy(id) {
   const { m, db } = await fs();
   await m.deleteDoc(m.doc(db, 'busy', id));
 }
+
+/** Prestations ajoutées ou modifiées depuis l'espace privé */
+export async function loadCustomServices() {
+  const { m, db } = await fs();
+  const snap = await m.getDocs(m.collection(db, 'services'));
+  return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
+}
+export async function saveService(id, data) {
+  const { m, db } = await fs();
+  await m.setDoc(m.doc(db, 'services', id), data);
+}
+export async function deleteService(id) {
+  const { m, db } = await fs();
+  await m.deleteDoc(m.doc(db, 'services', id));
+}
+
+/**
+ * Ajouts depuis l'espace privé, éventuellement répétés : une entrée par date.
+ * entry = { date, start, end, booking? } ; avec booking → rendez-vous confirmé, sinon indisponibilité.
+ */
+export async function createEntries(entries, series = null) {
+  const { m, db } = await fs();
+  const batch = m.writeBatch(db);
+  entries.forEach(({ date, start, end, booking }) => {
+    if (booking) {
+      const ref = m.doc(m.collection(db, 'bookings'));
+      batch.set(ref, { ...booking, date, start, end, status: 'confirmed', byAdmin: true, series, createdAt: m.serverTimestamp() });
+      batch.set(m.doc(db, 'busy', ref.id), { date, start, end, series });
+    } else {
+      batch.set(m.doc(m.collection(db, 'busy')), { date, start, end, manual: true, series });
+    }
+  });
+  await batch.commit();
+}
+
+/** Supprime toutes les occurrences à venir d'une série répétée (indisponibilités et rendez-vous) */
+export async function deleteSeries(series, fromDate) {
+  const { m, db } = await fs();
+  const batch = m.writeBatch(db);
+  for (const name of ['busy', 'bookings']) {
+    const snap = await m.getDocs(m.query(m.collection(db, name), m.where('series', '==', series)));
+    snap.docs.filter((d) => d.data().date >= fromDate).forEach((d) => batch.delete(d.ref));
+  }
+  await batch.commit();
+}

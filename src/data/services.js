@@ -268,3 +268,35 @@ export const allServices = () => {
   );
   return list;
 };
+
+/** Durée bloquée dans le planning quand la brochure n'en précise pas (une séance ; pour une cure, la première) */
+export const bookingMinutes = (s) => Number(s.duration) || (s.id === 'f-regard' ? 120 : 30);
+
+/**
+ * Fusionne le catalogue du site avec les prestations gérées dans l'espace privé (Firestore) :
+ * un document portant l'id d'une prestation existante la modifie (prix, durée, description, masquée),
+ * les autres sont de nouvelles prestations rattachées à une catégorie.
+ */
+const builtinIds = () => new Set(allServices().map((s) => s.id));
+const override = (s, custom) => {
+  const o = custom.find((c) => c.id === s.id);
+  return o ? { ...s, ...o } : s;
+};
+export function servicesFor(cat, custom = []) {
+  const ids = builtinIds();
+  return [
+    ...cat.services.map((s) => override(s, custom)),
+    ...custom.filter((c) => !ids.has(c.id) && c.category === cat.id),
+  ].filter((s) => !s.hidden);
+}
+export function packageItems(pack, custom = []) {
+  return pack.items.map((s) => override(s, custom)).filter((s) => !s.hidden);
+}
+export function allServicesWith(custom = [], { includeHidden = false } = {}) {
+  const ids = builtinIds();
+  const names = Object.fromEntries(categories.map((c) => [c.id, c.name]));
+  return [
+    ...allServices().map((s) => override(s, custom)),
+    ...custom.filter((c) => !ids.has(c.id)).map((c) => ({ ...c, category: names[c.category] || 'Autres soins', categoryId: c.category, custom: true })),
+  ].filter((s) => includeHidden || !s.hidden);
+}

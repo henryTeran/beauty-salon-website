@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { packages } from '../data/services.js';
+import { packages, packageItems } from '../data/services.js';
+import { useCustomServices } from '../lib/useCustomServices.js';
 import { getRouteMeta } from '../seo/routes.js';
 import { Reveal, ease } from '../components/ui.jsx';
 import { PageHero, PriceList, CtaBand } from '../components/blocks.jsx';
@@ -8,6 +9,7 @@ import { PageHero, PriceList, CtaBand } from '../components/blocks.jsx';
 const meta = getRouteMeta('/forfaits');
 
 export default function Forfaits() {
+  const custom = useCustomServices();
   return (
     <>
       <PageHero kicker="Des combinaisons pensées pour vous" title="Forfaits & cures à Genève" breadcrumbs={meta.breadcrumbs}>
@@ -22,7 +24,7 @@ export default function Forfaits() {
                 <p className="font-serif text-lg italic text-gold-dark">0{i + 1}</p>
                 <h2 className="display mt-2 text-3xl tracking-[0.06em] md:text-4xl">{p.name}</h2>
                 <p className="mt-3 text-taupe">{p.note}</p>
-                <PriceList services={p.items} className="mt-6 flex-1" />
+                <PriceList services={packageItems(p, custom)} className="mt-6 flex-1" />
                 <Link to={`/reservation?soin=${p.items[0].id}`} className="btn-ghost mt-8">Réserver</Link>
               </motion.article>
             </Reveal>

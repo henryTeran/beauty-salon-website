@@ -14,5 +14,5 @@ const app = (
 );
 
 // Pages prérendues : hydratation ; en dev : rendu classique
-if (root.hasChildNodes()) hydrateRoot(root, app);
+if (root.firstElementChild) hydrateRoot(root, app);
 else createRoot(root).render(app);

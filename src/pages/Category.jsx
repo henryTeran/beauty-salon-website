@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Check } from 'lucide-react';
-import { categories, packages, renataFranca } from '../data/services.js';
+import { categories, packages, renataFranca, servicesFor, packageItems } from '../data/services.js';
+import { useCustomServices } from '../lib/useCustomServices.js';
 import { getRouteMeta } from '../seo/routes.js';
 import { site } from '../config/site.js';
 import { Reveal, SectionHead, ParallaxImage, Magnetic } from '../components/ui.jsx';
@@ -15,6 +16,7 @@ const relatedPackages = {
 
 export default function Category({ category: c }) {
   const meta = getRouteMeta(c.slug);
+  const custom = useCustomServices();
   const others = [...categories, renataFranca].filter((o) => o.id !== c.id);
   const packs = packages
     .filter((p) => relatedPackages[c.id]?.includes(p.id))
@@ -57,11 +59,11 @@ export default function Category({ category: c }) {
             </ul>
           </div>
           <div>
-            <PriceList services={c.services} />
+            <PriceList services={servicesFor(c, custom)} />
             {packs.map((p) => (
               <div key={p.id} className="mt-10">
                 <Reveal as="h3" className="kicker">Forfait {p.name}</Reveal>
-                <PriceList services={p.items} className="mt-3" />
+                <PriceList services={packageItems(p, custom)} className="mt-3" />
               </div>
             ))}
             <Reveal className="mt-8 text-sm text-taupe">

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-import { categories, packages } from '../data/services.js';
+import { categories, packages, servicesFor, packageItems } from '../data/services.js';
+import { useCustomServices } from '../lib/useCustomServices.js';
 import { getRouteMeta } from '../seo/routes.js';
 import { Reveal, SectionHead } from '../components/ui.jsx';
 import { PageHero, PriceList, CtaBand } from '../components/blocks.jsx';
@@ -8,6 +9,7 @@ import { PageHero, PriceList, CtaBand } from '../components/blocks.jsx';
 const meta = getRouteMeta('/soins-et-tarifs');
 
 export default function Soins() {
+  const custom = useCustomServices();
   return (
     <>
       <PageHero kicker="La carte des soins" title="Soins & tarifs" breadcrumbs={meta.breadcrumbs}>
@@ -33,7 +35,7 @@ export default function Soins() {
                 <Link to={c.slug} className="btn-ghost">Détails du soin <ArrowUpRight size={15} aria-hidden="true" /></Link>
               </Reveal>
             </div>
-            <PriceList services={c.services} />
+            <PriceList services={servicesFor(c, custom)} />
           </div>
         </section>
       ))}
@@ -45,7 +47,7 @@ export default function Soins() {
             {packages.map((p) => (
               <div key={p.id}>
                 <Reveal as="h3" className="display text-2xl tracking-[0.08em]">{p.name}</Reveal>
-                <PriceList services={p.items} className="mt-4" />
+                <PriceList services={packageItems(p, custom)} className="mt-4" />
               </div>
             ))}
           </div>
