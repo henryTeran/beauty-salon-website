@@ -12,11 +12,13 @@ const dist = path.join(root, 'dist');
 const ssr = await import(pathToFileURL(path.join(root, 'dist-ssr/entry-server.js')).href);
 const { render, routes, notFoundMeta, buildHead, site, categories, renataFranca, packages, generalFaq, formatDuration } = ssr;
 
+const base = process.env.BASE_PATH || '/';
+const noindex = process.env.VITE_NOINDEX === '1';
 let template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 
 // Préchargement de la police de titre (LCP)
 const fontFile = fs.readdirSync(path.join(dist, 'assets')).find((f) => /^cormorant-garamond-latin-400-normal.*\.woff2$/.test(f));
-const preload = fontFile ? `<link rel="preload" href="/assets/${fontFile}" as="font" type="font/woff2" crossorigin />\n    ` : '';
+const preload = fontFile ? `<link rel="preload" href="${base}assets/${fontFile}" as="font" type="font/woff2" crossorigin />\n    ` : '';
 
 const writePage = (meta, file) => {
   const html = template
@@ -54,7 +56,7 @@ fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap);
 
 // ---------- robots.txt (moteurs classiques + moteurs IA explicitement autorisés) ----------
 const aiBots = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot', 'MistralAI-User'];
-const robots = `User-agent: *
+const robots = noindex ? 'User-agent: *\nDisallow: /\n' : `User-agent: *
 Allow: /
 
 ${aiBots.map((b) => `User-agent: ${b}\nAllow: /`).join('\n\n')}
@@ -68,12 +70,12 @@ const price = (s) => `${s.name}${s.duration ? ` (${formatDuration(s.duration)})`
 const a = site.address;
 const llms = `# ${site.name}
 
-> Institut de beauté et de bien-être à ${a.locality} (Suisse), tenu par ${site.owner}. Soins du visage, lifting coréen des cils, teintures cils et sourcils, épilation, massages relaxants et amincissants, drainage lymphatique méthode Renata França. Certaines prestations sont proposées à domicile sur rendez-vous. Valeurs : ${site.values.join(', ').toLowerCase()}.
+> Esthéticienne à domicile à ${a.locality} (Suisse) : ${site.owner}. Soins du visage, lifting coréen des cils, teintures cils et sourcils, épilation, massages relaxants et amincissants, drainage lymphatique méthode Renata França. Tous les soins sont réalisés à domicile, sur rendez-vous (pas de cabinet). Valeurs : ${site.values.join(', ').toLowerCase()}.
 
 ## Informations pratiques
 
 - Nom : ${site.name}
-- Lieu : ${[a.streetAddress, `${a.postalCode} ${a.locality}`.trim(), 'Suisse'].filter(Boolean).join(', ')}
+- Lieu : soins à domicile uniquement, à ${a.locality} et environs (Suisse)
 - Téléphone / WhatsApp : ${site.phoneDisplay}${site.email ? `\n- E-mail : ${site.email}` : ''}
 - Horaires : ${site.openingHoursText.map(([d, h]) => `${d} ${h}`).join(' ; ')}
 - Réservation : ${site.url}/reservation (WhatsApp, téléphone ou formulaire)

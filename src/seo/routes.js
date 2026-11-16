@@ -10,9 +10,9 @@ const brand = ' | María Fernanda';
 export const routes = [
   {
     path: '/',
-    title: 'Institut de beauté à Genève | María Fernanda Beauté & Bien-être',
+    title: 'Esthéticienne à domicile à Genève | María Fernanda Beauté & Bien-être',
     description:
-      "María Fernanda Beauté & Bien-être, Genève : soin du visage, lifting coréen des cils, épilation, massages et drainage Renata França. Au cabinet ou à domicile.",
+      "María Fernanda Beauté & Bien-être, Genève : soin du visage, lifting coréen des cils, épilation, massages et drainage Renata França. À domicile, sur rendez-vous.",
     image: '/og-image.jpg',
     faq: generalFaq,
     priority: 1.0,
@@ -47,9 +47,9 @@ export const routes = [
   },
   {
     path: '/soins-a-domicile-geneve',
-    title: 'Esthéticienne à domicile à Genève – massages & soins',
+    title: `Soins à domicile à Genève : zones & fonctionnement${brand}`,
     description:
-      'Soins esthétiques et massages à domicile à Genève et environs (Carouge, Lancy, Onex, Vernier…), sur rendez-vous. Le confort d’un institut, chez vous.',
+      'Comment se déroule un soin à domicile à Genève et environs (Carouge, Lancy, Onex, Vernier…) : réservation, déplacement, installation. Sur rendez-vous.',
     breadcrumbs: [['Soins à domicile', '/soins-a-domicile-geneve']],
     faq: domicileFaq,
     priority: 0.8,
@@ -66,7 +66,7 @@ export const routes = [
   {
     path: '/reservation',
     title: `Réserver un soin à Genève – rendez-vous${brand}`,
-    description: `Réservez votre soin en quelques secondes par WhatsApp, téléphone (${site.phoneDisplay}) ou formulaire. Cabinet à Genève et soins à domicile.`,
+    description: `Réservez votre soin en quelques secondes par WhatsApp, téléphone (${site.phoneDisplay}) ou formulaire. Soins à domicile à Genève, du lundi au samedi.`,
     breadcrumbs: [['Réservation', '/reservation']],
     pageType: 'ContactPage',
     priority: 0.7,

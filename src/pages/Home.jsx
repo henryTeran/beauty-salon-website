@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowUpRight, ArrowDown, Home as HomeIcon, Sparkles, HeartHandshake, Leaf as LeafIcon } from 'lucide-react';
 import { categories, packages, generalFaq, renataFranca } from '../data/services.js';
-import { site } from '../config/site.js';
+import { site, asset } from '../config/site.js';
 import { Reveal, SplitText, Leaf, Magnetic, ParallaxImage, SectionHead, ease } from '../components/ui.jsx';
 import { Faq, CtaBand, Marquee } from '../components/blocks.jsx';
 
@@ -27,7 +27,7 @@ function Hero() {
       <div className="container-site relative grid items-center gap-12 pb-20 lg:grid-cols-[1.1fr_.9fr] lg:gap-8 lg:pb-28">
         <motion.div style={{ y: yText, opacity: fade }}>
           <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease }} className="kicker flex items-center gap-3">
-            <span className="h-px w-10 bg-gold" /> Institut de beauté · Genève
+            <span className="h-px w-10 bg-gold" /> Esthéticienne à domicile · Genève
           </motion.p>
 
           <h1 className="display mt-6 text-[2.9rem] leading-[0.98] sm:text-7xl xl:text-[5.6rem]">
@@ -47,7 +47,7 @@ function Hero() {
 
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.05, duration: 1, ease }} className="lead mt-6 max-w-xl">
             Soins du visage, lifting coréen des cils, épilation, massages et drainage lymphatique Renata França.
-            Des soins sur mesure par {site.owner}, au cabinet ou à domicile.
+            Des soins sur mesure par {site.owner}, chez vous, sur rendez-vous.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 1, ease }} className="mt-9 flex flex-wrap items-center gap-4">
@@ -178,7 +178,7 @@ function RegardFeature() {
             transition={{ duration: 1.8, ease }}
             className="overflow-hidden rounded-[45%_55%_48%_52%/60%_58%_42%_40%] border border-gold/40"
           >
-            <img src="/images/regard-cils-345.webp" width="345" height="134" alt={regard.image.alt} loading="lazy" decoding="async" className="aspect-[5/3] w-full scale-110 object-cover" />
+            <img src={asset('/images/regard-cils-345.webp')} width="345" height="134" alt={regard.image.alt} loading="lazy" decoding="async" className="aspect-[5/3] w-full scale-110 object-cover" />
           </motion.div>
           <Leaf className="pointer-events-none absolute -bottom-16 -right-6 w-40 opacity-70" delay={0.4} />
         </div>
@@ -282,7 +282,7 @@ function DomicileBand() {
           <div>
             <h2 className="display text-3xl md:text-4xl">Soins à domicile à Genève</h2>
             <p className="mt-3 max-w-2xl text-taupe">
-              Certaines prestations sont également proposées à domicile, sur rendez-vous. Les modalités de déplacement sont précisées lors de la réservation.
+              Tous les soins sont réalisés chez vous, sur rendez-vous. Les modalités de déplacement sont précisées lors de la réservation.
             </p>
           </div>
           <Link to="/soins-a-domicile-geneve" className="btn-primary relative"><span>En savoir plus</span></Link>

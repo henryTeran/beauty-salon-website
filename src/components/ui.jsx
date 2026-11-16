@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { asset } from '../config/site.js';
 import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
 
 export const ease = [0.19, 1, 0.22, 1];
@@ -72,7 +73,7 @@ export function ParallaxImage({ image, className = '', sizes = '(min-width: 1024
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [-amount, amount]);
-  const srcSet = image.widths.map((w) => `${image.src}-${w}.webp ${w}w`).join(', ');
+  const srcSet = image.widths.map((w) => `${asset(image.src)}-${w}.webp ${w}w`).join(', ');
   const w = image.widths[image.widths.length - 1];
   return (
     <motion.div
@@ -85,7 +86,7 @@ export function ParallaxImage({ image, className = '', sizes = '(min-width: 1024
     >
       <motion.img
         style={{ y, scale: 1.18 }}
-        src={`${image.src}-${image.widths[0]}.webp`}
+        src={`${asset(image.src)}-${image.widths[0]}.webp`}
         srcSet={srcSet}
         sizes={sizes}
         width={w}

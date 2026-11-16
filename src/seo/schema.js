@@ -20,7 +20,7 @@ export function businessSchema() {
     alternateName: site.shortName,
     slogan: site.tagline,
     description:
-      "Institut de beauté et de bien-être à Genève : soins du visage, lifting coréen des cils, teintures, épilation, massages relaxants et amincissants, drainage lymphatique Renata França. Soins également à domicile.",
+      "Esthéticienne à domicile à Genève : soins du visage, lifting coréen des cils, teintures, épilation, massages relaxants et amincissants, drainage lymphatique Renata França. Soins réalisés à domicile, sur rendez-vous.",
     url: absUrl('/'),
     telephone: site.phone,
     email: site.email,
@@ -38,7 +38,6 @@ export function businessSchema() {
       addressRegion: site.address.region,
       addressCountry: site.address.country,
     },
-    geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
     areaServed: site.areaServed.map((name) => ({ '@type': 'City', name })),
     openingHoursSpecification: site.openingHours.map((o) => ({
       '@type': 'OpeningHoursSpecification',

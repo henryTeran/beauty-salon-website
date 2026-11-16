@@ -20,7 +20,7 @@ export default function Footer() {
           </Link>
           <p className="mt-6 font-script text-4xl text-gold-light">{site.tagline}</p>
           <p className="mt-4 max-w-xs text-[0.95rem] leading-relaxed text-cream/65">
-            Institut de beauté et de bien-être à Genève. {site.values.join(' · ')}.
+            Soins esthétiques et bien-être à domicile, à Genève et environs. {site.values.join(' · ')}.
           </p>
           <div className="mt-6 flex gap-3">
             {site.social.instagram && (
@@ -50,7 +50,7 @@ export default function Footer() {
         </nav>
 
         <nav aria-label="Informations">
-          <p className="kicker !text-gold-light">L’institut</p>
+          <p className="kicker !text-gold-light">Informations</p>
           <ul className="mt-5 space-y-2.5 text-[0.95rem]">
             <li><Link to="/a-propos" className="link-line hover:text-cream">À propos</Link></li>
             <li><Link to="/soins-a-domicile-geneve" className="link-line hover:text-cream">Soins à domicile</Link></li>
@@ -70,7 +70,7 @@ export default function Footer() {
             {site.email && <li><a href={`mailto:${site.email}`} className="link-line hover:text-cream">{site.email}</a></li>}
             <li className="pt-2 text-cream/65">
               {a.streetAddress && <>{a.streetAddress}<br /></>}
-              {a.postalCode} {a.locality}, Suisse
+              À domicile · {a.locality} et environs, Suisse<br />Sur rendez-vous uniquement
             </li>
           </ul>
           <dl className="mt-5 space-y-1 text-[0.88rem] text-cream/65">

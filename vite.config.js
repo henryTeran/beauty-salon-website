@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig(({ isSsrBuild }) => ({
+  // BASE_PATH=/sous-dossier/ pour un déploiement dans un sous-dossier (ex. GitHub Pages)
+  base: process.env.BASE_PATH || '/',
   plugins: [react()],
   build: {
     rollupOptions: isSsrBuild

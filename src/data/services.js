@@ -11,7 +11,7 @@ export const categories = [
     name: 'Visage',
     kicker: 'Éclat et soin personnalisé',
     navLabel: 'Soins du visage',
-    image: { src: '/images/soin-visage', widths: [800, 1400], ratio: 1.5, alt: 'Soin du visage relaxant réalisé en cabine à Genève' },
+    image: { src: '/images/soin-visage', widths: [800, 1400], ratio: 1.5, alt: 'Soin du visage relaxant réalisé à domicile à Genève' },
     seo: {
       title: 'Soin du visage à Genève – classique & sur-mesure dès 80 CHF',
       description:
@@ -128,22 +128,22 @@ export const categories = [
     name: 'Corps & bien-être',
     kicker: 'Lâcher prise et se ressourcer',
     navLabel: 'Massages',
-    image: { src: '/images/massage', widths: [800, 1600], ratio: 0.667, alt: 'Massage relaxant du dos en cabine à Genève' },
+    image: { src: '/images/massage', widths: [800, 1600], ratio: 0.667, alt: 'Massage relaxant du dos à domicile à Genève' },
     seo: {
       title: 'Massage à Genève – relaxant, amincissant, dos dès 50 CHF',
       description:
-        'Massages à Genève : massage relaxant, massage amincissant, massage du dos 30 min ou 1h et drainage lymphatique Renata França. Au cabinet ou à domicile.',
+        'Massages à Genève : massage relaxant, massage amincissant, massage du dos 30 min ou 1h et drainage lymphatique Renata França. À domicile, sur rendez-vous.',
     },
     h1: 'Massages relaxants & amincissants à Genève',
     intro: [
       "Un massage, c'est une parenthèse : une heure pour relâcher les tensions, apaiser le mental et retrouver un corps plus léger. Chaque séance est adaptée à votre état du jour, à la pression souhaitée et aux zones à privilégier.",
       "Le massage relaxant enveloppe le corps de manœuvres lentes et profondes. Le massage amincissant, plus tonique, aide à affiner la silhouette et à tonifier la peau. Le massage du dos cible les tensions accumulées par le stress et les postures du quotidien.",
     ],
-    benefits: ['Détente profonde du corps et de l’esprit', 'Tensions musculaires soulagées', 'Pression adaptée à chaque séance', 'Possible à domicile'],
+    benefits: ['Détente profonde du corps et de l’esprit', 'Tensions musculaires soulagées', 'Pression adaptée à chaque séance', 'Réalisé chez vous, sans déplacement'],
     faq: [
       ['Quel massage choisir pour décompresser ?', "Le massage relaxant d'une heure est idéal pour une détente globale. Si les tensions sont surtout localisées, le massage du dos (30 min ou 1h) est plus ciblé."],
       ['Le massage amincissant fait-il maigrir ?', "Il ne remplace pas une alimentation équilibrée et une activité physique, mais il aide à affiner la silhouette et à tonifier la peau, surtout en cure (forfait 3 séances à 265 CHF)."],
-      ['Les massages sont-ils possibles à domicile ?', "Oui, certaines prestations sont proposées à domicile sur rendez-vous. Les modalités de déplacement sont précisées lors de la réservation."],
+      ['Où se déroulent les massages ?', "Chez vous : tous les soins sont réalisés à domicile, sur rendez-vous, à Genève et dans les communes voisines. Le matériel nécessaire est apporté."],
     ],
     services: [
       { id: 'massage-relaxant', name: 'Massage relaxant', duration: 60, price: 85, description: 'Détente profonde du corps et de l’esprit.' },
@@ -232,13 +232,13 @@ export const packages = [
 
 export const generalFaq = [
   ['Comment prendre rendez-vous ?', "Par téléphone, par WhatsApp ou via le formulaire de réservation du site. Vous recevez une confirmation personnalisée de votre créneau."],
-  ['Proposez-vous des soins à domicile à Genève ?', "Oui, certaines prestations (massages, drainage lymphatique, soins du regard…) sont proposées à domicile sur rendez-vous, à Genève et dans les communes voisines. Les modalités de déplacement sont précisées lors de la réservation."],
+  ['Où se déroulent les soins ?', "Tous les soins sont réalisés à domicile, sur rendez-vous, à Genève et dans les communes voisines. Il n'y a pas de cabinet : María Fernanda se déplace chez vous avec le matériel nécessaire. Les modalités de déplacement sont précisées lors de la réservation."],
   ['Existe-t-il une offre pour une première visite ?', "Oui : le lifting coréen des cils est à 90 CHF au lieu de 100 CHF pour une première séance."],
   ['Proposez-vous des forfaits ?', "Oui : forfait Regard (115 CHF), forfaits Épilation & teintures (dès 27 CHF) et cures bien-être de 3 ou 5 séances (de 240 à 600 CHF)."],
 ];
 
 export const domicileFaq = [
-  ['Quels soins sont proposés à domicile ?', 'Certaines prestations de la carte sont proposées à domicile, sur rendez-vous. Indiquez le soin souhaité lors de votre demande : María Fernanda vous confirme la faisabilité et les modalités.'],
+  ['Quels soins sont proposés à domicile ?', 'Tous les soins de la carte sont réalisés à domicile, sur rendez-vous : soins du visage, lifting coréen des cils, teintures, épilation, massages et drainage lymphatique Renata França.'],
   ['Y a-t-il des frais de déplacement ?', 'Les modalités de déplacement dépendent de votre adresse et sont précisées lors de la réservation, avant toute confirmation.'],
   ['Dans quelles communes vous déplacez-vous ?', 'À Genève et dans les communes voisines du canton (Carouge, Lancy, Onex, Vernier, Meyrin, Chêne-Bougeries, Thônex…). Pour une autre commune, contactez-nous.'],
   ['Que faut-il prévoir chez soi ?', 'Un espace calme et suffisamment dégagé. Le matériel nécessaire au soin est apporté.'],

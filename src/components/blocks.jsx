@@ -139,7 +139,7 @@ export function CtaBand({ title = 'Offrez-vous un moment rien que pour vous', te
         <Reveal className="font-script text-4xl text-gold-light md:text-5xl" y={14}>{site.tagline}</Reveal>
         <SplitText as="h2" text={title} className="display mx-auto mt-5 block max-w-4xl text-4xl !text-cream md:text-6xl" />
         <Reveal delay={0.2} className="mx-auto mt-6 max-w-xl text-cream/75">
-          {text || `Réponse rapide par WhatsApp ou par téléphone au ${site.phoneDisplay}. Au cabinet à Genève ou à domicile, sur rendez-vous.`}
+          {text || `Réponse rapide par WhatsApp ou par téléphone au ${site.phoneDisplay}. À domicile à Genève et environs, sur rendez-vous.`}
         </Reveal>
         <Reveal delay={0.3} className="mt-10 flex flex-wrap justify-center gap-4">
           <Magnetic>

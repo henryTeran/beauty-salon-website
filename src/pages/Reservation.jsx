@@ -5,7 +5,7 @@ import { Check, Mail, MessageCircle, Phone, MapPin, Clock } from 'lucide-react';
 import { allServices, formatDuration } from '../data/services.js';
 import { site, telHref, waHref } from '../config/site.js';
 import { getRouteMeta } from '../seo/routes.js';
-import { Reveal, ease } from '../components/ui.jsx';
+import { Reveal } from '../components/ui.jsx';
 import { PageHero } from '../components/blocks.jsx';
 
 const meta = getRouteMeta('/reservation');
@@ -21,7 +21,7 @@ const field =
 export default function Reservation() {
   const [params] = useSearchParams();
   const [selected, setSelected] = useState([]);
-  const [form, setForm] = useState({ name: '', phone: '', date: '', moment: '', lieu: 'Au cabinet', adresse: '', message: '' });
+  const [form, setForm] = useState({ name: '', phone: '', date: '', moment: '', adresse: '', message: '' });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function Reservation() {
       '',
       form.date && `Date souhaitée : ${new Date(`${form.date}T12:00`).toLocaleDateString('fr-CH', { weekday: 'long', day: 'numeric', month: 'long' })}`,
       form.moment && `Moment : ${form.moment}`,
-      `Lieu : ${form.lieu}${form.lieu === 'À domicile' && form.adresse ? ` – ${form.adresse}` : ''}`,
+      `Soin à domicile${form.adresse ? ` – ${form.adresse}` : ''}`,
       '',
       `Nom : ${form.name}`,
       form.phone && `Téléphone : ${form.phone}`,
@@ -135,25 +135,10 @@ export default function Reservation() {
                     ))}
                   </div>
                 </div>
-                <div className="sm:col-span-2">
-                  <span className="kicker">Lieu du soin</span>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {['Au cabinet', 'À domicile'].map((l) => (
-                      <button type="button" key={l} aria-pressed={form.lieu === l} onClick={() => setForm((f) => ({ ...f, lieu: l }))}
-                        className={`rounded-full border px-5 py-2.5 text-[0.9rem] transition-colors ${form.lieu === l ? 'border-bordeaux bg-bordeaux text-cream' : 'border-gold/40 hover:border-bordeaux'}`}>
-                        {l}
-                      </button>
-                    ))}
-                  </div>
-                  <AnimatePresence>
-                    {form.lieu === 'À domicile' && (
-                      <motion.label initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.5, ease }} className="block overflow-hidden">
-                        <span className="kicker mt-5 block">Commune / adresse</span>
-                        <input type="text" autoComplete="street-address" value={form.adresse} onChange={set('adresse')} placeholder="Ex. Carouge, rue…" className={`${field} mt-2`} />
-                      </motion.label>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <label className="block sm:col-span-2">
+                  <span className="kicker">Commune / adresse du soin (à domicile)</span>
+                  <input type="text" autoComplete="street-address" value={form.adresse} onChange={set('adresse')} placeholder="Ex. Carouge, rue…" className={`${field} mt-2`} />
+                </label>
               </div>
             </fieldset>
 
@@ -225,7 +210,7 @@ export default function Reservation() {
                 <li><a href={waHref('Bonjour, je souhaite prendre rendez-vous.')} target="_blank" rel="noopener" className="flex items-center gap-3"><MessageCircle size={18} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">WhatsApp</span></a></li>
                 {site.email && <li><a href={`mailto:${site.email}`} className="flex items-center gap-3"><Mail size={18} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">{site.email}</span></a></li>}
                 <li className="flex items-start gap-3 text-cream/80"><MapPin size={18} strokeWidth={1.4} className="mt-1 shrink-0" aria-hidden="true" />
-                  <span>{site.address.streetAddress && <>{site.address.streetAddress}<br /></>}{site.address.postalCode} {site.address.locality}, Suisse<br />et à domicile sur rendez-vous</span>
+                  <span>À domicile · {site.address.locality} et environs<br />Sur rendez-vous uniquement</span>
                 </li>
                 <li className="flex items-start gap-3 text-cream/80"><Clock size={18} strokeWidth={1.4} className="mt-1 shrink-0" aria-hidden="true" />
                   <span>{site.openingHoursText.map(([d, h]) => <span key={d} className="block">{d} : {h}</span>)}</span>

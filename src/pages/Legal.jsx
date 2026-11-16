@@ -17,7 +17,7 @@ function LegalPage({ path, title, children }) {
 }
 
 const a = site.address;
-const fullAddress = [a.streetAddress, `${a.postalCode} ${a.locality}`.trim(), 'Suisse'].filter(Boolean).join(', ');
+const fullAddress = `${a.locality}, Suisse (soins à domicile, sur rendez-vous)`;
 
 export function MentionsLegales() {
   return (

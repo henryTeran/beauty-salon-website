@@ -11,7 +11,7 @@ export function buildHead(meta) {
   return [
     `<title>${esc(meta.title)}</title>`,
     `<meta name="description" content="${esc(meta.description)}" />`,
-    `<meta name="robots" content="${meta.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}" />`,
+    `<meta name="robots" content="${meta.noindex || site.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'}" />`,
     meta.noindex ? '' : `<link rel="canonical" href="${url}" />`,
     meta.noindex ? '' : `<link rel="alternate" hreflang="fr-CH" href="${url}" />`,
     meta.noindex ? '' : `<link rel="alternate" hreflang="x-default" href="${url}" />`,
@@ -30,8 +30,6 @@ export function buildHead(meta) {
     `<meta name="twitter:image" content="${image}" />`,
     `<meta name="geo.region" content="${site.address.country}-${site.address.region}" />`,
     `<meta name="geo.placename" content="${esc(site.address.locality)}" />`,
-    `<meta name="geo.position" content="${site.geo.lat};${site.geo.lng}" />`,
-    `<meta name="ICBM" content="${site.geo.lat}, ${site.geo.lng}" />`,
     `<script type="application/ld+json" id="ld-json">${jsonLd}</script>`,
   ]
     .filter(Boolean)

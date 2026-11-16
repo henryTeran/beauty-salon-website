@@ -13,13 +13,13 @@ export default function Domicile() {
   return (
     <>
       <PageHero
-        kicker="Le confort d’un institut, chez vous"
+        kicker="Votre soin, chez vous"
         title="Soins à domicile à Genève"
         breadcrumbs={meta.breadcrumbs}
         aside={<ParallaxImage image={corps.image} priority className="mx-auto aspect-[4/5] w-full max-w-sm rounded-t-full lg:max-w-none" sizes="(min-width: 1024px) 36vw, 80vw" />}
       >
-        Certaines prestations sont également proposées à domicile, sur rendez-vous. Les modalités de déplacement sont
-        précisées lors de la réservation.
+        Tous les soins sont réalisés à domicile, sur rendez-vous : María Fernanda se déplace chez vous avec le matériel
+        nécessaire. Les modalités de déplacement sont précisées lors de la réservation.
       </PageHero>
 
       <section className="section">
@@ -28,7 +28,7 @@ export default function Domicile() {
           <ol className="mt-14 grid gap-6 md:grid-cols-3">
             {[
               [CalendarCheck, 'Vous réservez', 'Par WhatsApp, téléphone ou formulaire, en précisant le soin et votre adresse.'],
-              [MapPin, 'On confirme', 'Créneau, faisabilité du soin à domicile et modalités de déplacement.'],
+              [MapPin, 'On confirme', 'Créneau, installation nécessaire et modalités de déplacement.'],
               [Sofa, 'Vous profitez', 'María Fernanda se déplace chez vous avec le matériel nécessaire.'],
             ].map(([Icon, t, d], i) => (
               <Reveal as="li" key={t} delay={i * 0.12} className="rounded-[2rem] border border-gold/30 p-9">

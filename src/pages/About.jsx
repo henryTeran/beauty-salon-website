@@ -5,12 +5,12 @@ import { Reveal, SectionHead, ParallaxImage, Leaf } from '../components/ui.jsx';
 import { PageHero, CtaBand } from '../components/blocks.jsx';
 
 const meta = getRouteMeta('/a-propos');
-const ambiance = { src: '/images/ambiance', widths: [800, 1400], ratio: 1.498, alt: 'Ambiance chaleureuse et apaisante de l’institut' };
+const ambiance = { src: '/images/ambiance', widths: [800, 1400], ratio: 1.498, alt: 'Ambiance chaleureuse et apaisante pendant un soin' };
 
 export default function About() {
   return (
     <>
-      <PageHero kicker="L’institut" title="À propos de María Fernanda" breadcrumbs={meta.breadcrumbs}>
+      <PageHero kicker="Votre esthéticienne" title="À propos de María Fernanda" breadcrumbs={meta.breadcrumbs}>
         Une esthéticienne, une approche : prendre le temps, écouter, et révéler votre beauté naturelle avec des gestes
         justes.
       </PageHero>
@@ -23,8 +23,9 @@ export default function About() {
             <SectionHead kicker="La philosophie" title="Expertise, douceur, résultats naturels" />
             <div className="mt-6 space-y-5 text-taupe">
               <Reveal as="p" delay={0.1}>
-                {site.name} est un institut de beauté et de bien-être situé à {site.address.locality}. Vous y êtes
-                accueillie personnellement par {site.owner}, du premier échange jusqu’aux conseils d’après-soin.
+                {site.name}, ce sont des soins de beauté et de bien-être réalisés à domicile, à {site.address.locality} et
+                dans les communes voisines. Vous êtes suivie personnellement par {site.owner}, du premier échange
+                jusqu’aux conseils d’après-soin.
               </Reveal>
               <Reveal as="p" delay={0.15}>
                 Ici, pas de soin standardisé : chaque protocole est adapté à votre peau, à votre regard et à votre
@@ -48,7 +49,7 @@ export default function About() {
             {[
               ['Un seul interlocuteur', 'Vous êtes suivie par la même personne à chaque rendez-vous : elle connaît votre peau, vos préférences et vos objectifs.'],
               ['Des tarifs transparents', 'Tous les prix sont affichés en francs suisses, avec des forfaits avantageux pour les cures.'],
-              ['Au cabinet ou chez vous', 'Certaines prestations sont proposées à domicile à Genève et dans les communes voisines.'],
+              ['Chez vous, sur rendez-vous', 'Tous les soins sont réalisés à domicile, à Genève et dans les communes voisines.'],
             ].map(([t, d], i) => (
               <Reveal key={t} delay={i * 0.12} className="rounded-[2rem] border border-gold/30 bg-cream p-9">
                 <p className="font-serif text-lg italic text-gold-dark">0{i + 1}</p>

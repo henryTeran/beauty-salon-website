@@ -8,10 +8,12 @@ export { buildHead } from './seo/head.js';
 export { site } from './config/site.js';
 export { categories, renataFranca, packages, generalFaq, formatDuration } from './data/services.js';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 export function render(url) {
   return renderToString(
     <StrictMode>
-      <StaticRouter location={url}>
+      <StaticRouter basename={base} location={`${base}${url}`}>
         <App />
       </StaticRouter>
     </StrictMode>

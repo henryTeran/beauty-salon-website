@@ -65,8 +65,8 @@ export default function Category({ category: c }) {
               </div>
             ))}
             <Reveal className="mt-8 text-sm text-taupe">
-              Prix en francs suisses (CHF). Soins sur rendez-vous à {site.address.locality}
-              {' '}— <Link to="/soins-a-domicile-geneve" className="link-line text-bordeaux">certaines prestations sont proposées à domicile</Link>.
+              Prix en francs suisses (CHF). Soins réalisés{' '}
+              <Link to="/soins-a-domicile-geneve" className="link-line text-bordeaux">à domicile</Link>, sur rendez-vous, à {site.address.locality} et environs.
             </Reveal>
           </div>
         </div>

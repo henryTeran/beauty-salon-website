@@ -12,7 +12,7 @@ npm run preview  # prévisualiser dist/
 ```
 
 Déploiement : publier le dossier `dist/` (Vercel, Netlify, Cloudflare Pages… — `vercel.json` et `netlify.toml` fournis).
-Définir le domaine via `SITE_URL=https://mon-domaine.ch npm run build` ou dans `src/config/site.js`.
+Définir le domaine via `VITE_SITE_URL=https://mon-domaine.ch npm run build` ou dans `src/config/site.js`.
 
 ## Architecture
 
