@@ -1,12 +1,36 @@
-# React + Vite
+# María Fernanda Beauté & Bien-être — site vitrine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Site de l'institut (Genève) : React 19 + Vite + Tailwind + Framer Motion, **prérendu en HTML statique** (une page HTML complète par URL) pour le SEO et les moteurs IA.
 
-Currently, two official plugins are available:
+## Commandes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev      # développement
+npm run build    # build + prérendu + sitemap.xml / robots.txt / llms.txt → dist/
+npm run preview  # prévisualiser dist/
+```
 
-## Expanding the ESLint configuration
+Déploiement : publier le dossier `dist/` (Vercel, Netlify, Cloudflare Pages… — `vercel.json` et `netlify.toml` fournis).
+Définir le domaine via `SITE_URL=https://mon-domaine.ch npm run build` ou dans `src/config/site.js`.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Architecture
+
+```
+src/
+  config/site.js      Identité, téléphone, adresse, horaires, zones, réseaux  ← à compléter (TODO)
+  data/services.js    Prestations, prix, forfaits, FAQ (source unique : pages, schémas, llms.txt)
+  seo/routes.js       Registre des pages : title, description, fil d'Ariane, priorité sitemap
+  seo/schema.js       Données structurées JSON-LD (BeautySalon, Service, FAQPage, BreadcrumbList…)
+  seo/head.js         Génération du <head> (prérendu) + mise à jour à la navigation
+  components/         Header, Footer, Layout, blocs (tarifs, FAQ, CTA), primitives d'animation
+  pages/              Home, Soins, Category (gabarit des pages soin), Forfaits, Domicile, About, Reservation, Legal
+  entry-server.jsx    Rendu serveur utilisé par le prérendu
+scripts/prerender.mjs Génère les .html, sitemap.xml, robots.txt, llms.txt
+```
+
+**Modifier un prix ou ajouter un soin** : uniquement dans `src/data/services.js`, puis `npm run build`.
+
+## Avant la mise en ligne
+
+Compléter les `TODO` de `src/config/site.js` : domaine, adresse, e-mail, horaires, coordonnées GPS, Instagram, fiche Google.

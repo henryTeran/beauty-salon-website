@@ -1,14 +1,12 @@
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, import.meta.url, 'VITE_');
-
-  return {
-    plugins: [react()],
-    define: {
-      'import.meta.env': JSON.stringify(env),
-    },
-  };
-})
+export default defineConfig(({ isSsrBuild }) => ({
+  plugins: [react()],
+  build: {
+    rollupOptions: isSsrBuild
+      ? {}
+      : { output: { manualChunks: { motion: ['framer-motion'], react: ['react', 'react-dom', 'react-router-dom'] } } },
+  },
+}));

@@ -1,38 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Services from "./pages/Services";
-import Booking from "./pages/Booking";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import CartDrawer from "./components/CartDrawer";
-import { CartProvider } from "./context/CartContext";
-import { BookingProvider } from "./context/BookingContext";
-import Reservations from "./pages/Reservations";
-import Payment from "./pages/Payment";
-import Success from "./pages/Success";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
+import { Routes, Route, useLocation } from 'react-router-dom';
+import Layout from './components/Layout.jsx';
+import Home from './pages/Home.jsx';
+import Soins from './pages/Soins.jsx';
+import Category from './pages/Category.jsx';
+import Forfaits from './pages/Forfaits.jsx';
+import Domicile from './pages/Domicile.jsx';
+import About from './pages/About.jsx';
+import Reservation from './pages/Reservation.jsx';
+import { MentionsLegales, Confidentialite } from './pages/Legal.jsx';
+import NotFound from './pages/NotFound.jsx';
+import { categories, renataFranca } from './data/services.js';
 
 export default function App() {
+  const location = useLocation();
   return (
-    <CartProvider>
-      <BookingProvider>
-        <Router>
-          <Navbar />
-          <CartDrawer />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/reservations" element={<Reservations />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/success" element={<Success />} />
-          </Routes>
-          <Footer />
-        </Router>
-      </BookingProvider>
-    </CartProvider>
+    <Layout>
+      <Routes location={location}>
+        <Route path="/" element={<Home />} />
+        <Route path="/soins-et-tarifs" element={<Soins />} />
+        {[...categories, renataFranca].map((c) => (
+          <Route key={c.slug} path={c.slug} element={<Category category={c} />} />
+        ))}
+        <Route path="/forfaits" element={<Forfaits />} />
+        <Route path="/soins-a-domicile-geneve" element={<Domicile />} />
+        <Route path="/a-propos" element={<About />} />
+        <Route path="/reservation" element={<Reservation />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/confidentialite" element={<Confidentialite />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Layout>
   );
 }
