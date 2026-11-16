@@ -64,16 +64,26 @@ L'onglet « Prestations » ajoute des soins et modifie prix, durée et descripti
 
 ## E-mails automatiques (SMTP)
 
-Le site ne parle pas directement à un serveur SMTP (impossible depuis un navigateur) : il dépose les e-mails dans la collection Firestore `mail`, et l'extension Firebase **Trigger Email from Firestore** les envoie par SMTP.
+Un navigateur ne peut pas parler à un serveur SMTP : le site dépose les e-mails dans la collection Firestore `mail`, et la Cloud Function `functions/index.js` les envoie par SMTP (nodemailer), puis note le résultat dans le champ `delivery` du document. Aucune extension Firebase n'est utilisée.
 
-1. Passer le projet Firebase au forfait **Blaze** (obligatoire pour installer une extension).
+Mise en service, une seule fois :
+
+1. Passer le projet Firebase au forfait **Blaze** (obligatoire pour les Cloud Functions qui sortent vers un serveur externe).
 2. Sur le compte Gmail d'envoi : activer la validation en deux étapes, puis créer un **mot de passe d'application**.
-3. Console Firebase → Extensions → installer « Trigger Email from Firestore » :
-   - SMTP connection URI : `smtps://rodmafer6@gmail.com@smtp.gmail.com:465`
-   - SMTP password : le mot de passe d'application
-   - Email documents collection : `mail`
-   - Default FROM address : `María Fernanda Beauté & Bien-être <rodmafer6@gmail.com>`
-4. Publier `firestore.rules`.
-5. Espace privé → Horaires → « E-mails automatiques » : cocher, enregistrer, puis « Envoyer un e-mail de test ».
+3. Dans un terminal, à la racine du dépôt :
+
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   cd functions && npm install && cd ..
+   firebase functions:secrets:set SMTP_PASSWORD   # coller le mot de passe d'application
+   firebase deploy --only functions,firestore:rules
+   ```
+
+   Au premier déploiement, la commande propose les réglages `SMTP_HOST` (smtp.gmail.com), `SMTP_PORT` (465), `SMTP_USER` et `MAIL_FROM_NAME` : valider les valeurs par défaut ou les adapter. Ils sont enregistrés dans `functions/.env.<projet>`.
+4. Espace privé → Horaires → « E-mails automatiques » : cocher, enregistrer, puis « Envoyer un e-mail de test ».
+
+En cas de problème : `firebase functions:log`, ou ouvrir le document dans la collection `mail` (champ `delivery.error`).
+Changer de mot de passe SMTP : relancer `firebase functions:secrets:set SMTP_PASSWORD` puis `firebase deploy --only functions`.
 
 Modèles et textes (e-mails et WhatsApp, en français, espagnol et anglais) : `src/lib/messages.js`.

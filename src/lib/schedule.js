@@ -13,7 +13,7 @@ export const defaultSchedule = {
   bufferMinutes: 30, // temps de trajet / préparation entre deux rendez-vous
   days: { 0: day(false), 1: day(true), 2: day(true), 3: day(true), 4: day(true), 5: day(true), 6: day(true) },
   blockedDates: [],
-  emailEnabled: false, // e-mails automatiques : à activer dans l'espace privé une fois l'envoi SMTP installé
+  emailEnabled: false, // e-mails automatiques : à activer dans l'espace privé une fois la fonction d'envoi SMTP déployée
 };
 
 export function mergeSchedule(data) {

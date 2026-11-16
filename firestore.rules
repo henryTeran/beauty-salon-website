@@ -37,7 +37,7 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // E-mails à envoyer (extension « Trigger Email ») : un visiteur ne peut écrire qu'à l'adresse
+    // E-mails à envoyer (Cloud Function functions/index.js) : un visiteur ne peut écrire qu'à l'adresse
     // de l'esthéticienne (avis de nouvelle demande) ; seule l'admin peut écrire à une cliente
     match /mail/{id} {
       allow create: if isAdmin() || (

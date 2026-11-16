@@ -376,7 +376,7 @@ function Hours({ notify }) {
     const sample = { name: 'Cliente Test', phone: '+41 79 000 00 00', email: adminEmails[0], address: 'Rue de l’Exemple 1, Genève', message: '', date: d, start: 600, end: 690, total: 100, lang: 'fr', services: [{ name: 'Lifting coréen des cils', price: 100, minutes: 90 }] };
     try {
       await sendMail(emailToClient(sample, 'confirmed'));
-      notify(`E-mail de test mis en file d’envoi vers ${adminEmails[0]}. S’il n’arrive pas, l’extension n’est pas encore installée.`);
+      notify(`E-mail de test mis en file d’envoi vers ${adminEmails[0]}. S’il n’arrive pas d’ici une minute, la fonction d’envoi n’est pas encore déployée.`);
     } catch {
       notify('Envoi impossible (règles Firestore à mettre à jour ?).');
     }
@@ -445,7 +445,7 @@ function Hours({ notify }) {
             <input type="checkbox" checked={!!s.emailEnabled} onChange={(e) => setS((c) => ({ ...c, emailEnabled: e.target.checked }))} className="mt-1 h-5 w-5 accent-[#4A1A22]" />
             <span>Activer les e-mails : avis à chaque nouvelle demande, et confirmation ou annulation envoyée à la cliente.</span>
           </label>
-          <p className="text-sm text-taupe">À activer une fois l’envoi SMTP installé dans Firebase (extension « Trigger Email »). Enregistrez, puis testez.</p>
+          <p className="text-sm text-taupe">À activer une fois la fonction d’envoi SMTP déployée dans Firebase. Enregistrez, puis testez.</p>
           <button type="button" onClick={testMail} className={pill(false)}>Envoyer un e-mail de test</button>
         </section>
 

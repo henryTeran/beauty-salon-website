@@ -118,8 +118,8 @@ export async function deleteSeries(series, fromDate) {
 }
 
 /**
- * File d'attente des e-mails : chaque document de la collection « mail » est envoyé par
- * l'extension Firebase « Trigger Email from Firestore » (configuration SMTP dans la console).
+ * File d'attente des e-mails : chaque document de la collection « mail » est envoyé par SMTP
+ * par la Cloud Function du dossier functions/ (qui note le résultat dans le champ « delivery »).
  */
 export async function sendMail(mail) {
   const { m, db } = await fs();
