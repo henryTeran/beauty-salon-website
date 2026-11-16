@@ -16,6 +16,8 @@ export function buildHead(meta) {
     meta.noindex ? '' : `<link rel="canonical" href="${url}" />`,
     ...(meta.noindex ? [] : languages.map((l) => `<link rel="alternate" hreflang="${l.code}" href="${langUrl(l.code, meta.path)}" />`)),
     meta.noindex ? '' : `<link rel="alternate" hreflang="x-default" href="${langUrl('fr', meta.path)}" />`,
+    `<meta name="author" content="${esc(site.name)}" />`,
+    `<meta name="designer" content="${esc(site.creator.name)} – ${site.creator.url}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="${esc(site.name)}" />`,
     `<meta property="og:locale" content="${ogLocale}" />`,

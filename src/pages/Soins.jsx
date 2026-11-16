@@ -1,6 +1,7 @@
 import { t } from '../i18n/index.js';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Download } from 'lucide-react';
+import { site, asset } from '../config/site.js';
 import { categories, packages, servicesFor, packageItems } from '../data/services.js';
 import { useCustomServices } from '../lib/useCustomServices.js';
 import { getRouteMeta } from '../seo/routes.js';
@@ -14,7 +15,10 @@ export default function Soins() {
   return (
     <>
       <PageHero kicker={t("La carte des soins")} title={t("Soins & tarifs")} breadcrumbs={meta.breadcrumbs}>
-        {t("Tous les soins proposés à Genève par María Fernanda, avec leur durée et leur prix en francs suisses. Tarifs clairs, sans surprise.")}
+        <p>{t("Tous les soins proposés à Genève par María Fernanda, avec leur durée et leur prix en francs suisses. Tarifs clairs, sans surprise.")}</p>
+        <a href={asset(site.brochure)} download className="btn-ghost mt-8">
+          <Download size={15} aria-hidden="true" /> {t('Télécharger la brochure (PDF)')}
+        </a>
       </PageHero>
 
       <nav aria-label={t("Catégories de soins")} className="sticky top-0 z-20 border-y border-gold/25 bg-cream/90 backdrop-blur-md">

@@ -87,3 +87,12 @@ En cas de problème : `firebase functions:log`, ou ouvrir le document dans la co
 Changer de mot de passe SMTP : relancer `firebase functions:secrets:set SMTP_PASSWORD` puis `firebase deploy --only functions`.
 
 Modèles et textes (e-mails et WhatsApp, en français, espagnol et anglais) : `src/lib/messages.js`.
+
+## Cookies, confidentialité et mentions légales (nLPD)
+
+- Bandeau de consentement : `src/components/Consent.jsx`. Rien de facultatif n'est chargé avant le choix du visiteur ; « Gérer les cookies » (pied de page) le rouvre. Choix conservé 12 mois dans le stockage local.
+- Google Analytics n'est chargé qu'après acceptation (`analyticsId` dans `src/config/site.js` ; vide = désactivé ; jamais chargé sur la version de validation).
+- Textes juridiques en trois langues : `src/content/legal.js`. À compléter dans `src/config/site.js` : `legalName`, `host`.
+- En-têtes de sécurité (HSTS, nosniff, etc.) : `firebase.json`, appliqués avec Firebase Hosting.
+- Crédit de création : `creator` dans `src/config/site.js` (pied de page, mentions légales, données structurées, `humans.txt`).
+- Brochure téléchargeable : `public/brochure-maria-fernanda.pdf`.

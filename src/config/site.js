@@ -16,6 +16,8 @@ export const site = {
   tagline: t('Révélez votre beauté naturelle'),
   values: ['Expertise', 'Douceur', 'Résultats naturels'].map((v) => t(v)),
   owner: 'María Fernanda',
+  // Nom complet de la responsable (mentions légales, politique de confidentialité). TODO: confirmer l'orthographe exacte
+  legalName: 'María Fernanda Rodriguez',
   jobTitle: t('Esthéticienne & praticienne bien-être'),
 
   phone: '+41786898020',
@@ -54,9 +56,20 @@ export const site = {
     googleBusiness: '', // TODO: lien de la fiche Google Business Profile
   },
 
+  // Création du site (crédit en pied de page, mentions légales, données structurées)
+  creator: { name: 'Henry Teran', label: 'henryteran.com', url: 'https://henryteran.com' },
+
+  // Hébergeur des pages (mentions légales). TODO: adapter à l'hébergement définitif
+  host: { name: 'GitHub, Inc. (GitHub Pages)', country: { fr: 'États-Unis', es: 'Estados Unidos', en: 'United States' } },
+
+  // Mesure d'audience Google Analytics : chargée uniquement si le visiteur l'accepte. Laisser vide pour la désactiver.
+  analyticsId: 'G-JR7WC4KXVG',
+
+  brochure: '/brochure-maria-fernanda.pdf',
+
   priceRange: 'CHF 12 – 600',
   currency: 'CHF',
-  languages: ['fr', 'es', 'en'], // TODO: langues parlées
+  languages: ['fr', 'es'], // langues parlées par l'esthéticienne
   paymentAccepted: ['Espèces', 'TWINT', 'Carte'].map((v) => t(v)), // TODO: confirmer
 };
 

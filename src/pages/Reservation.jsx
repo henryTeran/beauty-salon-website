@@ -1,6 +1,6 @@
 import { t, lang, locale, clock } from '../i18n/index.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, CheckCircle2, ChevronLeft, ChevronRight, Clock, Loader2, MessageCircle, Phone, Plus, Trash2 } from 'lucide-react';
 import { allServicesWith, bookingMinutes, formatDuration } from '../data/services.js';
@@ -371,6 +371,10 @@ export default function Reservation() {
                 <p role="alert" className={`mt-4 text-bordeaux-soft ${error ? '' : 'hidden'}`}>{error}</p>
                 <p className="mt-4 max-w-xl text-sm text-taupe">
                   {t('Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp. Le rendez-vous est validé après confirmation.')}
+                </p>
+                <p className="mt-2 max-w-xl text-sm text-taupe">
+                  {t('Vos données servent uniquement à organiser ce rendez-vous.')}{' '}
+                  <Link to="/confidentialite" className="link-line text-bordeaux">{t('Politique de confidentialité')}</Link>
                 </p>
                 <p className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-taupe">
                   <a href={telHref} className="flex items-center gap-2"><Phone size={16} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">{site.phoneDisplay}</span></a>

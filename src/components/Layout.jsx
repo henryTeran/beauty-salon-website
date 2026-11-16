@@ -5,6 +5,7 @@ import { AnimatePresence, MotionConfig, motion, useScroll, useSpring } from 'fra
 import { CalendarHeart, MessageCircle } from 'lucide-react';
 import Header from './Header.jsx';
 import Footer from './Footer.jsx';
+import Consent from './Consent.jsx';
 import { getRouteMeta } from '../seo/routes.js';
 import { applyHead } from '../seo/head.js';
 import { waHref } from '../config/site.js';
@@ -36,7 +37,7 @@ function useLenis() {
 }
 
 export default function Layout({ children }) {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const lenisRef = useLenis();
   const first = useRef(true);
   const { scrollYProgress } = useScroll();
@@ -48,9 +49,12 @@ export default function Layout({ children }) {
       return;
     }
     applyHead(getRouteMeta(pathname));
-    if (lenisRef.current) lenisRef.current.scrollTo(0, { immediate: true });
+    // Lien vers une section (#cookies…) : on y va une fois la page affichée ; sinon retour en haut
+    const target = hash && document.getElementById(hash.slice(1));
+    if (target) target.scrollIntoView();
+    else if (lenisRef.current) lenisRef.current.scrollTo(0, { immediate: true });
     else window.scrollTo(0, 0);
-  }, [pathname, lenisRef]);
+  }, [pathname, hash, lenisRef]);
 
   const onReservation = pathname === '/reservation' || pathname === '/admin';
 
@@ -67,6 +71,7 @@ export default function Layout({ children }) {
         </motion.main>
       </AnimatePresence>
       <Footer />
+      {pathname !== '/admin' && <Consent />}
 
       {!onReservation && (
         <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-gold/25 bg-cream/90 p-3 backdrop-blur-md lg:hidden">

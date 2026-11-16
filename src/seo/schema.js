@@ -94,6 +94,12 @@ export function personSchema() {
       'Soin du visage', 'Lifting coréen des cils', 'Rehaussement de cils', 'Teinture des cils et sourcils',
       'Épilation', 'Massage relaxant', 'Massage amincissant', 'Drainage lymphatique Renata França',
     ].map((v) => t(v)),
+    knowsLanguage: site.languages,
+    alumniOf: { '@type': 'EducationalOrganization', name: 'École Michelle Paschoud' },
+    hasCredential: [
+      { '@type': 'EducationalOccupationalCredential', credentialCategory: 'diploma', name: 'Diplôme en Esthétique Supérieure et Cosmétologie' },
+      { '@type': 'EducationalOccupationalCredential', credentialCategory: 'certificate', name: 'Méthode Renata França – drainage lymphatique' },
+    ],
     url: absUrl('/a-propos'),
   };
 }
@@ -106,6 +112,7 @@ export function websiteSchema() {
     name: site.name,
     inLanguage: locale,
     publisher: { '@id': BUSINESS_ID },
+    creator: { '@type': 'Person', name: site.creator.name, url: site.creator.url },
   };
 }
 

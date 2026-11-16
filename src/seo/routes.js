@@ -62,7 +62,7 @@ export const routes = [
     path: '/a-propos',
     title: `À propos de María Fernanda – esthéticienne à Genève`,
     description:
-      'Rencontrez María Fernanda, esthéticienne et praticienne bien-être à Genève. Une approche douce, experte et tournée vers des résultats naturels.',
+      'María Fernanda, esthéticienne diplômée à Genève : formation, méthode Renata França, soins à domicile. Une approche douce, experte et naturelle.',
     breadcrumbs: [['À propos', '/a-propos']],
     pageType: 'AboutPage',
     priority: 0.6,
@@ -86,7 +86,7 @@ export const routes = [
   {
     path: '/confidentialite',
     title: `Politique de confidentialité${brand}`,
-    description: `Politique de confidentialité et protection des données (nLPD) de ${site.name}.`,
+    description: `Protection des données (nLPD), cookies et sécurité : comment ${site.name} traite vos données personnelles.`,
     breadcrumbs: [['Confidentialité', '/confidentialite']],
     priority: 0.1,
     changefreq: 'yearly',

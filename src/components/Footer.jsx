@@ -2,9 +2,10 @@ import { t } from '../i18n/index.js';
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook } from 'lucide-react';
 import { categories, renataFranca } from '../data/services.js';
-import { site, telHref, waHref } from '../config/site.js';
+import { site, asset, telHref, waHref } from '../config/site.js';
 import { Monogram, Leaf } from './ui.jsx';
 import LangSwitch from './LangSwitch.jsx';
+import { openConsent } from './Consent.jsx';
 
 export default function Footer() {
   const a = site.address;
@@ -59,6 +60,8 @@ export default function Footer() {
             <li><Link to="/reservation" className="link-line hover:text-cream">{t("Réservation & contact")}</Link></li>
             <li><Link to="/mentions-legales" className="link-line hover:text-cream">{t("Mentions légales")}</Link></li>
             <li><Link to="/confidentialite" className="link-line hover:text-cream">{t("Confidentialité")}</Link></li>
+            <li><button type="button" onClick={openConsent} className="link-line hover:text-cream">{t('Gérer les cookies')}</button></li>
+            <li><a href={asset(site.brochure)} download className="link-line hover:text-cream">{t('Télécharger la brochure (PDF)')}</a></li>
           </ul>
         </nav>
 
@@ -88,7 +91,10 @@ export default function Footer() {
       <div className="border-t border-cream/10">
         <div className="container-site flex flex-col gap-3 py-6 text-[0.78rem] text-cream/50 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} {site.name}{" "}{t("· Genève")}</p>
-          <p>{t("Zones desservies :")}{" "}{site.areaServed.slice(0, 7).join(', ')}…</p>
+          <p>
+            {t('Site créé par')}{' '}
+            <a href={site.creator.url} target="_blank" rel="noopener" className="link-line text-cream/80 hover:text-cream">{site.creator.label}</a>
+          </p>
           <LangSwitch light />
         </div>
       </div>
