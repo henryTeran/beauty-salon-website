@@ -1,85 +1,354 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins-et-tarifs</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins-et-tarifs" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins-et-tarifs" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins-et-tarifs" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins/soin-visage-geneve</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <image:image><image:loc>https://henryteran.github.io/beauty-salon-website/images/soin-visage-1400.webp</image:loc></image:image>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/soin-visage-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/soin-visage-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/soin-visage-geneve" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins/rehaussement-cils-coreen-geneve</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <image:image><image:loc>https://henryteran.github.io/beauty-salon-website/images/regard-cils-345.webp</image:loc></image:image>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/rehaussement-cils-coreen-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/rehaussement-cils-coreen-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/rehaussement-cils-coreen-geneve" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins/epilation-geneve</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/epilation-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/epilation-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/epilation-geneve" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins/massage-geneve</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <image:image><image:loc>https://henryteran.github.io/beauty-salon-website/images/massage-1600.webp</image:loc></image:image>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/massage-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/massage-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/massage-geneve" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins/drainage-lymphatique-renata-franca-geneve</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <image:image><image:loc>https://henryteran.github.io/beauty-salon-website/images/massage-1600.webp</image:loc></image:image>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/drainage-lymphatique-renata-franca-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/drainage-lymphatique-renata-franca-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/drainage-lymphatique-renata-franca-geneve" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/forfaits</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/forfaits" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/forfaits" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/forfaits" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/soins-a-domicile-geneve</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins-a-domicile-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins-a-domicile-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins-a-domicile-geneve" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/a-propos</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/a-propos" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/a-propos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/a-propos" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/reservation</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/reservation" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/reservation" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/reservation" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/mentions-legales</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.1</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/mentions-legales" />
   </url>
   <url>
     <loc>https://henryteran.github.io/beauty-salon-website/confidentialite</loc>
     <lastmod>2026-11-16</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.1</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/confidentialite" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins-et-tarifs</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins-et-tarifs" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins-et-tarifs" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins-et-tarifs" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins/soin-visage-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/soin-visage-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/soin-visage-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/soin-visage-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins/rehaussement-cils-coreen-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/rehaussement-cils-coreen-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/rehaussement-cils-coreen-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/rehaussement-cils-coreen-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins/epilation-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/epilation-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/epilation-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/epilation-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins/massage-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/massage-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/massage-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/massage-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins/drainage-lymphatique-renata-franca-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/drainage-lymphatique-renata-franca-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/drainage-lymphatique-renata-franca-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/drainage-lymphatique-renata-franca-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/forfaits</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/forfaits" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/forfaits" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/forfaits" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/soins-a-domicile-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins-a-domicile-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins-a-domicile-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins-a-domicile-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/a-propos</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/a-propos" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/a-propos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/a-propos" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/reservation</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/reservation" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/reservation" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/reservation" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/mentions-legales</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/mentions-legales" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/es/confidentialite</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/confidentialite" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins-et-tarifs</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins-et-tarifs" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins-et-tarifs" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins-et-tarifs" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins/soin-visage-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/soin-visage-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/soin-visage-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/soin-visage-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins/rehaussement-cils-coreen-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/rehaussement-cils-coreen-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/rehaussement-cils-coreen-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/rehaussement-cils-coreen-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins/epilation-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/epilation-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/epilation-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/epilation-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins/massage-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/massage-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/massage-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/massage-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins/drainage-lymphatique-renata-franca-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins/drainage-lymphatique-renata-franca-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins/drainage-lymphatique-renata-franca-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins/drainage-lymphatique-renata-franca-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/forfaits</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/forfaits" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/forfaits" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/forfaits" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/soins-a-domicile-geneve</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/soins-a-domicile-geneve" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/soins-a-domicile-geneve" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/soins-a-domicile-geneve" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/a-propos</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/a-propos" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/a-propos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/a-propos" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/reservation</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/reservation" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/reservation" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/reservation" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/mentions-legales</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/mentions-legales" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/mentions-legales" />
+  </url>
+  <url>
+    <loc>https://henryteran.github.io/beauty-salon-website/en/confidentialite</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://henryteran.github.io/beauty-salon-website/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://henryteran.github.io/beauty-salon-website/es/confidentialite" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://henryteran.github.io/beauty-salon-website/en/confidentialite" />
   </url>
 </urlset>

@@ -12,6 +12,7 @@
 - Réservation : https://henryteran.github.io/beauty-salon-website/reservation (WhatsApp, téléphone ou formulaire)
 - Zones desservies à domicile : Genève, Carouge, Lancy, Plan-les-Ouates, Onex, Vernier, Meyrin, Chêne-Bougeries, Thônex, Cologny, Le Grand-Saconnex, Versoix
 - Devise : CHF (francs suisses)
+- Langues du site : français (https://henryteran.github.io/beauty-salon-website/), español (https://henryteran.github.io/beauty-salon-website/es/), English (https://henryteran.github.io/beauty-salon-website/en/)
 
 ## Soins et tarifs
 
