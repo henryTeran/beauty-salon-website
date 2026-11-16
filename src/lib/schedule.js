@@ -1,3 +1,5 @@
+import { locale } from '../i18n/index.js';
+
 /** Horaires de travail et calcul des créneaux libres (fonctions pures, sans Firebase). */
 
 export const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -37,7 +39,7 @@ export const addDays = (key, n) => {
   d.setDate(d.getDate() + n);
   return dateKey(d);
 };
-export const formatDate = (key, opts = { weekday: 'long', day: 'numeric', month: 'long' }) => parseDate(key).toLocaleDateString('fr-CH', opts);
+export const formatDate = (key, opts = { weekday: 'long', day: 'numeric', month: 'long' }) => parseDate(key).toLocaleDateString(locale, opts);
 
 /**
  * Créneaux libres d'une journée.

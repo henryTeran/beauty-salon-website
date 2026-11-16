@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.js';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { packages, packageItems } from '../data/services.js';
@@ -12,9 +13,8 @@ export default function Forfaits() {
   const custom = useCustomServices();
   return (
     <>
-      <PageHero kicker="Des combinaisons pensées pour vous" title="Forfaits & cures à Genève" breadcrumbs={meta.breadcrumbs}>
-        Associez plusieurs soins pour un résultat plus harmonieux, ou prolongez les bienfaits d’un massage dans la durée
-        avec une cure de 3 ou 5 séances à tarif préférentiel.
+      <PageHero kicker={t("Des combinaisons pensées pour vous")} title={t("Forfaits & cures à Genève")} breadcrumbs={meta.breadcrumbs}>
+        {t("Associez plusieurs soins pour un résultat plus harmonieux, ou prolongez les bienfaits d’un massage dans la durée avec une cure de 3 ou 5 séances à tarif préférentiel.")}
       </PageHero>
       <section className="section">
         <div className="container-site grid gap-8 lg:grid-cols-3">
@@ -25,17 +25,15 @@ export default function Forfaits() {
                 <h2 className="display mt-2 text-3xl tracking-[0.06em] md:text-4xl">{p.name}</h2>
                 <p className="mt-3 text-taupe">{p.note}</p>
                 <PriceList services={packageItems(p, custom)} className="mt-6 flex-1" />
-                <Link to={`/reservation?soin=${p.items[0].id}`} className="btn-ghost mt-8">Réserver</Link>
+                <Link to={`/reservation?soin=${p.items[0].id}`} className="btn-ghost mt-8">{t("Réserver")}</Link>
               </motion.article>
             </Reveal>
           ))}
         </div>
         <div className="container-site mt-16 max-w-3xl">
-          <h2 className="display text-3xl">Pourquoi choisir une cure ?</h2>
+          <h2 className="display text-3xl">{t("Pourquoi choisir une cure ?")}</h2>
           <p className="mt-4 text-taupe">
-            Les effets d’un massage ou d’un drainage lymphatique se construisent séance après séance. Une cure rapprochée
-            permet d’installer les résultats : détente plus profonde, silhouette plus légère, circulation stimulée.
-            Les forfaits bien-être font économiser de 15 à 50 CHF par rapport aux séances à l’unité.
+            {t("Les effets d’un massage ou d’un drainage lymphatique se construisent séance après séance. Une cure rapprochée permet d’installer les résultats : détente plus profonde, silhouette plus légère, circulation stimulée. Les forfaits bien-être font économiser de 15 à 50 CHF par rapport aux séances à l’unité.")}
           </p>
         </div>
       </section>

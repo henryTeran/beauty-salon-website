@@ -1,3 +1,4 @@
+import { t, locale, clock } from '../i18n/index.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -12,8 +13,9 @@ import { loadSchedule, loadBusy, createBooking } from '../lib/firebase.js';
 import { useCustomServices } from '../lib/useCustomServices.js';
 
 const meta = getRouteMeta('/reservation');
-const weekdays = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'];
-const hm = (min) => toTime(min).replace(':', 'h');
+// Initiales des jours, lundi en premier, dans la langue du site (le 5 janvier 2026 est un lundi)
+const weekdays = Array.from({ length: 7 }, (_, i) => new Date(2026, 0, 5 + i).toLocaleDateString(locale, { weekday: 'short' }).slice(0, 2));
+const hm = (min) => clock(toTime(min));
 const monthStart = (key) => `${key.slice(0, 8)}01`;
 const field =
   'w-full rounded-2xl border border-gold/35 bg-cream px-5 py-3.5 text-ink placeholder:text-taupe/60 transition-colors focus:border-bordeaux focus:outline-none';
@@ -34,12 +36,12 @@ function MonthCalendar({ month, setMonth, selected, onSelect, isFree, min, max, 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <button type="button" aria-label="Mois précédent" disabled={month <= monthStart(min)} onClick={() => shift(-1)} className={nav}><ChevronLeft size={18} aria-hidden="true" /></button>
+        <button type="button" aria-label={t("Mois précédent")} disabled={month <= monthStart(min)} onClick={() => shift(-1)} className={nav}><ChevronLeft size={18} aria-hidden="true" /></button>
         <p className="font-serif text-2xl capitalize text-bordeaux" aria-live="polite">
           {formatDate(month, { month: 'long', year: 'numeric' })}
           {loading && <Loader2 size={14} className="ml-2 inline animate-spin text-gold-dark" aria-hidden="true" />}
         </p>
-        <button type="button" aria-label="Mois suivant" disabled={month >= monthStart(max)} onClick={() => shift(1)} className={nav}><ChevronRight size={18} aria-hidden="true" /></button>
+        <button type="button" aria-label={t("Mois suivant")} disabled={month >= monthStart(max)} onClick={() => shift(1)} className={nav}><ChevronRight size={18} aria-hidden="true" /></button>
       </div>
       <div className="mt-5 grid grid-cols-7 gap-y-1 text-center">
         {weekdays.map((d) => (
@@ -164,11 +166,11 @@ export default function Reservation() {
       .join('\n');
 
   const validate = () => {
-    if (!chosen.length) return 'Sélectionnez au moins une prestation.';
-    if (!form.date || form.time === null) return 'Choisissez une date et une heure.';
-    if (!form.adresse.trim()) return 'Indiquez la commune ou l’adresse du soin.';
-    if (!form.name.trim()) return 'Indiquez votre nom.';
-    if (!form.phone.trim()) return 'Indiquez votre numéro de téléphone.';
+    if (!chosen.length) return t("Sélectionnez au moins une prestation.");
+    if (!form.date || form.time === null) return t("Choisissez une date et une heure.");
+    if (!form.adresse.trim()) return t("Indiquez la commune ou l’adresse du soin.");
+    if (!form.name.trim()) return t("Indiquez votre nom.");
+    if (!form.phone.trim()) return t("Indiquez votre numéro de téléphone.");
     return '';
   };
 
@@ -201,9 +203,8 @@ export default function Reservation() {
 
   return (
     <>
-      <PageHero kicker="Rendez-vous" title="Réserver un soin" breadcrumbs={meta.breadcrumbs}>
-        Choisissez vos soins, une date et une heure : {site.owner} se déplace chez vous et vous confirme le rendez-vous
-        personnellement.
+      <PageHero kicker={t("Rendez-vous")} title={t("Réserver un soin")} breadcrumbs={meta.breadcrumbs}>
+        {t("Choisissez vos soins, une date et une heure :")}{" "}{site.owner}{" "}{t("se déplace chez vous et vous confirme le rendez-vous personnellement.")}
       </PageHero>
 
       <section className="section !pt-16">
@@ -211,20 +212,20 @@ export default function Reservation() {
           {done ? (
             <div ref={doneRef} className={`${panel} mx-auto max-w-3xl md:!p-12`} role="status">
               <CheckCircle2 size={40} strokeWidth={1.2} className="text-gold-dark" aria-hidden="true" />
-              <h2 className="display mt-5 text-3xl md:text-4xl">{done.saved ? 'Demande enregistrée' : 'Dernière étape'}</h2>
+              <h2 className="display mt-5 text-3xl md:text-4xl">{done.saved ? t("Demande enregistrée") : t("Dernière étape")}</h2>
               <p className="mt-4 max-w-xl text-taupe">
                 {done.saved
-                  ? 'Votre créneau est pré-réservé. Envoyez maintenant votre demande pour recevoir la confirmation.'
-                  : 'Le planning en ligne est momentanément indisponible. Envoyez votre demande directement : le créneau vous sera confirmé.'}
+                  ? t("Votre créneau est pré-réservé. Envoyez maintenant votre demande pour recevoir la confirmation.")
+                  : t("Le planning en ligne est momentanément indisponible. Envoyez votre demande directement : le créneau vous sera confirmé.")}
               </p>
               <p className="mt-4 font-serif text-2xl capitalize text-bordeaux">{formatDate(form.date)} · {hm(form.time)}</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href={waHref(done.text)} target="_blank" rel="noopener" className="btn-primary">
-                  <span className="flex items-center gap-2"><MessageCircle size={16} aria-hidden="true" /> Envoyer par WhatsApp</span>
+                  <span className="flex items-center gap-2"><MessageCircle size={16} aria-hidden="true" />{" "}{t("Envoyer par WhatsApp")}</span>
                 </a>
                 {site.email && (
                   <a href={`mailto:${site.email}?subject=${encodeURIComponent('Demande de rendez-vous')}&body=${encodeURIComponent(done.text)}`} className="btn-ghost">
-                    <Mail size={15} aria-hidden="true" /> Envoyer par e-mail
+                    <Mail size={15} aria-hidden="true" />{" "}{t("Envoyer par e-mail")}
                   </a>
                 )}
               </div>
@@ -234,7 +235,7 @@ export default function Reservation() {
               <div className="grid items-start gap-8 lg:grid-cols-2">
                 {/* Colonne gauche : le rendez-vous */}
                 <div>
-                  <h2 className="display text-2xl tracking-[0.06em] md:text-3xl">Votre rendez-vous</h2>
+                  <h2 className="display text-2xl tracking-[0.06em] md:text-3xl">{t("Votre rendez-vous")}</h2>
                   <ul className="mt-6 space-y-3">
                     <AnimatePresence initial={false}>
                       {chosen.map((s) => (
@@ -245,7 +246,7 @@ export default function Reservation() {
                           </div>
                           <div className="mt-2 flex items-center justify-between gap-4 text-sm text-taupe">
                             <span className="flex items-center gap-1.5"><Clock size={14} aria-hidden="true" /> {formatDuration(bookingMinutes(s))} · {s.category}</span>
-                            <button type="button" onClick={() => toggle(s.id)} className="flex items-center gap-1.5 text-bordeaux-soft"><Trash2 size={14} aria-hidden="true" /> <span className="link-line">Retirer</span></button>
+                            <button type="button" onClick={() => toggle(s.id)} className="flex items-center gap-1.5 text-bordeaux-soft"><Trash2 size={14} aria-hidden="true" /> <span className="link-line">{t("Retirer")}</span></button>
                           </div>
                         </motion.li>
                       ))}
@@ -253,14 +254,14 @@ export default function Reservation() {
                   </ul>
                   {chosen.length > 0 && (
                     <p className="mt-4 flex items-baseline justify-between px-2">
-                      <span className="kicker">Total indicatif · {formatDuration(duration)}</span>
+                      <span className="kicker">{t("Total indicatif ·")}{" "}{formatDuration(duration)}</span>
                       <span className="font-serif text-3xl text-bordeaux">{total} <span className="font-sans text-xs uppercase tracking-wide2 text-gold-dark">CHF</span></span>
                     </p>
                   )}
 
                   {chosen.length > 0 && (
                     <button type="button" aria-expanded={picker} onClick={() => setPicker((p) => !p)} className="btn-ghost mt-5 !px-6 !py-3">
-                      <Plus size={15} className={`transition-transform duration-300 ${picker ? 'rotate-45' : ''}`} aria-hidden="true" /> Ajouter une prestation
+                      <Plus size={15} className={`transition-transform duration-300 ${picker ? 'rotate-45' : ''}`} aria-hidden="true" />{" "}{t("Ajouter une prestation")}
                     </button>
                   )}
                   <AnimatePresence initial={false}>
@@ -300,7 +301,7 @@ export default function Reservation() {
 
                 {/* Colonne droite : date et heure */}
                 <div className="lg:sticky lg:top-28">
-                  <h2 className="display text-2xl tracking-[0.06em] md:text-3xl">Date et heure</h2>
+                  <h2 className="display text-2xl tracking-[0.06em] md:text-3xl">{t("Date et heure")}</h2>
                   <div className={`${panel} mt-6`}>
                     <MonthCalendar
                       month={month}
@@ -314,12 +315,12 @@ export default function Reservation() {
                     />
                     <div className="hairline my-6" />
                     <div aria-live="polite">
-                      {!form.date && <p className="text-center text-taupe">Choisissez un jour pour voir les heures disponibles.</p>}
+                      {!form.date && <p className="text-center text-taupe">{t("Choisissez un jour pour voir les heures disponibles.")}</p>}
                       {form.date && (
                         <>
                           <p className="kicker text-center">{formatDate(form.date)}</p>
                           {slots.length === 0 ? (
-                            <p className="mt-3 text-center text-taupe">Plus d’heure disponible ce jour-là pour cette durée.</p>
+                            <p className="mt-3 text-center text-taupe">{t("Plus d’heure disponible ce jour-là pour cette durée.")}</p>
                           ) : (
                             <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
                               {slots.map((t) => (
@@ -347,23 +348,23 @@ export default function Reservation() {
 
               {/* Coordonnées */}
               <div className="mt-14 border-t border-gold/25 pt-12">
-                <h2 className="display text-2xl tracking-[0.06em] md:text-3xl">Vos coordonnées</h2>
+                <h2 className="display text-2xl tracking-[0.06em] md:text-3xl">{t("Vos coordonnées")}</h2>
                 <div className="mt-6 grid gap-5 md:grid-cols-2">
                   <label className="block">
-                    <span className="kicker">Nom et prénom *</span>
+                    <span className="kicker">{t("Nom et prénom *")}</span>
                     <input required type="text" autoComplete="name" value={form.name} onChange={set('name')} className={`${field} mt-2`} />
                   </label>
                   <label className="block">
-                    <span className="kicker">Téléphone *</span>
+                    <span className="kicker">{t("Téléphone *")}</span>
                     <input required type="tel" autoComplete="tel" inputMode="tel" value={form.phone} onChange={set('phone')} placeholder="+41…" className={`${field} mt-2`} />
                   </label>
                   <label className="block md:col-span-2">
-                    <span className="kicker">Commune / adresse du soin à domicile *</span>
-                    <input required type="text" autoComplete="street-address" value={form.adresse} onChange={set('adresse')} placeholder="Ex. Carouge, rue…" className={`${field} mt-2`} />
+                    <span className="kicker">{t("Commune / adresse du soin à domicile *")}</span>
+                    <input required type="text" autoComplete="street-address" value={form.adresse} onChange={set('adresse')} placeholder={t("Ex. Carouge, rue…")} className={`${field} mt-2`} />
                   </label>
                   <label className="block md:col-span-2">
-                    <span className="kicker">Message (facultatif)</span>
-                    <textarea rows={3} value={form.message} onChange={set('message')} placeholder="Type de peau, première visite, question…" className={`${field} mt-2 resize-none`} />
+                    <span className="kicker">{t("Message (facultatif)")}</span>
+                    <textarea rows={3} value={form.message} onChange={set('message')} placeholder={t("Type de peau, première visite, question…")} className={`${field} mt-2 resize-none`} />
                   </label>
                 </div>
 
@@ -371,7 +372,7 @@ export default function Reservation() {
                   <button type="submit" disabled={sending} className="btn-primary disabled:opacity-60">
                     <span className="flex items-center gap-2">
                       {sending ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Check size={16} aria-hidden="true" />}
-                      Demander ce rendez-vous
+                      {t("Demander ce rendez-vous")}
                     </span>
                   </button>
                   {form.date && form.time !== null && (
@@ -380,12 +381,11 @@ export default function Reservation() {
                 </div>
                 <p role="alert" className={`mt-4 text-bordeaux-soft ${error ? '' : 'hidden'}`}>{error}</p>
                 <p className="mt-4 max-w-xl text-sm text-taupe">
-                  Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp ou e-mail. Le
-                  rendez-vous est validé après confirmation.
+                  {t("Votre demande est enregistrée dans le planning, puis vous l’envoyez par WhatsApp ou e-mail. Le rendez-vous est validé après confirmation.")}
                 </p>
                 <p className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-taupe">
                   <a href={telHref} className="flex items-center gap-2"><Phone size={16} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">{site.phoneDisplay}</span></a>
-                  <a href={waHref('Bonjour, je souhaite prendre rendez-vous.')} target="_blank" rel="noopener" className="flex items-center gap-2"><MessageCircle size={16} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">WhatsApp</span></a>
+                  <a href={waHref('Bonjour, je souhaite prendre rendez-vous.')} target="_blank" rel="noopener" className="flex items-center gap-2"><MessageCircle size={16} strokeWidth={1.4} aria-hidden="true" /> <span className="link-line">{t("WhatsApp")}</span></a>
                 </p>
               </div>
             </form>

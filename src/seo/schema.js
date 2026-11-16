@@ -1,4 +1,5 @@
-import { site, absUrl } from '../config/site.js';
+import { site, absUrl, fileUrl } from '../config/site.js';
+import { t, locale } from '../i18n/index.js';
 import { categories, packages } from '../data/services.js';
 
 const BUSINESS_ID = `${site.url}/#business`;
@@ -20,12 +21,12 @@ export function businessSchema() {
     alternateName: site.shortName,
     slogan: site.tagline,
     description:
-      "Esthéticienne à domicile à Genève : soins du visage, lifting coréen des cils, teintures, épilation, massages relaxants et amincissants, drainage lymphatique Renata França. Soins réalisés à domicile, sur rendez-vous.",
+      t("Esthéticienne à domicile à Genève : soins du visage, lifting coréen des cils, teintures, épilation, massages relaxants et amincissants, drainage lymphatique Renata França. Soins réalisés à domicile, sur rendez-vous."),
     url: absUrl('/'),
     telephone: site.phone,
     email: site.email,
-    image: [absUrl('/og-image.jpg'), absUrl('/images/soin-visage-1400.webp')],
-    logo: absUrl('/icons/icon-512.png'),
+    image: [fileUrl('/og-image.jpg'), fileUrl('/images/soin-visage-1400.webp')],
+    logo: fileUrl('/icons/icon-512.png'),
     priceRange: site.priceRange,
     currenciesAccepted: site.currency,
     paymentAccepted: site.paymentAccepted.join(', '),
@@ -50,7 +51,7 @@ export function businessSchema() {
     sameAs: sameAs.length ? sameAs : undefined,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
-      name: 'Soins et tarifs',
+      name: t('Soins et tarifs'),
       itemListElement: [
         ...categories.map((c) => ({
           '@type': 'OfferCatalog',
@@ -60,7 +61,7 @@ export function businessSchema() {
         })),
         {
           '@type': 'OfferCatalog',
-          name: 'Forfaits',
+          name: t('Forfaits'),
           url: absUrl('/forfaits'),
           itemListElement: packages.flatMap((p) => p.items.map((s) => offerFor(s))),
         },
@@ -92,7 +93,7 @@ export function personSchema() {
     knowsAbout: [
       'Soin du visage', 'Lifting coréen des cils', 'Rehaussement de cils', 'Teinture des cils et sourcils',
       'Épilation', 'Massage relaxant', 'Massage amincissant', 'Drainage lymphatique Renata França',
-    ],
+    ].map((v) => t(v)),
     url: absUrl('/a-propos'),
   };
 }
@@ -103,7 +104,7 @@ export function websiteSchema() {
     '@id': WEBSITE_ID,
     url: absUrl('/'),
     name: site.name,
-    inLanguage: 'fr-CH',
+    inLanguage: locale,
     publisher: { '@id': BUSINESS_ID },
   };
 }
@@ -115,16 +116,16 @@ export function webPageSchema(meta) {
     url: absUrl(meta.path),
     name: meta.title,
     description: meta.description,
-    inLanguage: 'fr-CH',
+    inLanguage: locale,
     isPartOf: { '@id': WEBSITE_ID },
     about: { '@id': BUSINESS_ID },
-    primaryImageOfPage: meta.image ? absUrl(meta.image) : undefined,
+    primaryImageOfPage: meta.image ? fileUrl(meta.image) : undefined,
     breadcrumb: meta.breadcrumbs ? { '@id': `${absUrl(meta.path)}#breadcrumb` } : undefined,
   };
 }
 
 export function breadcrumbSchema(meta) {
-  const items = [['Accueil', '/'], ...meta.breadcrumbs];
+  const items = [[t('Accueil'), '/'], ...meta.breadcrumbs];
   return {
     '@type': 'BreadcrumbList',
     '@id': `${absUrl(meta.path)}#breadcrumb`,

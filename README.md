@@ -50,3 +50,14 @@ Pour autoriser un autre compte : l'ajouter dans `firestore.rules` et dans `src/c
 
 Version de validation (GitHub Pages) : `npm run build:preview`, puis publier `dist/` sur la branche `gh-pages`.
 Firebase Hosting : `npm run build && firebase deploy --only hosting`.
+
+## Langues (français, espagnol, anglais)
+
+- Français à la racine, espagnol sous `/es/…`, anglais sous `/en/…` : chaque page est prérendue dans les trois langues, avec balises `hreflang` et sitemap multilingue.
+- Les textes sont écrits en français dans le code ; `t('texte français')` renvoie la traduction de `src/i18n/es.js` ou `src/i18n/en.js`. Une phrase sans traduction s'affiche en français.
+- Après avoir ajouté ou modifié un texte français : ajouter la même clé (le texte français exact) dans `es.js` et `en.js`.
+- L'espace privé `/admin` et les prestations ajoutées depuis celui-ci restent en français.
+
+## Espace privé : prestations
+
+L'onglet « Prestations » ajoute des soins et modifie prix, durée et description (collection Firestore `services`). Le site et la réservation les affichent dès le chargement de la page ; les textes prérendus pour Google (HTML, données structurées, `llms.txt`) reprennent `src/data/services.js` et ne changent qu'au prochain `npm run build`.

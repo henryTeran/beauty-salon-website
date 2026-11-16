@@ -9,46 +9,57 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
-const ssr = await import(pathToFileURL(path.join(root, 'dist-ssr/entry-server.js')).href);
-const { render, routes, notFoundMeta, adminMeta, buildHead, site, categories, renataFranca, packages, generalFaq, formatDuration } = ssr;
-
+const ssrUrl = pathToFileURL(path.join(root, 'dist-ssr/entry-server.js')).href;
 const base = process.env.BASE_PATH || '/';
 const noindex = process.env.VITE_NOINDEX === '1';
-let template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 
 // Préchargement de la police de titre (LCP)
 const fontFile = fs.readdirSync(path.join(dist, 'assets')).find((f) => /^cormorant-garamond-latin-400-normal.*\.woff2$/.test(f));
 const preload = fontFile ? `<link rel="preload" href="${base}assets/${fontFile}" as="font" type="font/woff2" crossorigin />\n    ` : '';
 
-const writePage = (meta, file) => {
-  const html = template
-    .replace('<!--app-head-->', preload + buildHead(meta))
-    .replace('<!--app-html-->', render(meta.path));
-  const out = path.join(dist, file);
-  fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, html);
-  console.log('  ✓', file);
-};
+// Une instance du site par langue : la langue est fixée avant le chargement du module
+const collect = process.env.I18N_COLLECT ? (globalThis.__I18N_COLLECT__ = new Set()) : null;
+const byLang = {};
+for (const code of ['fr', 'es', 'en']) {
+  globalThis.__LANG__ = code;
+  const ssr = await import(`${ssrUrl}?lang=${code}`);
+  byLang[code] = ssr;
+  const dir = ssr.prefix.slice(1);
+  const writePage = (meta, file) => {
+    const html = template
+      .replace('<html lang="fr-CH"', `<html lang="${ssr.locale}"`)
+      .replace('<!--app-head-->', preload + ssr.buildHead(meta))
+      .replace('<!--app-html-->', ssr.render(meta.path));
+    const out = path.join(dist, dir, file);
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, html);
+  };
+  for (const r of ssr.routes) writePage(r, r.path === '/' ? 'index.html' : `${r.path.slice(1)}.html`);
+  writePage(ssr.notFoundMeta, '404.html');
+  if (code === 'fr') writePage(ssr.adminMeta, 'admin.html');
+  console.log(`  ✓ ${code} : ${ssr.routes.length} pages`);
+}
+if (collect) fs.writeFileSync(process.env.I18N_COLLECT, JSON.stringify([...collect], null, 1));
+delete globalThis.__I18N_COLLECT__;
 
-console.log('Prérendu des pages :');
-for (const r of routes) writePage(r, r.path === '/' ? 'index.html' : `${r.path.slice(1)}.html`);
-writePage(notFoundMeta, '404.html');
-writePage(adminMeta, 'admin.html');
+const { routes, site, categories, renataFranca, packages, generalFaq, formatDuration, languages, prefixOf } = byLang.fr;
 
 // ---------- sitemap.xml ----------
 const today = new Date().toISOString().split('T')[0];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${routes
-  .map(
-    (r) => `  <url>
-    <loc>${site.url}${r.path}</loc>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${languages
+  .flatMap((l) =>
+    routes.map(
+      (r) => `  <url>
+    <loc>${site.url}${prefixOf(l.code)}${r.path}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${r.changefreq || 'monthly'}</changefreq>
-    <priority>${(r.priority ?? 0.5).toFixed(1)}</priority>${
-      r.image && r.image.endsWith('.webp') ? `\n    <image:image><image:loc>${site.url}${r.image}</image:loc></image:image>` : ''
-    }
+    <priority>${((r.priority ?? 0.5) * (l.code === 'fr' ? 1 : 0.8)).toFixed(1)}</priority>
+${languages.map((a) => `    <xhtml:link rel="alternate" hreflang="${a.code}" href="${site.url}${prefixOf(a.code)}${r.path}" />`).join('\n')}
   </url>`
+    )
   )
   .join('\n')}
 </urlset>
@@ -82,7 +93,7 @@ const llms = `# ${site.name}
 - Horaires : ${site.openingHoursText.map(([d, h]) => `${d} ${h}`).join(' ; ')}
 - Réservation : ${site.url}/reservation (WhatsApp, téléphone ou formulaire)
 - Zones desservies à domicile : ${site.areaServed.join(', ')}
-- Devise : CHF (francs suisses)
+- Devise : CHF (francs suisses)\n- Langues du site : français (${site.url}/), español (${site.url}/es/), English (${site.url}/en/)
 
 ## Soins et tarifs
 

@@ -1,4 +1,5 @@
-import { site, absUrl } from '../config/site.js';
+import { site, absUrl, fileUrl, langUrl } from '../config/site.js';
+import { languages, ogLocale } from '../i18n/index.js';
 import { buildGraph } from './schema.js';
 
 const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -6,18 +7,18 @@ const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
 /** Balises <head> propres à une page (injectées au prerender) */
 export function buildHead(meta) {
   const url = absUrl(meta.path);
-  const image = absUrl(meta.image && meta.image.endsWith('.jpg') ? meta.image : '/og-image.jpg');
+  const image = fileUrl(meta.image && meta.image.endsWith('.jpg') ? meta.image : '/og-image.jpg');
   const jsonLd = JSON.stringify(buildGraph(meta)).replace(/</g, '\\u003c');
   return [
     `<title>${esc(meta.title)}</title>`,
     `<meta name="description" content="${esc(meta.description)}" />`,
     `<meta name="robots" content="${meta.noindex || site.noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'}" />`,
     meta.noindex ? '' : `<link rel="canonical" href="${url}" />`,
-    meta.noindex ? '' : `<link rel="alternate" hreflang="fr-CH" href="${url}" />`,
-    meta.noindex ? '' : `<link rel="alternate" hreflang="x-default" href="${url}" />`,
+    ...(meta.noindex ? [] : languages.map((l) => `<link rel="alternate" hreflang="${l.code}" href="${langUrl(l.code, meta.path)}" />`)),
+    meta.noindex ? '' : `<link rel="alternate" hreflang="x-default" href="${langUrl('fr', meta.path)}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="${esc(site.name)}" />`,
-    `<meta property="og:locale" content="fr_CH" />`,
+    `<meta property="og:locale" content="${ogLocale}" />`,
     `<meta property="og:title" content="${esc(meta.title)}" />`,
     `<meta property="og:description" content="${esc(meta.description)}" />`,
     `<meta property="og:url" content="${url}" />`,
@@ -52,7 +53,10 @@ export function applyHead(meta) {
   set('meta[name="twitter:title"]', 'content', meta.title);
   set('meta[name="twitter:description"]', 'content', meta.description);
   set('link[rel="canonical"]', 'href', url);
-  document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((l) => l.setAttribute('href', url));
+  document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((l) => {
+    const code = l.getAttribute('hreflang');
+    l.setAttribute('href', langUrl(code === 'x-default' ? 'fr' : code, meta.path));
+  });
   const ld = document.getElementById('ld-json');
   if (ld) ld.textContent = JSON.stringify(buildGraph(meta));
 }

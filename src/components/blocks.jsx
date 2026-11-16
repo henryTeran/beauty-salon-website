@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.js';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,9 +9,9 @@ import { Reveal, SplitText, Leaf, Magnetic, SectionHead, ease } from './ui.jsx';
 
 export function Breadcrumbs({ items }) {
   return (
-    <nav aria-label="Fil d’Ariane" className="text-[0.72rem] uppercase tracking-wide2 text-taupe">
+    <nav aria-label={t("Fil d’Ariane")} className="text-[0.72rem] uppercase tracking-wide2 text-taupe">
       <ol className="flex flex-wrap items-center gap-1.5">
-        <li><Link to="/" className="link-line">Accueil</Link></li>
+        <li><Link to="/" className="link-line">{t("Accueil")}</Link></li>
         {items.map(([label, to], i) => (
           <li key={to} className="flex items-center gap-1.5">
             <ChevronRight size={12} aria-hidden="true" />
@@ -61,7 +62,7 @@ export function PriceRow({ s, index = 0 }) {
         </p>
       </div>
       {s.description && <p className="mt-1 max-w-xl text-[0.95rem] text-taupe">{s.description}</p>}
-      {s.saving && <p className="mt-1 text-[0.8rem] uppercase tracking-wide2 text-gold-dark">Économie de {s.saving} CHF</p>}
+      {s.saving && <p className="mt-1 text-[0.8rem] uppercase tracking-wide2 text-gold-dark">{t("Économie de")}{" "}{s.saving} CHF</p>}
       {s.offer && (
         <div className="mt-3 flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-gold-pale/70 to-ivory px-5 py-3">
           <p className="font-serif text-xl text-bordeaux">
@@ -86,7 +87,7 @@ export function PriceList({ services, className = '' }) {
   );
 }
 
-export function Faq({ items, title = 'Questions fréquentes', kicker = 'Bon à savoir' }) {
+export function Faq({ items, title = t("Questions fréquentes"), kicker = t("Bon à savoir") }) {
   const [open, setOpen] = useState(0);
   return (
     <section className="section bg-ivory/60">
@@ -130,7 +131,7 @@ export function Faq({ items, title = 'Questions fréquentes', kicker = 'Bon à s
   );
 }
 
-export function CtaBand({ title = 'Offrez-vous un moment rien que pour vous', text }) {
+export function CtaBand({ title = t("Offrez-vous un moment rien que pour vous"), text }) {
   return (
     <section className="relative overflow-hidden bg-bordeaux text-cream">
       <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(60% 80% at 80% 10%, #A9814F 0%, transparent 60%), radial-gradient(50% 70% at 0% 100%, #6B2A35 0%, transparent 70%)' }} />
@@ -139,16 +140,16 @@ export function CtaBand({ title = 'Offrez-vous un moment rien que pour vous', te
         <Reveal className="font-script text-4xl text-gold-light md:text-5xl" y={14}>{site.tagline}</Reveal>
         <SplitText as="h2" text={title} className="display mx-auto mt-5 block max-w-4xl text-4xl !text-cream md:text-6xl" />
         <Reveal delay={0.2} className="mx-auto mt-6 max-w-xl text-cream/75">
-          {text || `Réponse rapide par WhatsApp ou par téléphone au ${site.phoneDisplay}. À domicile à Genève et environs, sur rendez-vous.`}
+          {text || t("Réponse rapide par WhatsApp ou par téléphone au {0}. À domicile à Genève et environs, sur rendez-vous.", site.phoneDisplay)}
         </Reveal>
         <Reveal delay={0.3} className="mt-10 flex flex-wrap justify-center gap-4">
           <Magnetic>
             <Link to="/reservation" className="btn bg-cream text-bordeaux hover:bg-gold-light">
-              Réserver un soin <ArrowUpRight size={16} aria-hidden="true" />
+              {t("Réserver un soin")}{" "}<ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </Magnetic>
-          <a href={waHref('Bonjour, je souhaite prendre rendez-vous.')} target="_blank" rel="noopener" className="btn-light">WhatsApp</a>
-          <a href={telHref} className="btn-light">Appeler</a>
+          <a href={waHref('Bonjour, je souhaite prendre rendez-vous.')} target="_blank" rel="noopener" className="btn-light">{t("WhatsApp")}</a>
+          <a href={telHref} className="btn-light">{t("Appeler")}</a>
         </Reveal>
       </div>
     </section>

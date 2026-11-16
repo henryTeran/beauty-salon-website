@@ -1,4 +1,5 @@
 import { site } from '../config/site.js';
+import { localize } from '../i18n/index.js';
 import { categories, renataFranca, generalFaq, domicileFaq } from '../data/services.js';
 
 /**
@@ -8,6 +9,7 @@ import { categories, renataFranca, generalFaq, domicileFaq } from '../data/servi
 const brand = ' | María Fernanda';
 
 export const routes = [
+  ...localize([
   {
     path: '/',
     title: 'Esthéticienne à domicile à Genève | María Fernanda Beauté & Bien-être',
@@ -27,6 +29,7 @@ export const routes = [
     pageType: 'CollectionPage',
     priority: 0.9,
   },
+  ]),
   ...[...categories, renataFranca].map((c) => ({
     path: c.slug,
     title: `${c.seo.title}${c.seo.title.length < 40 ? brand : ''}`,
@@ -37,6 +40,7 @@ export const routes = [
     category: c,
     priority: 0.9,
   })),
+  ...localize([
   {
     path: '/forfaits',
     title: `Forfaits beauté & cures bien-être à Genève${brand}`,
@@ -87,14 +91,15 @@ export const routes = [
     priority: 0.1,
     changefreq: 'yearly',
   },
+  ]),
 ];
 
-export const notFoundMeta = {
+export const notFoundMeta = localize({
   path: '/404',
   title: `Page introuvable${brand}`,
   description: 'Cette page n’existe pas ou a été déplacée.',
   noindex: true,
-};
+});
 
 export const adminMeta = {
   path: '/admin',

@@ -1,10 +1,12 @@
+import { t, localize } from '../i18n/index.js';
+
 /**
  * Source unique des prestations (issue de la brochure officielle).
  * Utilisée par les pages, le formulaire de réservation, les données structurées,
  * le sitemap et llms.txt. Modifier un prix ici le met à jour partout.
  */
 
-export const categories = [
+export const categories = localize([
   {
     id: 'visage',
     slug: '/soins/soin-visage-geneve',
@@ -160,10 +162,10 @@ export const categories = [
       { id: 'massage-dos-60', name: 'Massage du dos', duration: 60, price: 75, description: 'Détente ciblée et relaxation complète.' },
     ],
   },
-];
+]);
 
 /** Page dédiée (mot-clé à fort potentiel) – réutilise le service du catalogue */
-export const renataFranca = {
+export const renataFranca = localize({
   id: 'renata-franca',
   slug: '/soins/drainage-lymphatique-renata-franca-geneve',
   name: 'Drainage lymphatique Renata França',
@@ -195,9 +197,9 @@ export const renataFranca = {
   services: [
     { id: 'drainage-rf', name: 'Drainage lymphatique Renata França', duration: 60, price: 130, description: 'Stimule la circulation et réduit la rétention d’eau.' },
   ],
-};
+});
 
-export const packages = [
+export const packages = localize([
   {
     id: 'regard',
     name: 'Regard',
@@ -228,21 +230,21 @@ export const packages = [
       { id: 'f-5-drainages', name: '5 drainages Renata França', duration: 60, price: 600, saving: 50 },
     ],
   },
-];
+]);
 
-export const generalFaq = [
+export const generalFaq = localize([
   ['Comment prendre rendez-vous ?', "Par téléphone, par WhatsApp ou via le formulaire de réservation du site. Vous recevez une confirmation personnalisée de votre créneau."],
   ['Où se déroulent les soins ?', "Tous les soins sont réalisés à domicile, sur rendez-vous, à Genève et dans les communes voisines. Il n'y a pas de cabinet : María Fernanda se déplace chez vous avec le matériel nécessaire. Les modalités de déplacement sont précisées lors de la réservation."],
   ['Existe-t-il une offre pour une première visite ?', "Oui : le lifting coréen des cils est à 90 CHF au lieu de 100 CHF pour une première séance."],
   ['Proposez-vous des forfaits ?', "Oui : forfait Regard (115 CHF), forfaits Épilation & teintures (dès 27 CHF) et cures bien-être de 3 ou 5 séances (de 240 à 600 CHF)."],
-];
+]);
 
-export const domicileFaq = [
+export const domicileFaq = localize([
   ['Quels soins sont proposés à domicile ?', 'Tous les soins de la carte sont réalisés à domicile, sur rendez-vous : soins du visage, lifting coréen des cils, teintures, épilation, massages et drainage lymphatique Renata França.'],
   ['Y a-t-il des frais de déplacement ?', 'Les modalités de déplacement dépendent de votre adresse et sont précisées lors de la réservation, avant toute confirmation.'],
   ['Dans quelles communes vous déplacez-vous ?', 'À Genève et dans les communes voisines du canton (Carouge, Lancy, Onex, Vernier, Meyrin, Chêne-Bougeries, Thônex…). Pour une autre commune, contactez-nous.'],
   ['Que faut-il prévoir chez soi ?', 'Un espace calme et suffisamment dégagé. Le matériel nécessaire au soin est apporté.'],
-];
+]);
 
 export const formatDuration = (min) => {
   if (!min) return '';
@@ -264,7 +266,7 @@ export const allServices = () => {
     })
   );
   packages.forEach((p) =>
-    p.items.forEach((s) => list.push({ ...s, category: `Forfait ${p.name}` }))
+    p.items.forEach((s) => list.push({ ...s, category: t('Forfait {0}', p.name) }))
   );
   return list;
 };
@@ -297,6 +299,6 @@ export function allServicesWith(custom = [], { includeHidden = false } = {}) {
   const names = Object.fromEntries(categories.map((c) => [c.id, c.name]));
   return [
     ...allServices().map((s) => override(s, custom)),
-    ...custom.filter((c) => !ids.has(c.id)).map((c) => ({ ...c, category: names[c.category] || 'Autres soins', categoryId: c.category, custom: true })),
+    ...custom.filter((c) => !ids.has(c.id)).map((c) => ({ ...c, category: names[c.category] || t('Autres soins'), categoryId: c.category, custom: true })),
   ].filter((s) => includeHidden || !s.hidden);
 }

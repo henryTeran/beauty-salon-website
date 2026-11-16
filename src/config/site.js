@@ -3,6 +3,8 @@
  * ⚠️ Tous les champs marqués TODO doivent être vérifiés / complétés avant la mise en ligne :
  * ils alimentent le SEO local (Google Business Profile, données structurées, NAP).
  */
+import { t, localize, prefix, prefixOf } from '../i18n/index.js';
+
 export const site = {
   // URL de production, SANS slash final. Peut être surchargée par la variable d'env VITE_SITE_URL au build.
   url: import.meta.env.VITE_SITE_URL || 'https://www.mariafernanda-beaute.ch', // TODO: domaine définitif
@@ -11,10 +13,10 @@ export const site = {
 
   name: 'María Fernanda Beauté & Bien-être',
   shortName: 'María Fernanda',
-  tagline: 'Révélez votre beauté naturelle',
-  values: ['Expertise', 'Douceur', 'Résultats naturels'],
+  tagline: t('Révélez votre beauté naturelle'),
+  values: ['Expertise', 'Douceur', 'Résultats naturels'].map((v) => t(v)),
   owner: 'María Fernanda',
-  jobTitle: 'Esthéticienne & praticienne bien-être',
+  jobTitle: t('Esthéticienne & praticienne bien-être'),
 
   phone: '+41786898020',
   phoneDisplay: '+41 78 689 80 20',
@@ -41,10 +43,10 @@ export const site = {
   openingHours: [
     { days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '09:00', closes: '19:00' },
   ],
-  openingHoursText: [
+  openingHoursText: localize([
     ['Lundi – Samedi', '9h00 – 19h00'],
     ['Dimanche', 'Fermé'],
-  ],
+  ]),
 
   social: {
     instagram: 'https://www.instagram.com/mafer_gz1921/',
@@ -55,7 +57,7 @@ export const site = {
   priceRange: 'CHF 12 – 600',
   currency: 'CHF',
   languages: ['fr', 'es', 'en'], // TODO: langues parlées
-  paymentAccepted: ['Espèces', 'TWINT', 'Carte'], // TODO: confirmer
+  paymentAccepted: ['Espèces', 'TWINT', 'Carte'].map((v) => t(v)), // TODO: confirmer
 };
 
 export const telHref = `tel:${site.phone}`;
@@ -63,4 +65,8 @@ export const waHref = (text = '') =>
   `https://wa.me/${site.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 /** Chemin d'un fichier de /public en tenant compte du sous-dossier de déploiement */
 export const asset = (p) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${p}`;
-export const absUrl = (path = '/') => `${site.url}${path === '/' ? '/' : path}`;
+/** URL absolue d'une page dans une langue donnée (par défaut : la langue courante) */
+export const langUrl = (code, path = '/') => `${site.url}${prefixOf(code)}${path === '/' ? '/' : path}`;
+export const absUrl = (path = '/') => `${site.url}${prefix}${path === '/' ? '/' : path}`;
+/** URL absolue d'un fichier (image, icône) : jamais préfixée par la langue */
+export const fileUrl = (path) => `${site.url}${path}`;

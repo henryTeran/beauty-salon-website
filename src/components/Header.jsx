@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.js';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion';
@@ -5,12 +6,13 @@ import { ChevronDown, Phone } from 'lucide-react';
 import { categories, renataFranca } from '../data/services.js';
 import { site, telHref } from '../config/site.js';
 import { Monogram, ease } from './ui.jsx';
+import LangSwitch from './LangSwitch.jsx';
 
 const soins = [...categories, renataFranca].map((c) => ({ to: c.slug, label: c.navLabel }));
 const links = [
-  { to: '/forfaits', label: 'Forfaits' },
-  { to: '/soins-a-domicile-geneve', label: 'À domicile' },
-  { to: '/a-propos', label: 'À propos' },
+  { to: '/forfaits', label: t("Forfaits") },
+  { to: '/soins-a-domicile-geneve', label: t("À domicile") },
+  { to: '/a-propos', label: t("À propos") },
 ];
 
 export default function Header() {
@@ -52,12 +54,12 @@ export default function Header() {
           <Link to="/" aria-label={`${site.name} – accueil`} className="relative z-10 flex items-center gap-3">
             <Monogram className="h-9 w-12" />
             <span className="leading-none">
-              <span className="block whitespace-nowrap font-serif text-[0.92rem] uppercase tracking-[0.22em] text-bordeaux sm:text-[1.05rem] sm:tracking-[0.3em]">María Fernanda</span>
-              <span className="mt-1 block text-[0.58rem] uppercase tracking-luxe text-gold-dark">Beauté &amp; bien-être</span>
+              <span className="block whitespace-nowrap font-serif text-[0.92rem] uppercase tracking-[0.22em] text-bordeaux sm:text-[1.05rem] sm:tracking-[0.3em]">{t("María Fernanda")}</span>
+              <span className="mt-1 block text-[0.58rem] uppercase tracking-luxe text-gold-dark">{t("Beauté & bien-être")}</span>
             </span>
           </Link>
 
-          <nav aria-label="Navigation principale" className="hidden items-center gap-9 text-[0.78rem] uppercase tracking-wide2 lg:flex">
+          <nav aria-label={t("Navigation principale")} className="hidden items-center gap-7 xl:gap-9 text-[0.78rem] uppercase tracking-wide2 lg:flex">
             <div className="relative" onMouseEnter={() => setDrop(true)} onMouseLeave={() => setDrop(false)}>
               <NavLink
                 to="/soins-et-tarifs"
@@ -66,7 +68,7 @@ export default function Header() {
                 aria-expanded={drop}
                 onFocus={() => setDrop(true)}
               >
-                Soins &amp; tarifs <ChevronDown size={13} className={`transition-transform duration-300 ${drop ? 'rotate-180' : ''}`} />
+                {t("Soins & tarifs")}{" "}<ChevronDown size={13} className={`transition-transform duration-300 ${drop ? 'rotate-180' : ''}`} />
               </NavLink>
               <AnimatePresence>
                 {drop && (
@@ -97,18 +99,19 @@ export default function Header() {
                 {l.label}
               </NavLink>
             ))}
+            <LangSwitch />
             <Link to="/reservation" className="btn-primary !px-6 !py-3">
-              <span>Réserver</span>
+              <span>{t("Réserver")}</span>
             </Link>
           </nav>
 
           <div className="relative z-10 flex items-center gap-2 lg:hidden">
-            <a href={telHref} aria-label={`Appeler le ${site.phoneDisplay}`} className="grid h-11 w-11 place-items-center rounded-full border border-gold/40 text-bordeaux">
+            <a href={telHref} aria-label={t("Appeler le {0}", site.phoneDisplay)} className="grid h-11 w-11 place-items-center rounded-full border border-gold/40 text-bordeaux">
               <Phone size={17} strokeWidth={1.5} />
             </a>
             <button
               type="button"
-              aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+              aria-label={open ? t("Fermer le menu") : t("Ouvrir le menu")}
               aria-expanded={open}
               aria-controls="menu-mobile"
               onClick={() => setOpen((o) => !o)}
@@ -134,10 +137,10 @@ export default function Header() {
             className="fixed inset-0 z-40 overflow-y-auto bg-ivory pt-24 lg:hidden"
             data-lenis-prevent
           >
-            <nav aria-label="Navigation mobile" className="container-site flex min-h-full flex-col pb-10">
-              <p className="kicker mb-4">Soins &amp; tarifs</p>
+            <nav aria-label={t("Navigation mobile")} className="container-site flex min-h-full flex-col pb-10">
+              <p className="kicker mb-4">{t("Soins & tarifs")}</p>
               <ul className="space-y-1">
-                {[{ to: '/soins-et-tarifs', label: 'Tous les soins' }, ...soins].map((l, i) => (
+                {[{ to: '/soins-et-tarifs', label: t("Tous les soins") }, ...soins].map((l, i) => (
                   <motion.li key={l.to} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 + i * 0.05, duration: 0.7, ease }}>
                     <NavLink to={l.to} className="block py-1.5 font-serif text-[1.7rem] leading-tight text-bordeaux">
                       {l.label}
@@ -153,9 +156,10 @@ export default function Header() {
                   </li>
                 ))}
               </ul>
+              <LangSwitch className="mt-6" />
               <div className="mt-auto grid gap-3 pt-10">
                 <Link to="/reservation" className="btn-primary w-full">
-                  <span>Réserver un soin</span>
+                  <span>{t("Réserver un soin")}</span>
                 </Link>
                 <a href={telHref} className="btn-ghost w-full">
                   {site.phoneDisplay}

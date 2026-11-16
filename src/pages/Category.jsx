@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.js';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Check } from 'lucide-react';
 import { categories, packages, renataFranca, servicesFor, packageItems } from '../data/services.js';
@@ -6,6 +7,14 @@ import { getRouteMeta } from '../seo/routes.js';
 import { site } from '../config/site.js';
 import { Reveal, SectionHead, ParallaxImage, Magnetic } from '../components/ui.jsx';
 import { PageHero, PriceList, Faq, CtaBand } from '../components/blocks.jsx';
+
+const faqTitles = {
+  visage: t('Vos questions sur le soin du visage'),
+  regard: t('Vos questions sur le lifting des cils'),
+  epilation: t('Vos questions sur l’épilation'),
+  corps: t('Vos questions sur les massages'),
+  'renata-franca': t('Vos questions sur le drainage Renata França'),
+};
 
 const relatedPackages = {
   regard: ['regard', 'epilation-teintures'],
@@ -38,7 +47,7 @@ export default function Category({ category: c }) {
         <div className="mt-8">
           <Magnetic>
             <Link to={`/reservation?soin=${c.services[0].id}`} className="btn-primary">
-              <span className="flex items-center gap-2">Réserver ce soin <ArrowUpRight size={16} aria-hidden="true" /></span>
+              <span className="flex items-center gap-2">{t("Réserver ce soin")}{" "}<ArrowUpRight size={16} aria-hidden="true" /></span>
             </Link>
           </Magnetic>
         </div>
@@ -47,7 +56,7 @@ export default function Category({ category: c }) {
       <section className="section">
         <div className="container-site grid gap-14 lg:grid-cols-[.85fr_1.15fr]">
           <div>
-            <SectionHead kicker="Prestations & tarifs" title={`Tarifs ${c.name.toLowerCase()}`} />
+            <SectionHead kicker={t("Prestations & tarifs")} title={t("Tarifs {0}", c.name.toLowerCase())} />
             <Reveal delay={0.15} className="mt-6 text-taupe">{c.intro[1]}</Reveal>
             <ul className="mt-8 space-y-3">
               {c.benefits.map((b, i) => (
@@ -62,13 +71,13 @@ export default function Category({ category: c }) {
             <PriceList services={servicesFor(c, custom)} />
             {packs.map((p) => (
               <div key={p.id} className="mt-10">
-                <Reveal as="h3" className="kicker">Forfait {p.name}</Reveal>
+                <Reveal as="h3" className="kicker">{t("Forfait")}{" "}{p.name}</Reveal>
                 <PriceList services={packageItems(p, custom)} className="mt-3" />
               </div>
             ))}
             <Reveal className="mt-8 text-sm text-taupe">
-              Prix en francs suisses (CHF). Soins réalisés{' '}
-              <Link to="/soins-a-domicile-geneve" className="link-line text-bordeaux">à domicile</Link>, sur rendez-vous, à {site.address.locality} et environs.
+              {t("Prix en francs suisses (CHF). Soins réalisés")}{' '}
+              <Link to="/soins-a-domicile-geneve" className="link-line text-bordeaux">{t("à domicile")}</Link>{t(", sur rendez-vous, à")}{" "}{site.address.locality}{" "}{t("et environs.")}
             </Reveal>
           </div>
         </div>
@@ -77,7 +86,7 @@ export default function Category({ category: c }) {
       {c.steps && (
         <section className="section bg-bordeaux-deep text-cream">
           <div className="container-site">
-            <SectionHead light kicker="Le déroulement" title="Votre séance, étape par étape" />
+            <SectionHead light kicker={t("Le déroulement")} title={t("Votre séance, étape par étape")} />
             <ol className="mt-14 grid gap-px overflow-hidden rounded-[2rem] bg-cream/15 md:grid-cols-2 lg:grid-cols-4">
               {c.steps.map(([t, d], i) => (
                 <Reveal as="li" key={t} delay={i * 0.1} className={`bg-bordeaux-deep p-8 ${c.steps.length === 3 ? 'lg:col-span-1 lg:last:col-span-2' : ''}`}>
@@ -91,11 +100,11 @@ export default function Category({ category: c }) {
         </section>
       )}
 
-      <Faq items={c.faq} title={`Vos questions sur ${c.id === 'renata-franca' ? 'le drainage Renata França' : c.id === 'regard' ? 'le lifting des cils' : c.id === 'visage' ? 'le soin du visage' : c.id === 'corps' ? 'les massages' : 'l’épilation'}`} />
+      <Faq items={c.faq} title={faqTitles[c.id]} />
 
       <section className="section !py-20">
         <div className="container-site">
-          <p className="kicker">À découvrir aussi</p>
+          <p className="kicker">{t("À découvrir aussi")}</p>
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {others.map((o, i) => (
               <Reveal as="li" key={o.id} delay={i * 0.07}>

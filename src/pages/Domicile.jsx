@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.js';
 import { Link } from 'react-router-dom';
 import { CalendarCheck, MapPin, Sofa } from 'lucide-react';
 import { site } from '../config/site.js';
@@ -13,23 +14,22 @@ export default function Domicile() {
   return (
     <>
       <PageHero
-        kicker="Votre soin, chez vous"
-        title="Soins à domicile à Genève"
+        kicker={t("Votre soin, chez vous")}
+        title={t("Soins à domicile à Genève")}
         breadcrumbs={meta.breadcrumbs}
         aside={<ParallaxImage image={corps.image} priority className="mx-auto aspect-[4/5] w-full max-w-sm rounded-t-full lg:max-w-none" sizes="(min-width: 1024px) 36vw, 80vw" />}
       >
-        Tous les soins sont réalisés à domicile, sur rendez-vous : María Fernanda se déplace chez vous avec le matériel
-        nécessaire. Les modalités de déplacement sont précisées lors de la réservation.
+        {t("Tous les soins sont réalisés à domicile, sur rendez-vous : María Fernanda se déplace chez vous avec le matériel nécessaire. Les modalités de déplacement sont précisées lors de la réservation.")}
       </PageHero>
 
       <section className="section">
         <div className="container-site">
-          <SectionHead kicker="Comment ça marche" title="Trois étapes, zéro contrainte" align="center" />
+          <SectionHead kicker={t("Comment ça marche")} title={t("Trois étapes, zéro contrainte")} align="center" />
           <ol className="mt-14 grid gap-6 md:grid-cols-3">
             {[
-              [CalendarCheck, 'Vous réservez', 'Par WhatsApp, téléphone ou formulaire, en précisant le soin et votre adresse.'],
-              [MapPin, 'On confirme', 'Créneau, installation nécessaire et modalités de déplacement.'],
-              [Sofa, 'Vous profitez', 'María Fernanda se déplace chez vous avec le matériel nécessaire.'],
+              [CalendarCheck, t("Vous réservez"), t("Par WhatsApp, téléphone ou formulaire, en précisant le soin et votre adresse.")],
+              [MapPin, t("On confirme"), t("Créneau, installation nécessaire et modalités de déplacement.")],
+              [Sofa, t("Vous profitez"), t("María Fernanda se déplace chez vous avec le matériel nécessaire.")],
             ].map(([Icon, t, d], i) => (
               <Reveal as="li" key={t} delay={i * 0.12} className="rounded-[2rem] border border-gold/30 p-9">
                 <span className="grid h-14 w-14 place-items-center rounded-full bg-gold-pale text-gold-dark"><Icon size={22} strokeWidth={1.3} aria-hidden="true" /></span>
@@ -43,9 +43,8 @@ export default function Domicile() {
 
       <section className="section bg-ivory/60">
         <div className="container-site grid gap-10 lg:grid-cols-2">
-          <SectionHead kicker="Zones desservies" title="Genève et communes voisines">
-            Les déplacements se font dans le canton de Genève. Votre commune ne figure pas dans la liste ? Écrivez-nous,
-            une solution est souvent possible.
+          <SectionHead kicker={t("Zones desservies")} title={t("Genève et communes voisines")}>
+            {t("Les déplacements se font dans le canton de Genève. Votre commune ne figure pas dans la liste ? Écrivez-nous, une solution est souvent possible.")}
           </SectionHead>
           <ul className="flex flex-wrap content-start gap-3">
             {site.areaServed.map((z, i) => (
@@ -56,12 +55,12 @@ export default function Domicile() {
           </ul>
         </div>
         <div className="container-site mt-12">
-          <Link to="/soins-et-tarifs" className="btn-ghost">Voir les soins &amp; tarifs</Link>
+          <Link to="/soins-et-tarifs" className="btn-ghost">{t("Voir les soins & tarifs")}</Link>
         </div>
       </section>
 
-      <Faq items={faq} title="Soins à domicile : vos questions" />
-      <CtaBand title="Votre soin, chez vous" />
+      <Faq items={faq} title={t("Soins à domicile : vos questions")} />
+      <CtaBand title={t("Votre soin, chez vous")} />
     </>
   );
 }

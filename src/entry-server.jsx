@@ -2,13 +2,16 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import App from './App.jsx';
+import { prefix } from './i18n/index.js';
+
+export { lang, locale, languages, prefix, prefixOf } from './i18n/index.js';
 
 export { routes, notFoundMeta, adminMeta, getRouteMeta } from './seo/routes.js';
 export { buildHead } from './seo/head.js';
 export { site } from './config/site.js';
 export { categories, renataFranca, packages, generalFaq, formatDuration } from './data/services.js';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${prefix}`;
 
 export function render(url) {
   return renderToString(

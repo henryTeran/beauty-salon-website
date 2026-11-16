@@ -7,6 +7,7 @@ export default defineConfig(({ isSsrBuild }) => ({
   base: process.env.BASE_PATH || '/',
   plugins: [react()],
   build: {
+    target: 'es2022', // await au premier niveau (chargement du dictionnaire de langue)
     rollupOptions: isSsrBuild
       ? {}
       : { output: { manualChunks: { motion: ['framer-motion'], react: ['react', 'react-dom', 'react-router-dom'] } } },
