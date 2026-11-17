@@ -77,6 +77,11 @@ const L = {
 };
 
 const pick = (lang) => L[lang] || L.fr;
+/** Numéro au format international attendu par wa.me (un 0 initial devient l'indicatif suisse) */
+export const waNumber = (phone) => String(phone || '').replace(/\D/g, '').replace(/^00/, '').replace(/^0(?=[1-9])/, '41');
+export const waLink = (phone, text) => `https://wa.me/${waNumber(phone)}?text=${encodeURIComponent(text)}`;
+/** Adresse de l'espace privé (calculée dans le navigateur) */
+const adminUrl = () => (typeof window === 'undefined' ? '/admin' : `${window.location.origin}${import.meta.env?.BASE_URL || '/'}admin`);
 const fmtDate = (key, lang) => {
   const s = new Date(`${key}T12:00:00`).toLocaleDateString(locales[lang] || locales.fr, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -162,13 +167,13 @@ export function reminderWhatsApp(b, kind = 'reminder1') {
 }
 
 /* ------------------------------- E-mails ------------------------------- */
-const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const C = { cream: '#FCF8F2', ivory: '#F6EEE3', gold: '#A9814F', pale: '#EFE0CB', bordeaux: '#4A1A22', ink: '#2B1C1A', taupe: '#75625A' };
 const serif = "Georgia, 'Times New Roman', serif";
 const sans = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 /** Gabarit commun : en-tête à la marque, titre, détails en tableau, pied de page */
-function layout({ lang, kicker, title, intro, rows, outro }) {
+function layout({ lang, kicker, title, intro, rows, outro, button }) {
   const row = ([k, v]) => `
           <tr>
             <td style="padding:12px 0;border-bottom:1px solid ${C.pale};font:11px ${sans};letter-spacing:2px;text-transform:uppercase;color:${C.gold};width:34%;vertical-align:top">${esc(k)}</td>
@@ -195,7 +200,8 @@ function layout({ lang, kicker, title, intro, rows, outro }) {
             </table>
           </td></tr>
           <tr><td style="padding:16px 40px 36px">
-            <p style="margin:0;font:15px/1.7 ${sans};color:${C.taupe}">${outro}</p>
+            <p style="margin:0;font:15px/1.7 ${sans};color:${C.taupe}">${outro}</p>${button ? `
+            <p style="margin:24px 0 0"><a href="${esc(button.href)}" style="display:inline-block;background:${C.bordeaux};color:${C.cream};font:600 12px ${sans};letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:15px 28px;border-radius:999px">${esc(button.label)}</a></p>` : ''}
           </td></tr>
           <tr><td align="center" style="background:${C.bordeaux};padding:22px 32px;font:12px/1.7 ${sans};color:${C.pale}">
             ${BRAND} · Genève<br />${PHONE}
@@ -227,7 +233,7 @@ export function emailToOwner(b) {
     to: adminEmails[0],
     message: {
       subject: `Nouvelle demande : ${b.name} – ${fmtDate(b.date, 'fr').toLowerCase()} à ${hhmm(b.start, 'fr')}`,
-      html: layout({ lang: 'fr', kicker: 'Nouvelle demande', title: `${b.name} souhaite un rendez-vous`, intro: 'La demande est inscrite dans le planning, en attente de confirmation.', rows, outro: 'Ouvrez l’espace privé pour confirmer ou annuler ce rendez-vous.' }),
+      html: layout({ lang: 'fr', kicker: 'Nouvelle demande', title: `${b.name} souhaite un rendez-vous`, intro: 'La demande est inscrite dans le planning, en attente de confirmation.', rows, outro: 'Ouvrez le planning pour confirmer ou annuler ce rendez-vous.', button: { label: 'Ouvrir mon planning', href: adminUrl() } }),
       text: lines(['Nouvelle demande de rendez-vous', '', ...rows.filter((r) => r[1]).map(([k, v]) => `${k} : ${String(v).replace(/<br \/>/g, ', ')}`)]),
     },
   };
@@ -271,5 +277,45 @@ export function reminderMails(b, id, now = Date.now()) {
   const startMs = new Date(`${b.date}T00:00:00`).getTime() + b.start * 60000;
   return [['reminder1', 24], ['reminder2', 2]]
     .map(([kind, hours]) => ({ ...emailToClient(b, kind), bookingId: id, kind, sendAt: new Date(startMs - hours * 3600000) }))
+    .filter((mail) => mail.sendAt.getTime() > now + 5 * 60000);
+}
+
+/**
+ * Avis à l'esthéticienne : « c'est le moment d'envoyer le rappel WhatsApp ».
+ * Deux e-mails programmés (24 h et 2 h avant) avec un bouton qui ouvre WhatsApp, message prêt.
+ */
+export function ownerReminderMails(b, id, now = Date.now()) {
+  if (!b.phone) return [];
+  const startMs = new Date(`${b.date}T00:00:00`).getTime() + b.start * 60000;
+  const h = hhmm(b.start, 'fr');
+  const when = { reminder1: `demain à ${h}`, reminder2: `aujourd’hui à ${h}` };
+  const rows = [
+    ['Cliente', esc(b.name)],
+    ['Date', esc(fmtDate(b.date, 'fr'))],
+    ['Heure', esc(h)],
+    ['Prestations', (b.services || []).map((x) => esc(x.name)).join('<br />')],
+    ['Adresse', esc(b.address)],
+    ['Téléphone', esc(b.phone)],
+  ];
+  return [['reminder1', 24], ['reminder2', 2]]
+    .map(([kind, hours]) => ({
+      to: adminEmails[0],
+      bookingId: id,
+      kind: `owner-${kind}`,
+      sendAt: new Date(startMs - hours * 3600000),
+      message: {
+        subject: `Rappel à envoyer : ${b.name}, ${when[kind]}`,
+        html: layout({
+          lang: 'fr',
+          kicker: 'Rappel à envoyer',
+          title: kind === 'reminder1' ? `Rendez-vous de demain : ${b.name}` : `Rendez-vous dans 2 h : ${b.name}`,
+          intro: kind === 'reminder1' ? 'C’est le moment d’envoyer le rappel de la veille.' : 'C’est le moment de prévenir la cliente de votre arrivée.',
+          rows,
+          outro: 'Le bouton ouvre WhatsApp avec le message déjà rédigé dans la langue de la cliente : il ne reste qu’à l’envoyer.',
+          button: { label: 'Envoyer le rappel WhatsApp', href: waLink(b.phone, reminderWhatsApp(b, kind)) },
+        }),
+        text: lines([`Rappel à envoyer : ${b.name}, ${when[kind]}`, '', waLink(b.phone, reminderWhatsApp(b, kind))]),
+      },
+    }))
     .filter((mail) => mail.sendAt.getTime() > now + 5 * 60000);
 }

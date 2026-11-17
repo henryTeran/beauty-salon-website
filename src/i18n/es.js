@@ -445,4 +445,10 @@ export default {
   "J’ai lu et j’accepte les": "He leído y acepto las",
   "conditions de réservation": "condiciones de reserva",
   " : en cas d’empêchement, je préviens au moins 24 h à l’avance. Paiement en espèces à la fin du soin.": ": si no puedo asistir, aviso con al menos 24 h de antelación. Pago en efectivo al terminar el tratamiento.",
+  "Lundi": "Lunes",
+  "Mardi": "Martes",
+  "Mercredi": "Miércoles",
+  "Jeudi": "Jueves",
+  "Vendredi": "Viernes",
+  "Samedi": "Sábado",
 };

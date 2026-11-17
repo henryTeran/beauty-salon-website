@@ -445,4 +445,10 @@ export default {
   "J’ai lu et j’accepte les": "I have read and accept the",
   "conditions de réservation": "booking terms",
   " : en cas d’empêchement, je préviens au moins 24 h à l’avance. Paiement en espèces à la fin du soin.": ": if I cannot make it, I will give at least 24 hours’ notice. Payment in cash at the end of the treatment.",
+  "Lundi": "Monday",
+  "Mardi": "Tuesday",
+  "Mercredi": "Wednesday",
+  "Jeudi": "Thursday",
+  "Vendredi": "Friday",
+  "Samedi": "Saturday",
 };

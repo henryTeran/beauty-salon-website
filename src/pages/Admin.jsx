@@ -9,7 +9,8 @@ import {
 import { defaultSchedule, dayNames, weekOrder, dateKey, addDays, formatDate, parseDate, toMin, toTime } from '../lib/schedule.js';
 import { categories, allServices, allServicesWith, bookingMinutes, formatDuration } from '../data/services.js';
 import { resetCustomServices } from '../lib/useCustomServices.js';
-import { confirmWhatsApp, reminderWhatsApp, emailToClient, reminderMails } from '../lib/messages.js';
+import { resetSchedule } from '../lib/useSchedule.js';
+import { confirmWhatsApp, reminderWhatsApp, emailToClient, reminderMails, ownerReminderMails, waNumber } from '../lib/messages.js';
 import { prefix } from '../i18n/index.js';
 
 const field = 'rounded-xl border border-gold/35 bg-cream px-3 py-2 text-ink focus:border-bordeaux focus:outline-none';
@@ -54,7 +55,6 @@ function Login({ onError, error }) {
   );
 }
 
-const waNumber = (phone) => String(phone || '').replace(/\D/g, '').replace(/^00/, '').replace(/^0(?=[1-9])/, '41');
 
 /** Formulaire d'ajout : rendez-vous (durée calculée selon les prestations) ou indisponibilité, répétable */
 function EntryForm({ initial, services, emailEnabled, onClose, onSaved, notify }) {
@@ -85,8 +85,12 @@ function EntryForm({ initial, services, emailEnabled, onClose, onSaved, notify }
       : null;
     try {
       const created = await createEntries(dates.map((date) => ({ date, start, end, booking })), f.repeat ? `s-${Date.now().toString(36)}` : null);
-      if (booking?.email && emailEnabled) {
-        await Promise.all(created.map(({ id, date }) => scheduleReminders(reminderMails({ ...booking, date, start, end }, id)).catch(() => {})));
+      if (booking && emailEnabled) {
+        // rappels programmés : e-mails à la cliente (si adresse) et avis « rappel à envoyer » à l'esthéticienne
+        await Promise.all(created.map(({ id, date }) => {
+          const b = { ...booking, date, start, end };
+          return scheduleReminders([...(b.email ? reminderMails(b, id) : []), ...ownerReminderMails(b, id)]).catch(() => {});
+        }));
       }
       onSaved(dates.length > 1 ? `${dates.length} entrées ajoutées au planning.` : 'Ajouté au planning.');
     } catch {
@@ -238,9 +242,10 @@ function Planning({ notify, services }) {
   const mailable = (b) => schedule.emailEnabled && !!b.email;
   const setStatus = async (b, status) => {
     await setBookingStatus(b.id, status);
-    if (status === 'confirmed' && mailable(b)) {
-      await sendMail(emailToClient(b, 'confirmed')).catch(() => {});
-      await scheduleReminders(reminderMails(b, b.id)).catch(() => {}); // e-mails de rappel : veille et 2 h avant
+    if (status === 'confirmed' && schedule.emailEnabled) {
+      if (b.email) await sendMail(emailToClient(b, 'confirmed')).catch(() => {});
+      // programmés 24 h et 2 h avant : e-mails à la cliente (si adresse) et avis « rappel à envoyer » à l'esthéticienne
+      await scheduleReminders([...(b.email ? reminderMails(b, b.id) : []), ...ownerReminderMails(b, b.id)]).catch(() => {});
     }
     if (status === 'cancelled' && mailable(b)) await sendMail(emailToClient(b, 'cancelled')).catch(() => {});
     if (status !== 'confirmed') await cancelReminders(b.id).catch(() => {});
@@ -447,6 +452,7 @@ function Hours({ notify }) {
     setSaving(true);
     try {
       await saveSchedule(s);
+      resetSchedule();
       notify('Horaires enregistrés. Ils s’appliquent immédiatement à la réservation en ligne.');
     } catch {
       notify('Enregistrement impossible (droits d’accès ou connexion).');
@@ -502,7 +508,7 @@ function Hours({ notify }) {
           <h2 className="font-serif text-2xl text-bordeaux">E-mails automatiques</h2>
           <label className="flex items-start gap-3">
             <input type="checkbox" checked={!!s.emailEnabled} onChange={(e) => setS((c) => ({ ...c, emailEnabled: e.target.checked }))} className="mt-1 h-5 w-5 accent-[#4A1A22]" />
-            <span>Activer les e-mails : avis à chaque nouvelle demande, confirmation ou annulation envoyée à la cliente, rappels automatiques la veille et 2 h avant.</span>
+            <span>Activer les e-mails : avis à chaque nouvelle demande, confirmation ou annulation envoyée à la cliente, rappels automatiques la veille et 2 h avant. Vous recevez aussi un e-mail au moment d’envoyer chaque rappel WhatsApp.</span>
           </label>
           <p className="text-sm text-taupe">À activer une fois la fonction d’envoi SMTP déployée dans Firebase. Enregistrez, puis testez.</p>
           <button type="button" onClick={testMail} className={pill(false)}>Envoyer un e-mail de test</button>

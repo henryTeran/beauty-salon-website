@@ -5,9 +5,12 @@ import { categories, renataFranca } from '../data/services.js';
 import { site, asset, telHref, waHref } from '../config/site.js';
 import { Monogram, Leaf } from './ui.jsx';
 import LangSwitch from './LangSwitch.jsx';
+import { useSchedule } from '../lib/useSchedule.js';
+import { hoursSummary } from '../lib/schedule.js';
 import { openConsent } from './Consent.jsx';
 
 export default function Footer() {
+  const schedule = useSchedule(); // horaires réglés dans l'espace privé
   const a = site.address;
   return (
     <footer className="relative overflow-hidden bg-bordeaux-deep pb-20 text-cream/80 lg:pb-0">
@@ -80,7 +83,7 @@ export default function Footer() {
             </li>
           </ul>
           <dl className="mt-5 space-y-1 text-[0.88rem] text-cream/65">
-            {site.openingHoursText.map(([d, h]) => (
+            {hoursSummary(schedule).map(([d, h]) => (
               <div key={d} className="flex justify-between gap-4">
                 <dt>{d}</dt>
                 <dd>{h}</dd>

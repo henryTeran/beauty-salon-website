@@ -1,4 +1,4 @@
-import { locale } from '../i18n/index.js';
+import { locale, t, clock } from '../i18n/index.js';
 
 /** Horaires de travail et calcul des créneaux libres (fonctions pures, sans Firebase). */
 
@@ -61,4 +61,20 @@ export function freeSlots(schedule, date, duration, busy = [], now = new Date())
     slots.push(t);
   }
   return { slots, reason: slots.length ? null : 'full' };
+}
+
+/**
+ * Horaires résumés pour l'affichage : les jours consécutifs aux mêmes heures sont regroupés.
+ * Ex. [['Lundi – Samedi', '9h00 – 19h00'], ['Dimanche', 'Fermé']]
+ */
+export function hoursSummary(schedule) {
+  const label = (d) => (d.open ? `${clock(d.start).replace(/^0/, '')} – ${clock(d.end).replace(/^0/, '')}` : t('Fermé'));
+  const groups = [];
+  weekOrder.forEach((i) => {
+    const text = label(schedule.days[i]);
+    const last = groups[groups.length - 1];
+    if (last && last.text === text) last.to = i;
+    else groups.push({ from: i, to: i, text });
+  });
+  return groups.map((g) => [g.from === g.to ? t(dayNames[g.from]) : `${t(dayNames[g.from])} – ${t(dayNames[g.to])}`, g.text]);
 }
