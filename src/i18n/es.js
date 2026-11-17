@@ -438,4 +438,11 @@ export default {
   "Télécharger la brochure (PDF)": "Descargar el folleto (PDF, en francés)",
   "Site créé par": "Sitio creado por",
   "Vos données servent uniquement à organiser ce rendez-vous.": "Tus datos se utilizan únicamente para organizar esta cita.",
+  "Conditions de réservation et d’annulation | María Fernanda": "Condiciones de reserva y cancelación | María Fernanda",
+  "Réservation, rappels, annulation 24 h à l’avance, retards, paiement en espèces à la fin du soin : les conditions des soins à domicile à Genève.": "Reserva, recordatorios, cancelación con 24 h de antelación, retrasos y pago en efectivo al terminar: las condiciones de los tratamientos a domicilio en Ginebra.",
+  "Conditions de réservation": "Condiciones de reserva",
+  "Merci d’accepter les conditions de réservation.": "Por favor, acepta las condiciones de reserva.",
+  "J’ai lu et j’accepte les": "He leído y acepto las",
+  "conditions de réservation": "condiciones de reserva",
+  " : en cas d’empêchement, je préviens au moins 24 h à l’avance. Paiement en espèces à la fin du soin.": ": si no puedo asistir, aviso con al menos 24 h de antelación. Pago en efectivo al terminar el tratamiento.",
 };

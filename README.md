@@ -96,3 +96,10 @@ Modèles et textes (e-mails et WhatsApp, en français, espagnol et anglais) : `s
 - En-têtes de sécurité (HSTS, nosniff, etc.) : `firebase.json`, appliqués avec Firebase Hosting.
 - Crédit de création : `creator` dans `src/config/site.js` (pied de page, mentions légales, données structurées, `humans.txt`).
 - Brochure téléchargeable : `public/brochure-maria-fernanda.pdf`.
+
+## Rappels de rendez-vous et absences
+
+- **WhatsApp (manuel, un clic)** : dans le planning, le bandeau « Rappels à envoyer » liste les rendez-vous confirmés de demain (rappel de la veille) et d'aujourd'hui (message « je serai chez vous à… », 2 h avant). Les mêmes boutons sont dans le détail de chaque rendez-vous.
+- **E-mail (automatique)** : à la confirmation, deux e-mails sont programmés (24 h et 2 h avant) dans la collection `mail` avec un champ `sendAt` ; la fonction `sendScheduledMail` les envoie toutes les 15 minutes. Nécessite la fonction SMTP déployée, les e-mails activés dans l'espace privé et une adresse e-mail laissée par la cliente. Ils sont annulés si le rendez-vous est annulé.
+- **Absences** : bouton « Cliente absente » ; le détail d'un rendez-vous signale les absences déjà enregistrées pour le même numéro.
+- **Conditions de réservation** : page `/conditions-de-reservation` (texte dans `src/content/legal.js`), case à cocher obligatoire dans le formulaire. Paiement en espèces à la fin du soin.

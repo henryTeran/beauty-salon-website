@@ -438,4 +438,11 @@ export default {
   "Télécharger la brochure (PDF)": "Download the brochure (PDF, in French)",
   "Site créé par": "Website by",
   "Vos données servent uniquement à organiser ce rendez-vous.": "Your details are used only to arrange this appointment.",
+  "Conditions de réservation et d’annulation | María Fernanda": "Booking and cancellation terms | María Fernanda",
+  "Réservation, rappels, annulation 24 h à l’avance, retards, paiement en espèces à la fin du soin : les conditions des soins à domicile à Genève.": "Booking, reminders, 24-hour cancellation, lateness and cash payment at the end of the treatment: the terms for home treatments in Geneva.",
+  "Conditions de réservation": "Booking terms",
+  "Merci d’accepter les conditions de réservation.": "Please accept the booking terms.",
+  "J’ai lu et j’accepte les": "I have read and accept the",
+  "conditions de réservation": "booking terms",
+  " : en cas d’empêchement, je préviens au moins 24 h à l’avance. Paiement en espèces à la fin du soin.": ": if I cannot make it, I will give at least 24 hours’ notice. Payment in cash at the end of the treatment.",
 };

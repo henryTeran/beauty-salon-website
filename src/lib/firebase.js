@@ -94,9 +94,11 @@ export async function deleteService(id) {
 export async function createEntries(entries, series = null) {
   const { m, db } = await fs();
   const batch = m.writeBatch(db);
+  const created = []; // { id, date } des rendez-vous créés, pour programmer leurs rappels
   entries.forEach(({ date, start, end, booking }) => {
     if (booking) {
       const ref = m.doc(m.collection(db, 'bookings'));
+      created.push({ id: ref.id, date });
       batch.set(ref, { ...booking, date, start, end, status: 'confirmed', byAdmin: true, series, createdAt: m.serverTimestamp() });
       batch.set(m.doc(db, 'busy', ref.id), { date, start, end, series });
     } else {
@@ -104,17 +106,22 @@ export async function createEntries(entries, series = null) {
     }
   });
   await batch.commit();
+  return created;
 }
 
 /** Supprime toutes les occurrences à venir d'une série répétée (indisponibilités et rendez-vous) */
 export async function deleteSeries(series, fromDate) {
   const { m, db } = await fs();
   const batch = m.writeBatch(db);
+  const removed = [];
   for (const name of ['busy', 'bookings']) {
     const snap = await m.getDocs(m.query(m.collection(db, name), m.where('series', '==', series)));
-    snap.docs.filter((d) => d.data().date >= fromDate).forEach((d) => batch.delete(d.ref));
+    const docs = snap.docs.filter((d) => d.data().date >= fromDate);
+    docs.forEach((d) => batch.delete(d.ref));
+    if (name === 'bookings') removed.push(...docs.map((d) => d.id));
   }
   await batch.commit();
+  await Promise.all(removed.map((id) => cancelReminders(id).catch(() => {})));
 }
 
 /**
@@ -124,4 +131,38 @@ export async function deleteSeries(series, fromDate) {
 export async function sendMail(mail) {
   const { m, db } = await fs();
   await m.addDoc(m.collection(db, 'mail'), mail);
+}
+
+/** Programme les e-mails de rappel d'un rendez-vous (voir reminderMails) */
+export async function scheduleReminders(mails) {
+  if (!mails.length) return;
+  const { m, db } = await fs();
+  const batch = m.writeBatch(db);
+  mails.forEach((mail) => batch.set(m.doc(m.collection(db, 'mail')), mail));
+  await batch.commit();
+}
+
+/** Annule les rappels encore en attente d'un rendez-vous (annulation, absence, suppression) */
+export async function cancelReminders(bookingId) {
+  const { m, db } = await fs();
+  const snap = await m.getDocs(m.query(m.collection(db, 'mail'), m.where('bookingId', '==', bookingId)));
+  const pending = snap.docs.filter((d) => d.data().sendAt);
+  if (!pending.length) return;
+  const batch = m.writeBatch(db);
+  pending.forEach((d) => batch.delete(d.ref));
+  await batch.commit();
+}
+
+/** Note qu'un rappel WhatsApp a été envoyé à la main (kind = 'reminder1' | 'reminder2') */
+export async function markReminded(id, kind) {
+  const { m, db } = await fs();
+  await m.updateDoc(m.doc(db, 'bookings', id), { [`reminded.${kind}`]: true });
+}
+
+/** Nombre d'absences déjà enregistrées pour ce numéro de téléphone */
+export async function countNoShows(phone) {
+  if (!phone) return 0;
+  const { m, db } = await fs();
+  const snap = await m.getDocs(m.query(m.collection(db, 'bookings'), m.where('phone', '==', phone)));
+  return snap.docs.filter((d) => d.data().status === 'noshow').length;
 }

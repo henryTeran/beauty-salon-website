@@ -76,6 +76,14 @@ export const routes = [
     priority: 0.7,
   },
   {
+    path: '/conditions-de-reservation',
+    title: `Conditions de réservation et d’annulation${brand}`,
+    description: 'Réservation, rappels, annulation 24 h à l’avance, retards, paiement en espèces à la fin du soin : les conditions des soins à domicile à Genève.',
+    breadcrumbs: [['Conditions de réservation', '/conditions-de-reservation']],
+    priority: 0.3,
+    changefreq: 'yearly',
+  },
+  {
     path: '/mentions-legales',
     title: `Mentions légales${brand}`,
     description: `Mentions légales du site ${site.name}.`,

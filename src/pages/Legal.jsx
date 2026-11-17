@@ -53,4 +53,5 @@ function LegalPage({ path, doc }) {
 }
 
 export const MentionsLegales = () => <LegalPage path="/mentions-legales" doc={legal.mentions} />;
+export const Conditions = () => <LegalPage path="/conditions-de-reservation" doc={legal.terms} />;
 export const Confidentialite = () => <LegalPage path="/confidentialite" doc={legal.privacy} />;

@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Loader2, LogOut, MapPin, MessageCircle, Pencil, Phone, Plus, Repeat, Sparkles, Trash2, X } from 'lucide-react';
+import { BellRing, CalendarDays, ChevronLeft, ChevronRight, Clock, Loader2, LogOut, MapPin, MessageCircle, Pencil, Phone, Plus, Repeat, Sparkles, Trash2, X } from 'lucide-react';
 import { adminEmails } from '../config/firebase.js';
 import {
   authApi, loadSchedule, saveSchedule, loadBookings, loadBusy, setBookingStatus, deleteBusy,
   createEntries, deleteSeries, loadCustomServices, saveService, deleteService, sendMail,
+  scheduleReminders, cancelReminders, markReminded, countNoShows,
 } from '../lib/firebase.js';
 import { defaultSchedule, dayNames, weekOrder, dateKey, addDays, formatDate, parseDate, toMin, toTime } from '../lib/schedule.js';
 import { categories, allServices, allServicesWith, bookingMinutes, formatDuration } from '../data/services.js';
 import { resetCustomServices } from '../lib/useCustomServices.js';
-import { confirmWhatsApp, emailToClient } from '../lib/messages.js';
+import { confirmWhatsApp, reminderWhatsApp, emailToClient, reminderMails } from '../lib/messages.js';
 import { prefix } from '../i18n/index.js';
 
 const field = 'rounded-xl border border-gold/35 bg-cream px-3 py-2 text-ink focus:border-bordeaux focus:outline-none';
 const card = 'rounded-[1.5rem] border border-gold/30 bg-cream p-6 shadow-card';
 const pill = (on) => `rounded-full border px-3.5 py-2 text-sm transition-colors ${on ? 'border-bordeaux bg-bordeaux text-cream' : 'border-gold/40 hover:border-bordeaux'}`;
 const hm = (min) => toTime(min).replace(':', 'h');
-const statusLabel = { pending: 'À confirmer', confirmed: 'Confirmé', cancelled: 'Annulé' };
+const statusLabel = { pending: 'À confirmer', confirmed: 'Confirmé', cancelled: 'Annulé', noshow: 'Absente' };
 /** Noms des prestations tels qu'affichés dans l'espace privé (catalogue en français), quelle que soit la langue de la cliente */
 const namesOf = (b, services) => (b.services || []).map((s) => services.find((x) => x.id === s.id)?.name || s.name).join(', ');
 const PX = 1.1; // pixels par minute dans la grille
@@ -56,7 +57,7 @@ function Login({ onError, error }) {
 const waNumber = (phone) => String(phone || '').replace(/\D/g, '').replace(/^00/, '').replace(/^0(?=[1-9])/, '41');
 
 /** Formulaire d'ajout : rendez-vous (durée calculée selon les prestations) ou indisponibilité, répétable */
-function EntryForm({ initial, services, onClose, onSaved, notify }) {
+function EntryForm({ initial, services, emailEnabled, onClose, onSaved, notify }) {
   const [f, setF] = useState({ type: 'rdv', date: initial.date, start: initial.start, end: toTime(Math.min(toMin(initial.start) + 60, 1439)), ids: [], name: '', phone: '', email: '', address: '', repeat: false, days: [parseDate(initial.date).getDay()], until: addDays(initial.date, 28) });
   const [saving, setSaving] = useState(false);
   const set = (k) => (e) => setF((c) => ({ ...c, [k]: e.target.value }));
@@ -83,7 +84,10 @@ function EntryForm({ initial, services, onClose, onSaved, notify }) {
       ? { name: f.name.trim(), phone: f.phone.trim(), email: f.email.trim(), address: f.address.trim(), message: '', lang: 'fr', services: chosen.map((s) => ({ id: s.id, name: s.name, price: Number(s.price), minutes: bookingMinutes(s) })), total: chosen.reduce((t, s) => t + Number(s.price), 0) }
       : null;
     try {
-      await createEntries(dates.map((date) => ({ date, start, end, booking })), f.repeat ? `s-${Date.now().toString(36)}` : null);
+      const created = await createEntries(dates.map((date) => ({ date, start, end, booking })), f.repeat ? `s-${Date.now().toString(36)}` : null);
+      if (booking?.email && emailEnabled) {
+        await Promise.all(created.map(({ id, date }) => scheduleReminders(reminderMails({ ...booking, date, start, end }, id)).catch(() => {})));
+      }
       onSaved(dates.length > 1 ? `${dates.length} entrées ajoutées au planning.` : 'Ajouté au planning.');
     } catch {
       notify('L’ajout a échoué (droits d’accès ou connexion).');
@@ -176,6 +180,8 @@ function Planning({ notify, services }) {
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(null);
   const [sel, setSel] = useState(null);
+  const [soon, setSoon] = useState([]); // rendez-vous d'aujourd'hui et de demain (rappels)
+  const [absences, setAbsences] = useState(0);
   const start = addDays(monday, offset * 7);
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   const today = dateKey(new Date());
@@ -187,8 +193,10 @@ function Planning({ notify, services }) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const [b, busy] = await Promise.all([loadBookings(start, addDays(start, 6)), loadBusy(start, addDays(start, 6))]);
+      const now = dateKey(new Date());
+      const [b, busy, near] = await Promise.all([loadBookings(start, addDays(start, 6)), loadBusy(start, addDays(start, 6)), loadBookings(now, addDays(now, 1))]);
       setBookings(b);
+      setSoon(near);
       setBlocks(busy.filter((x) => x.manual));
     } catch {
       notify('Impossible de charger le planning (droits d’accès ou connexion).');
@@ -218,12 +226,37 @@ function Planning({ notify, services }) {
   const hours = Array.from({ length: (to - from) / 60 }, (_, i) => from + i * 60);
   const pending = bookings.filter((b) => b.status === 'pending').length;
   const selected = sel && (bookings.find((b) => b.id === sel) || blocks.find((b) => b.id === sel));
+  const selectedPhone = selected && !selected.manual ? selected.phone : '';
+
+  // Absences déjà enregistrées pour la cliente sélectionnée
+  useEffect(() => {
+    setAbsences(0);
+    if (selectedPhone) countNoShows(selectedPhone).then(setAbsences).catch(() => {});
+  }, [selectedPhone, sel]);
 
   // Change le statut et prévient la cliente par e-mail si elle a laissé une adresse et que l'envoi est activé
   const mailable = (b) => schedule.emailEnabled && !!b.email;
   const setStatus = async (b, status) => {
     await setBookingStatus(b.id, status);
-    if (mailable(b)) await sendMail(emailToClient(b, status)).catch(() => {});
+    if (status === 'confirmed' && mailable(b)) {
+      await sendMail(emailToClient(b, 'confirmed')).catch(() => {});
+      await scheduleReminders(reminderMails(b, b.id)).catch(() => {}); // e-mails de rappel : veille et 2 h avant
+    }
+    if (status === 'cancelled' && mailable(b)) await sendMail(emailToClient(b, 'cancelled')).catch(() => {});
+    if (status !== 'confirmed') await cancelReminders(b.id).catch(() => {});
+  };
+
+  // Rappels WhatsApp à envoyer : la veille (rendez-vous de demain) et le jour même (2 h avant)
+  const tomorrow = addDays(today, 1);
+  const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+  const toRemind = soon
+    .filter((b) => b.status === 'confirmed' && b.phone)
+    .map((b) => (b.date === tomorrow && !b.reminded?.reminder1 ? { b, kind: 'reminder1' } : b.date === today && b.start > nowMin && !b.reminded?.reminder2 ? { b, kind: 'reminder2' } : null))
+    .filter(Boolean)
+    .sort((x, y) => (x.b.date + String(x.b.start).padStart(4, '0')).localeCompare(y.b.date + String(y.b.start).padStart(4, '0')));
+  const reminderHref = (b, kind) => `https://wa.me/${waNumber(b.phone)}?text=${encodeURIComponent(reminderWhatsApp(b, kind))}`;
+  const reminded = (b, kind) => () => {
+    markReminded(b.id, kind).then(refresh).catch(() => {});
   };
 
   const clickGrid = (date) => (e) => {
@@ -249,6 +282,23 @@ function Planning({ notify, services }) {
           <button type="button" onClick={() => setAdding({ date: days.includes(today) ? today : start, start: '10:00' })} className="inline-flex items-center gap-2 rounded-full bg-bordeaux px-5 py-2.5 text-sm text-cream"><Plus size={15} aria-hidden="true" /> Ajouter</button>
         </div>
       </div>
+
+      {toRemind.length > 0 && (
+        <section className={`${card} !border-gold !py-5`}>
+          <h2 className="flex items-center gap-2 font-serif text-2xl text-bordeaux"><BellRing size={18} strokeWidth={1.4} aria-hidden="true" /> Rappels à envoyer</h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {toRemind.map(({ b, kind }) => (
+              <li key={b.id + kind}>
+                <a href={reminderHref(b, kind)} target="_blank" rel="noopener" onClick={reminded(b, kind)} className={`${pill(false)} inline-flex items-center gap-2`}>
+                  <MessageCircle size={14} aria-hidden="true" />
+                  {kind === 'reminder1' ? `Demain ${hm(b.start)}` : `Aujourd’hui ${hm(b.start)}`} · {b.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-sm text-taupe">Un clic ouvre WhatsApp avec le message prêt, dans la langue de la cliente. Demain : rappel de la veille. Aujourd’hui : « je serai chez vous à… », à envoyer environ 2 h avant.</p>
+        </section>
+      )}
 
       <div className="grid items-start gap-6 xl:grid-cols-[1fr_20rem]">
         <div className={`${card} overflow-x-auto !p-0`}>
@@ -293,7 +343,7 @@ function Planning({ notify, services }) {
                     ))}
                     {bookings.filter((b) => b.date === d && b.status !== 'cancelled').map((b) => (
                       <button type="button" key={b.id} onClick={() => setSel(b.id)} style={{ top: (b.start - from) * PX, height: Math.max((b.end - b.start) * PX, 22) }}
-                        className={`absolute inset-x-1 overflow-hidden rounded-lg px-2 py-0.5 text-left text-xs leading-tight shadow-sm ${b.status === 'pending' ? 'border border-dashed border-gold-dark bg-gold-pale text-bordeaux' : 'bg-bordeaux text-cream'} ${sel === b.id ? 'ring-2 ring-gold-dark ring-offset-1' : ''}`}>
+                        className={`absolute inset-x-1 overflow-hidden rounded-lg px-2 py-0.5 text-left text-xs leading-tight shadow-sm ${b.status === 'pending' ? 'border border-dashed border-gold-dark bg-gold-pale text-bordeaux' : b.status === 'noshow' ? 'bg-taupe/50 text-cream line-through' : 'bg-bordeaux text-cream'} ${sel === b.id ? 'ring-2 ring-gold-dark ring-offset-1' : ''}`}>
                         <span className="font-medium">{hm(b.start)} {b.name}</span>
                         <span className="block opacity-80">{namesOf(b, services)}</span>
                       </button>
@@ -313,6 +363,7 @@ function Planning({ notify, services }) {
               <ul className="mt-4 space-y-2 text-taupe">
                 <li className="flex items-center gap-2"><span className="h-4 w-6 rounded bg-bordeaux" /> Confirmé</li>
                 <li className="flex items-center gap-2"><span className="h-4 w-6 rounded border border-dashed border-gold-dark bg-gold-pale" /> À confirmer</li>
+                <li className="flex items-center gap-2"><span className="h-4 w-6 rounded bg-taupe/50" /> Cliente absente</li>
                 <li className="flex items-center gap-2"><span className="h-4 w-6 rounded bg-sand" /> Indisponible / fermé</li>
               </ul>
             </>
@@ -337,16 +388,24 @@ function Planning({ notify, services }) {
               <p className="mt-2 text-taupe">{namesOf(selected, services)} · {selected.total} CHF</p>
               {selected.address && <p className="mt-1 flex items-start gap-1.5 text-taupe"><MapPin size={14} className="mt-1 shrink-0" aria-hidden="true" /> {selected.address}</p>}
               {selected.email && <p className="mt-1 text-taupe">{selected.email}</p>}
+              {absences > 0 && <p className="mt-2 rounded-xl bg-gold-pale px-3 py-2 text-bordeaux">Attention : {absences} absence{absences > 1 ? 's' : ''} déjà enregistrée{absences > 1 ? 's' : ''} pour ce numéro.</p>}
               {selected.message && <p className="mt-1 italic text-taupe">« {selected.message} »</p>}
               {selected.phone && (
                 <p className="mt-3 flex flex-wrap gap-2">
                   <a href={`tel:${selected.phone}`} className={`${pill(false)} inline-flex items-center gap-1`}><Phone size={13} aria-hidden="true" /> {selected.phone}</a>
                   <a href={`https://wa.me/${waNumber(selected.phone)}?text=${encodeURIComponent(confirmWhatsApp(selected))}`} target="_blank" rel="noopener" className={`${pill(false)} inline-flex items-center gap-1`}><MessageCircle size={13} aria-hidden="true" /> Envoyer la confirmation</a>
+                  {selected.status === 'confirmed' && (
+                    <>
+                      <a href={reminderHref(selected, 'reminder1')} target="_blank" rel="noopener" onClick={reminded(selected, 'reminder1')} className={`${pill(false)} inline-flex items-center gap-1`}><BellRing size={13} aria-hidden="true" /> Rappel de la veille{selected.reminded?.reminder1 ? ' ✓' : ''}</a>
+                      <a href={reminderHref(selected, 'reminder2')} target="_blank" rel="noopener" onClick={reminded(selected, 'reminder2')} className={`${pill(false)} inline-flex items-center gap-1`}><BellRing size={13} aria-hidden="true" /> Rappel 2 h avant{selected.reminded?.reminder2 ? ' ✓' : ''}</a>
+                    </>
+                  )}
                 </p>
               )}
               <div className="mt-4 flex flex-wrap gap-2">
                 {selected.status === 'pending' && <button type="button" onClick={() => act(() => setStatus(selected, 'confirmed'), mailable(selected) ? 'Rendez-vous confirmé, e-mail envoyé à la cliente.' : 'Rendez-vous confirmé.')} className={pill(true)}>Confirmer</button>}
-                <button type="button" onClick={() => window.confirm('Annuler ce rendez-vous et libérer le créneau ?') && act(() => setStatus(selected, 'cancelled'), mailable(selected) ? 'Rendez-vous annulé, cliente prévenue par e-mail.' : 'Rendez-vous annulé, créneau libéré.')} className={pill(false)}>Annuler</button>
+                {selected.status === 'confirmed' && selected.date <= today && <button type="button" onClick={() => window.confirm('Marquer cette cliente comme absente ?') && act(() => setStatus(selected, 'noshow'), 'Absence enregistrée.')} className={pill(false)}>Cliente absente</button>}
+                {selected.status !== 'noshow' && <button type="button" onClick={() => window.confirm('Annuler ce rendez-vous et libérer le créneau ?') && act(() => setStatus(selected, 'cancelled'), mailable(selected) ? 'Rendez-vous annulé, cliente prévenue par e-mail.' : 'Rendez-vous annulé, créneau libéré.')} className={pill(false)}>Annuler</button>}
                 {selected.series && <button type="button" onClick={() => window.confirm('Supprimer ce rendez-vous et tous les suivants de la série ?') && act(() => deleteSeries(selected.series, selected.date), 'Série supprimée.')} className={pill(false)}>Supprimer la série</button>}
               </div>
             </>
@@ -354,7 +413,7 @@ function Planning({ notify, services }) {
         </aside>
       </div>
 
-      {adding && <EntryForm initial={adding} services={services} notify={notify} onClose={() => setAdding(null)} onSaved={(msg) => { setAdding(null); notify(msg); refresh(); }} />}
+      {adding && <EntryForm initial={adding} services={services} emailEnabled={schedule.emailEnabled} notify={notify} onClose={() => setAdding(null)} onSaved={(msg) => { setAdding(null); notify(msg); refresh(); }} />}
     </div>
   );
 }
@@ -443,7 +502,7 @@ function Hours({ notify }) {
           <h2 className="font-serif text-2xl text-bordeaux">E-mails automatiques</h2>
           <label className="flex items-start gap-3">
             <input type="checkbox" checked={!!s.emailEnabled} onChange={(e) => setS((c) => ({ ...c, emailEnabled: e.target.checked }))} className="mt-1 h-5 w-5 accent-[#4A1A22]" />
-            <span>Activer les e-mails : avis à chaque nouvelle demande, et confirmation ou annulation envoyée à la cliente.</span>
+            <span>Activer les e-mails : avis à chaque nouvelle demande, confirmation ou annulation envoyée à la cliente, rappels automatiques la veille et 2 h avant.</span>
           </label>
           <p className="text-sm text-taupe">À activer une fois la fonction d’envoi SMTP déployée dans Firebase. Enregistrez, puis testez.</p>
           <button type="button" onClick={testMail} className={pill(false)}>Envoyer un e-mail de test</button>

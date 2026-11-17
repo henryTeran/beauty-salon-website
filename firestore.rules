@@ -48,7 +48,7 @@ service cloud.firestore {
         && request.resource.data.message.html.size() <= 30000
         && request.resource.data.message.text.size() <= 5000
       );
-      allow read: if isAdmin();
+      allow read, delete: if isAdmin(); // suppression = annulation d'un rappel programmé
     }
 
     // Demandes de rendez-vous : tout le monde peut en créer une, seul l'admin peut les lire

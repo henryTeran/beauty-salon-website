@@ -90,7 +90,7 @@ export default function Reservation() {
   const [selected, setSelected] = useState([]);
   const [picker, setPicker] = useState(true);
   const [month, setMonth] = useState(monthStart(today));
-  const [form, setForm] = useState({ name: '', phone: '', date: '', time: null, adresse: '', message: '', email: '' });
+  const [form, setForm] = useState({ name: '', phone: '', date: '', time: null, adresse: '', message: '', email: '', accept: false });
   const [schedule, setSchedule] = useState(defaultSchedule);
   const [busy, setBusy] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -153,6 +153,7 @@ export default function Reservation() {
     if (!form.adresse.trim()) return t("Indiquez la commune ou l’adresse du soin.");
     if (!form.name.trim()) return t("Indiquez votre nom.");
     if (!form.phone.trim()) return t("Indiquez votre numéro de téléphone.");
+    if (!form.accept) return t('Merci d’accepter les conditions de réservation.');
     if (form.email.trim() && !/^\S+@\S+\.\S+$/.test(form.email.trim())) return t('Vérifiez votre adresse e-mail.');
     return '';
   };
@@ -356,6 +357,15 @@ export default function Reservation() {
                     <textarea rows={3} value={form.message} onChange={set('message')} placeholder={t("Type de peau, première visite, question…")} className={`${field} mt-2 resize-none`} />
                   </label>
                 </div>
+
+                <label className="mt-6 flex max-w-2xl cursor-pointer items-start gap-3 text-[0.95rem] text-taupe">
+                  <input type="checkbox" required checked={form.accept} onChange={(e) => setForm((f) => ({ ...f, accept: e.target.checked }))} className="mt-1 h-5 w-5 shrink-0 accent-[#4A1A22]" />
+                  <span>
+                    {t('J’ai lu et j’accepte les')}{' '}
+                    <Link to="/conditions-de-reservation" target="_blank" className="link-line text-bordeaux">{t('conditions de réservation')}</Link>
+                    {t(' : en cas d’empêchement, je préviens au moins 24 h à l’avance. Paiement en espèces à la fin du soin.')}
+                  </span>
+                </label>
 
                 <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
                   <button type="submit" disabled={sending} className="btn-primary disabled:opacity-60">

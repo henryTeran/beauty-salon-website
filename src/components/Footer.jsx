@@ -58,6 +58,7 @@ export default function Footer() {
             <li><Link to="/a-propos" className="link-line hover:text-cream">{t("À propos")}</Link></li>
             <li><Link to="/soins-a-domicile-geneve" className="link-line hover:text-cream">{t("Soins à domicile")}</Link></li>
             <li><Link to="/reservation" className="link-line hover:text-cream">{t("Réservation & contact")}</Link></li>
+            <li><Link to="/conditions-de-reservation" className="link-line hover:text-cream">{t('Conditions de réservation')}</Link></li>
             <li><Link to="/mentions-legales" className="link-line hover:text-cream">{t("Mentions légales")}</Link></li>
             <li><Link to="/confidentialite" className="link-line hover:text-cream">{t("Confidentialité")}</Link></li>
             <li><button type="button" onClick={openConsent} className="link-line hover:text-cream">{t('Gérer les cookies')}</button></li>

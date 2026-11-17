@@ -1,5 +1,5 @@
 /**
- * Textes juridiques (mentions légales, politique de confidentialité et de cookies)
+ * Textes juridiques (mentions légales, politique de confidentialité et de cookies, conditions de réservation)
  * en français, espagnol et anglais. La version française fait foi.
  * Les valeurs propres à l'entreprise viennent de src/config/site.js.
  *
@@ -131,4 +131,52 @@ const privacy = {
   },
 };
 
-export const legal = { mentions: mentions[lang] || mentions.fr, privacy: privacy[lang] || privacy.fr };
+const terms = {
+  fr: {
+    kicker: 'Rendez-vous',
+    title: 'Conditions de réservation',
+    updated: `Dernière mise à jour : ${dates.fr}`,
+    sections: [
+      { h: 'Prise de rendez-vous', p: ['La réservation se fait par le site, par WhatsApp ou par téléphone. Une demande envoyée par le site pré-réserve le créneau choisi ; le rendez-vous n’est définitif qu’après confirmation par l’esthéticienne.'] },
+      { h: 'Soins à domicile', p: ['Tous les soins sont réalisés chez vous. Merci de prévoir un espace calme, propre et suffisamment dégagé, ainsi qu’un accès à un point d’eau. Le matériel nécessaire est apporté. Les modalités de déplacement sont précisées lors de la confirmation.'] },
+      { h: 'Rappels', p: ['Un rappel vous est envoyé la veille du rendez-vous, puis un message environ deux heures avant l’arrivée de l’esthéticienne. Merci de répondre au rappel de la veille pour confirmer votre présence.'] },
+      { h: 'Annulation et report', p: ['Un empêchement peut arriver : merci de prévenir au moins 24 heures à l’avance, par WhatsApp ou par téléphone, afin que le créneau puisse être proposé à une autre personne. Le report est alors sans frais.'] },
+      { h: 'Retard et absence', p: ['En cas de retard de votre part, la durée du soin peut être réduite d’autant pour ne pas décaler les rendez-vous suivants, le tarif restant inchangé. En cas d’absence sans avertissement ou d’annulations tardives répétées, l’esthéticienne se réserve le droit de refuser de nouvelles réservations.'] },
+      { h: 'Tarifs et paiement', p: ['Les prix sont indiqués en francs suisses (CHF). Le règlement se fait en espèces, à la fin du soin. Les forfaits de plusieurs séances se règlent en totalité lors de la première séance.'] },
+      { h: 'Santé et contre-indications', p: ['Merci de signaler avant le soin toute grossesse, allergie, affection de la peau, trouble circulatoire ou traitement en cours. L’esthéticienne peut adapter, reporter ou refuser un soin si elle estime qu’il n’est pas indiqué. Les soins proposés ne remplacent pas un avis médical.'] },
+      { h: 'Personnes mineures', p: ['Les soins destinés à une personne mineure sont réalisés avec l’accord et en présence d’un représentant légal.'] },
+    ],
+  },
+  es: {
+    kicker: 'Citas',
+    title: 'Condiciones de reserva',
+    updated: `Última actualización: ${dates.es}`,
+    sections: [
+      { h: 'Reserva de cita', p: ['La reserva se hace desde la web, por WhatsApp o por teléfono. Una solicitud enviada desde la web prerreserva la hora elegida; la cita solo es definitiva tras la confirmación de la esteticista.'] },
+      { h: 'Tratamientos a domicilio', p: ['Todos los tratamientos se realizan en tu casa. Por favor, prepara un espacio tranquilo, limpio y despejado, con acceso a un punto de agua. Se lleva el material necesario. Las condiciones de desplazamiento se indican en la confirmación.'] },
+      { h: 'Recordatorios', p: ['Recibirás un recordatorio el día anterior a la cita y un mensaje unas dos horas antes de la llegada de la esteticista. Por favor, responde al recordatorio del día anterior para confirmar tu asistencia.'] },
+      { h: 'Cancelación y cambio de fecha', p: ['Puede surgir un imprevisto: te pedimos avisar con al menos 24 horas de antelación, por WhatsApp o por teléfono, para poder ofrecer la hora a otra persona. En ese caso el cambio de fecha no tiene coste.'] },
+      { h: 'Retrasos y ausencias', p: ['Si llegas tarde, la duración del tratamiento puede reducirse en ese tiempo para no retrasar las citas siguientes, sin cambio de precio. En caso de ausencia sin aviso o de cancelaciones tardías repetidas, la esteticista se reserva el derecho de no aceptar nuevas reservas.'] },
+      { h: 'Precios y pago', p: ['Los precios se indican en francos suizos (CHF). El pago se realiza en efectivo, al terminar el tratamiento. Los packs de varias sesiones se abonan íntegramente en la primera sesión.'] },
+      { h: 'Salud y contraindicaciones', p: ['Antes del tratamiento, informa de cualquier embarazo, alergia, afección de la piel, problema circulatorio o tratamiento en curso. La esteticista puede adaptar, aplazar o rechazar un tratamiento si considera que no está indicado. Los tratamientos no sustituyen una consulta médica.'] },
+      { h: 'Menores de edad', p: ['Los tratamientos destinados a una persona menor de edad se realizan con el consentimiento y en presencia de su representante legal.'] },
+    ],
+  },
+  en: {
+    kicker: 'Appointments',
+    title: 'Booking terms',
+    updated: `Last updated: ${dates.en}`,
+    sections: [
+      { h: 'Booking an appointment', p: ['You can book through the website, by WhatsApp or by phone. A request sent through the website provisionally holds the chosen slot; the appointment is final only once confirmed by the beautician.'] },
+      { h: 'Home treatments', p: ['All treatments are carried out at your home. Please have a quiet, clean space with enough room, and access to water. The equipment needed is brought to you. Travel arrangements are specified in the confirmation.'] },
+      { h: 'Reminders', p: ['You receive a reminder the day before your appointment, then a message about two hours before the beautician arrives. Please reply to the reminder the day before to confirm you will be there.'] },
+      { h: 'Cancelling and rescheduling', p: ['Things come up: please give at least 24 hours’ notice, by WhatsApp or phone, so the slot can be offered to someone else. Rescheduling is then free of charge.'] },
+      { h: 'Lateness and no-shows', p: ['If you are late, the treatment may be shortened accordingly so that later appointments are not delayed, with no change to the price. After a no-show without notice or repeated late cancellations, the beautician reserves the right to decline further bookings.'] },
+      { h: 'Prices and payment', p: ['Prices are shown in Swiss francs (CHF). Payment is made in cash at the end of the treatment. Packages of several sessions are paid in full at the first session.'] },
+      { h: 'Health and contraindications', p: ['Before the treatment, please mention any pregnancy, allergy, skin condition, circulatory problem or ongoing treatment. The beautician may adapt, postpone or decline a treatment if she considers it unsuitable. Treatments do not replace medical advice.'] },
+      { h: 'Minors', p: ['Treatments for a minor are carried out with the consent and in the presence of a legal representative.'] },
+    ],
+  },
+};
+
+export const legal = { mentions: mentions[lang] || mentions.fr, privacy: privacy[lang] || privacy.fr, terms: terms[lang] || terms.fr };

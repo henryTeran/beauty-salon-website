@@ -70,7 +70,7 @@ export const site = {
   priceRange: 'CHF 12 – 600',
   currency: 'CHF',
   languages: ['fr', 'es'], // langues parlées par l'esthéticienne
-  paymentAccepted: ['Espèces', 'TWINT', 'Carte'].map((v) => t(v)), // TODO: confirmer
+  paymentAccepted: ['Espèces'].map((v) => t(v)), // règlement en espèces à la fin du soin
 };
 
 export const telHref = `tel:${site.phone}`;

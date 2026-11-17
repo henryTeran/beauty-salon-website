@@ -26,6 +26,13 @@ const L = {
     rebook: 'Pour choisir une autre date, répondez à ce message ou réservez à nouveau sur le site.',
     bye: 'À bientôt,',
     home: 'Soin à domicile',
+    cash: 'Le règlement se fait en espèces à la fin du soin.',
+    rem1Subject: 'Rappel : votre rendez-vous de demain',
+    rem1: 'Petit rappel : votre rendez-vous est prévu demain.',
+    rem1Ask: 'Merci de confirmer votre présence en répondant à ce message. En cas d’empêchement, prévenez-moi dès que possible.',
+    rem2Subject: (h) => `Votre rendez-vous d’aujourd’hui à ${h}`,
+    rem2: (h) => `Je serai chez vous aujourd’hui à ${h} pour votre soin.`,
+    rem2Ask: 'Merci de prévoir un espace calme et dégagé. À tout à l’heure !',
   },
   es: {
     hello: (n) => `Hola ${n}:`,
@@ -39,6 +46,13 @@ const L = {
     rebook: 'Para elegir otra fecha, responde a este mensaje o reserva de nuevo en la web.',
     bye: 'Hasta pronto,',
     home: 'Tratamiento a domicilio',
+    cash: 'El pago se realiza en efectivo al terminar el tratamiento.',
+    rem1Subject: 'Recordatorio: tu cita de mañana',
+    rem1: 'Te recuerdo que tu cita es mañana.',
+    rem1Ask: 'Por favor, confirma tu asistencia respondiendo a este mensaje. Si no puedes venir, avísame lo antes posible.',
+    rem2Subject: (h) => `Tu cita de hoy a las ${h}`,
+    rem2: (h) => `Hoy estaré en tu casa a las ${h} para tu tratamiento.`,
+    rem2Ask: 'Por favor, prepara un espacio tranquilo y despejado. ¡Hasta ahora!',
   },
   en: {
     hello: (n) => `Hello ${n},`,
@@ -52,6 +66,13 @@ const L = {
     rebook: 'To choose another date, reply to this message or book again on the website.',
     bye: 'See you soon,',
     home: 'Home treatment',
+    cash: 'Payment is made in cash at the end of the treatment.',
+    rem1Subject: 'Reminder: your appointment tomorrow',
+    rem1: 'A quick reminder that your appointment is tomorrow.',
+    rem1Ask: 'Please confirm you will be there by replying to this message. If you cannot make it, let me know as soon as possible.',
+    rem2Subject: (h) => `Your appointment today at ${h}`,
+    rem2: (h) => `I will be at your home today at ${h} for your treatment.`,
+    rem2Ask: 'Please have a quiet, clear space ready. See you shortly!',
   },
 };
 
@@ -109,8 +130,32 @@ export function confirmWhatsApp(b) {
     b.address && `*${l.address}${sep(b.lang)}* ${b.address}`,
     '',
     l.change,
+    l.cash,
     '',
     l.bye,
+    OWNER,
+    `_${BRAND}_`,
+  ]);
+}
+
+/** Rappels envoyés par María Fernanda : kind = 'reminder1' (la veille) ou 'reminder2' (2 h avant) */
+export function reminderWhatsApp(b, kind = 'reminder1') {
+  const l = pick(b.lang);
+  const h = hhmm(b.start, b.lang);
+  if (kind === 'reminder2') return lines([l.hello(b.name), '', l.rem2(h), l.rem2Ask, '', OWNER, `_${BRAND}_`]);
+  return lines([
+    l.hello(b.name),
+    '',
+    `*${l.rem1}*`,
+    '',
+    `*${l.date}${sep(b.lang)}* ${fmtDate(b.date, b.lang)}`,
+    `*${l.time}${sep(b.lang)}* ${h}`,
+    `*${l.services}${sep(b.lang)}* ${(b.services || []).map((x) => x.name).join(', ')}`,
+    b.address && `*${l.address}${sep(b.lang)}* ${b.address}`,
+    '',
+    l.rem1Ask,
+    l.cash,
+    '',
     OWNER,
     `_${BRAND}_`,
   ]);
@@ -190,25 +235,41 @@ export function emailToOwner(b) {
   return doc;
 }
 
-/** E-mail à la cliente : confirmation ou annulation, dans sa langue */
+/** E-mail à la cliente, dans sa langue : kind = confirmed | cancelled | reminder1 (veille) | reminder2 (2 h avant) */
 export function emailToClient(b, kind = 'confirmed') {
   const lang = L[b.lang] ? b.lang : 'fr';
   const l = pick(lang);
-  const ok = kind === 'confirmed';
+  const h = hhmm(b.start, lang);
+  const k = {
+    confirmed: { title: l.confirmedSubject, lead: l.confirmed, outro: [l.change, l.cash] },
+    cancelled: { title: l.cancelledSubject, lead: l.cancelled, outro: [l.rebook] },
+    reminder1: { title: l.rem1Subject, lead: l.rem1, outro: [l.rem1Ask, l.cash] },
+    reminder2: { title: l.rem2Subject(h), lead: l.rem2(h), outro: [l.rem2Ask] },
+  }[kind];
   const rows = [
     [l.date, esc(fmtDate(b.date, lang))],
-    [l.time, esc(fmtTime(b, lang))],
-    [l.services, (b.services || []).map((s) => esc(s.name)).join('<br />')],
+    [l.time, esc(h)],
+    [l.services, (b.services || []).map((x) => esc(x.name)).join('<br />')],
     [l.address, esc(b.address)],
   ];
-  const title = ok ? l.confirmedSubject : l.cancelledSubject;
-  const outro = `${esc(ok ? l.change : l.rebook)}<br /><br />${esc(l.bye)}<br /><span style="font:18px ${serif};color:${C.bordeaux}">${OWNER}</span>`;
+  const outro = `${k.outro.map(esc).join('<br />')}<br /><br />${esc(l.bye)}<br /><span style="font:18px ${serif};color:${C.bordeaux}">${OWNER}</span>`;
   return {
     to: b.email,
     message: {
-      subject: `${title} – ${BRAND}`,
-      html: layout({ lang, kicker: l.home, title, intro: esc(l.hello(b.name)), rows, outro }),
-      text: lines([l.hello(b.name), '', ok ? l.confirmed : l.cancelled, '', ...rows.filter((r) => r[1]).map(([k, v]) => `${k}${sep(lang)} ${String(v).replace(/<br \/>/g, ', ')}`), '', ok ? l.change : l.rebook, '', l.bye, OWNER, BRAND]),
+      subject: `${k.title} – ${BRAND}`,
+      html: layout({ lang, kicker: l.home, title: k.title, intro: `${esc(l.hello(b.name))}<br />${esc(k.lead)}`, rows, outro }),
+      text: lines([l.hello(b.name), '', k.lead, '', ...rows.filter((r) => r[1]).map(([key, v]) => `${key}${sep(lang)} ${String(v).replace(/<br \/>/g, ', ')}`), '', ...k.outro, '', l.bye, OWNER, BRAND]),
     },
   };
+}
+
+/**
+ * Rappels automatiques par e-mail : deux documents « mail » programmés (champ sendAt),
+ * 24 h et 2 h avant le rendez-vous. Ceux dont l'heure est déjà passée ne sont pas créés.
+ */
+export function reminderMails(b, id, now = Date.now()) {
+  const startMs = new Date(`${b.date}T00:00:00`).getTime() + b.start * 60000;
+  return [['reminder1', 24], ['reminder2', 2]]
+    .map(([kind, hours]) => ({ ...emailToClient(b, kind), bookingId: id, kind, sendAt: new Date(startMs - hours * 3600000) }))
+    .filter((mail) => mail.sendAt.getTime() > now + 5 * 60000);
 }
