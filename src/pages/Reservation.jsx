@@ -8,10 +8,11 @@ import { site, telHref, waHref } from '../config/site.js';
 import { getRouteMeta } from '../seo/routes.js';
 import { PageHero } from '../components/blocks.jsx';
 import { ease } from '../components/ui.jsx';
-import { defaultSchedule, freeSlots, toTime, dateKey, addDays, formatDate, parseDate } from '../lib/schedule.js';
-import { loadSchedule, loadBusy, createBooking, sendMail } from '../lib/firebase.js';
+import { freeSlots, toTime, dateKey, addDays, formatDate, parseDate } from '../lib/schedule.js';
+import { loadBusy, watchBusy, createBooking, sendMail } from '../lib/firebase.js';
 import { requestWhatsApp, emailToOwner } from '../lib/messages.js';
 import { useCustomServices } from '../lib/useCustomServices.js';
+import { useSchedule } from '../lib/useSchedule.js';
 
 const meta = getRouteMeta('/reservation');
 // Initiales des jours, lundi en premier, dans la langue du site (le 5 janvier 2026 est un lundi)
@@ -75,7 +76,7 @@ function MonthCalendar({ month, setMonth, selected, onSelect, isFree, min, max, 
 
 export default function Reservation() {
   const [params] = useSearchParams();
-  const custom = useCustomServices();
+  const custom = useCustomServices(true); // en direct dès l'affichage, comme les horaires et les créneaux
   const services = useMemo(() => allServicesWith(custom), [custom]);
   const groups = useMemo(
     () => services.reduce((acc, s) => {
@@ -91,7 +92,7 @@ export default function Reservation() {
   const [picker, setPicker] = useState(true);
   const [month, setMonth] = useState(monthStart(today));
   const [form, setForm] = useState({ name: '', phone: '', date: '', time: null, adresse: '', message: '', email: '', accept: false });
-  const [schedule, setSchedule] = useState(defaultSchedule);
+  const schedule = useSchedule(true); // horaires définis dans l'espace privé, tenus à jour en direct
   const [busy, setBusy] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -107,21 +108,24 @@ export default function Reservation() {
     }
   }, [params]);
 
-  // Horaires définis dans l'espace privé (valeurs par défaut si indisponibles)
-  useEffect(() => {
-    loadSchedule().then(setSchedule).catch(() => {});
-  }, []);
-
-  // Créneaux déjà pris sur le mois affiché
+  // Créneaux déjà pris sur le mois affiché, puis suivis en direct : un créneau qui vient
+  // d'être pris ou libéré disparaît ou réapparaît sans recharger la page
   useEffect(() => {
     let alive = true;
+    let stop = () => {};
+    const end = addDays(month, 31);
     setLoading(true);
-    loadBusy(month, addDays(month, 31))
+    loadBusy(month, end)
       .then((b) => alive && setBusy(b))
       .catch(() => alive && setBusy([]))
-      .finally(() => alive && setLoading(false));
+      .finally(() => {
+        if (!alive) return;
+        setLoading(false);
+        stop = watchBusy(month, end, setBusy);
+      });
     return () => {
       alive = false;
+      stop();
     };
   }, [month]);
 

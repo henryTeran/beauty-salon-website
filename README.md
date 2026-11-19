@@ -40,6 +40,8 @@ Compléter les `TODO` de `src/config/site.js` : domaine, adresse, e-mail, horair
 - Réservation : `/reservation` affiche les créneaux libres selon les horaires et les rendez-vous déjà pris.
 - Espace privé : `/admin` (connexion e-mail + mot de passe) pour voir le planning, confirmer ou annuler, bloquer un créneau et modifier les horaires.
 - Code : `src/lib/schedule.js` (calcul des créneaux), `src/lib/firebase.js` (accès aux données), `src/pages/Admin.jsx`.
+- Mise à jour en direct, sans recharger la page : planning de l'espace privé (nouvelles demandes, changements faits sur un autre appareil), créneaux de la réservation, horaires et prestations sur tout le site. Les lectures et écritures passent par Firestore « lite » ; l'écoute en direct (`watch…` dans `src/lib/firebase.js`, `src/lib/liveStore.js`) charge le SDK complet, tout de suite dans l'espace privé et la réservation, après 20 s sur les autres pages.
+- Espace privé sur téléphone : vue par jour (semaine en bandeau, journée en liste, détail en panneau bas) ; grille de la semaine à partir de la tablette.
 
 Mise en service, une seule fois, dans la console Firebase du projet `beautybooker-25c9d` :
 

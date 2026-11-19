@@ -1,23 +1,28 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BellRing, CalendarDays, ChevronLeft, ChevronRight, Clock, Loader2, LogOut, MapPin, MessageCircle, Pencil, Phone, Plus, Repeat, Sparkles, Trash2, X } from 'lucide-react';
 import { adminEmails } from '../config/firebase.js';
 import {
-  authApi, loadSchedule, saveSchedule, loadBookings, loadBusy, setBookingStatus, deleteBusy,
-  createEntries, deleteSeries, loadCustomServices, saveService, deleteService, sendMail,
+  authApi, loadSchedule, saveSchedule, loadBookings, loadBusy, watchBookings, watchBusy, setBookingStatus, deleteBusy,
+  createEntries, deleteSeries, saveService, deleteService, sendMail,
   scheduleReminders, cancelReminders, markReminded, countNoShows,
 } from '../lib/firebase.js';
 import { defaultSchedule, dayNames, weekOrder, dateKey, addDays, formatDate, parseDate, toMin, toTime } from '../lib/schedule.js';
 import { categories, allServices, allServicesWith, bookingMinutes, formatDuration } from '../data/services.js';
-import { resetCustomServices } from '../lib/useCustomServices.js';
-import { resetSchedule } from '../lib/useSchedule.js';
+import { useCustomServices, refreshCustomServices } from '../lib/useCustomServices.js';
+import { useSchedule, refreshSchedule } from '../lib/useSchedule.js';
 import { confirmWhatsApp, reminderWhatsApp, emailToClient, reminderMails, ownerReminderMails, waNumber } from '../lib/messages.js';
 import { prefix } from '../i18n/index.js';
 
 const field = 'rounded-xl border border-gold/35 bg-cream px-3 py-2 text-ink focus:border-bordeaux focus:outline-none';
-const card = 'rounded-[1.5rem] border border-gold/30 bg-cream p-6 shadow-card';
+const card = 'rounded-[1.5rem] border border-gold/30 bg-cream p-4 shadow-card sm:p-6';
 const pill = (on) => `rounded-full border px-3.5 py-2 text-sm transition-colors ${on ? 'border-bordeaux bg-bordeaux text-cream' : 'border-gold/40 hover:border-bordeaux'}`;
+const round = 'grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gold/40 md:h-11 md:w-11';
 const hm = (min) => toTime(min).replace(':', 'h');
 const statusLabel = { pending: 'À confirmer', confirmed: 'Confirmé', cancelled: 'Annulé', noshow: 'Absente' };
+const byStart = (a, b) => (a.date + String(a.start).padStart(4, '0')).localeCompare(b.date + String(b.start).padStart(4, '0'));
+/** Semaine affichée : « 16 – 22 novembre 2026 », ou « 30 novembre – 6 décembre 2026 » à cheval sur deux mois */
+const weekLabel = (from, to) =>
+  `${from.slice(0, 7) === to.slice(0, 7) ? Number(from.slice(8)) : formatDate(from, { day: 'numeric', month: 'long' })} – ${formatDate(to, { day: 'numeric', month: 'long', year: 'numeric' })}`;
 /** Noms des prestations tels qu'affichés dans l'espace privé (catalogue en français), quelle que soit la langue de la cliente */
 const namesOf = (b, services) => (b.services || []).map((s) => services.find((x) => x.id === s.id)?.name || s.name).join(', ');
 const PX = 1.1; // pixels par minute dans la grille
@@ -172,38 +177,51 @@ function EntryForm({ initial, services, emailEnabled, onClose, onSaved, notify }
 }
 
 function Planning({ notify, services }) {
-  const monday = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-    return dateKey(d);
-  }, []);
+  const schedule = useSchedule(true);
   const [offset, setOffset] = useState(0);
-  const [schedule, setSchedule] = useState(defaultSchedule);
   const [bookings, setBookings] = useState([]);
   const [blocks, setBlocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(null);
   const [sel, setSel] = useState(null);
+  const [pick, setPick] = useState(null); // jour choisi dans la vue par jour (téléphone)
   const [soon, setSoon] = useState([]); // rendez-vous d'aujourd'hui et de demain (rappels)
   const [absences, setAbsences] = useState(0);
+  const [, setTick] = useState(0);
+
+  // L'heure avance : la page se réaffiche chaque minute (jour courant, rappels du moment)
+  useEffect(() => {
+    const timer = window.setInterval(() => setTick((n) => n + 1), 60000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const today = dateKey(new Date());
+  const monday = useMemo(() => {
+    const d = parseDate(today);
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return dateKey(d);
+  }, [today]);
   const start = addDays(monday, offset * 7);
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
-  const today = dateKey(new Date());
+  const day = days.includes(pick) ? pick : days.includes(today) ? today : start; // jour affiché sur téléphone
 
-  useEffect(() => {
-    loadSchedule().then(setSchedule).catch(() => {});
-  }, []);
+  const seen = useRef({}); // mises à jour reçues en direct, par jeu de données
+  const week = useRef(start);
+  week.current = start;
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    const at = { ...seen.current };
+    const fresh = (key) => seen.current[key] === at[key]; // rien reçu en direct entre-temps
     try {
       const now = dateKey(new Date());
       const [b, busy, near] = await Promise.all([loadBookings(start, addDays(start, 6)), loadBusy(start, addDays(start, 6)), loadBookings(now, addDays(now, 1))]);
-      setBookings(b);
-      setSoon(near);
-      setBlocks(busy.filter((x) => x.manual));
+      if (week.current !== start) return; // la semaine affichée a changé pendant le chargement
+      if (fresh('bookings')) setBookings(b);
+      if (fresh('soon')) setSoon(near);
+      if (fresh('blocks')) setBlocks(busy.filter((x) => x.manual));
     } catch {
-      notify('Impossible de charger le planning (droits d’accès ou connexion).');
+      if (week.current === start) notify('Impossible de charger le planning (droits d’accès ou connexion).');
     }
     setLoading(false);
   }, [start, notify]);
@@ -211,6 +229,20 @@ function Planning({ notify, services }) {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // En direct : une nouvelle demande, ou un changement fait sur un autre appareil, apparaît sans recharger la page
+  useEffect(() => {
+    const live = (key, set) => (list) => {
+      seen.current[key] = (seen.current[key] || 0) + 1;
+      set(list);
+    };
+    const stops = [
+      watchBookings(start, addDays(start, 6), live('bookings', setBookings)),
+      watchBusy(start, addDays(start, 6), live('blocks', (busy) => setBlocks(busy.filter((x) => x.manual)))),
+      watchBookings(today, addDays(today, 1), live('soon', setSoon)),
+    ];
+    return () => stops.forEach((stop) => stop());
+  }, [start, today]);
 
   const act = async (fn, ok) => {
     try {
@@ -228,8 +260,13 @@ function Planning({ notify, services }) {
   const from = Math.floor(Math.min(480, ...open.map((d) => toMin(d.start)), ...bookings.map((b) => b.start), ...blocks.map((b) => b.start)) / 60) * 60;
   const to = Math.ceil(Math.max(1200, ...open.map((d) => toMin(d.end)), ...bookings.map((b) => b.end), ...blocks.map((b) => b.end)) / 60) * 60;
   const hours = Array.from({ length: (to - from) / 60 }, (_, i) => from + i * 60);
-  const pending = bookings.filter((b) => b.status === 'pending').length;
+  const waiting = bookings.filter((b) => b.status === 'pending').sort(byStart);
+  const pending = waiting.length;
   const selected = sel && (bookings.find((b) => b.id === sel) || blocks.find((b) => b.id === sel));
+  // Vue par jour (téléphone) : indisponibilités et rendez-vous du jour choisi, dans l'ordre
+  const dayHours = schedule.days[parseDate(day).getDay()];
+  const dayOff = !dayHours.open || schedule.blockedDates.includes(day);
+  const dayEntries = [...blocks, ...bookings.filter((b) => b.status !== 'cancelled')].filter((b) => b.date === day).sort(byStart);
   const selectedPhone = selected && !selected.manual ? selected.phone : '';
 
   // Absences déjà enregistrées pour la cliente sélectionnée
@@ -258,7 +295,7 @@ function Planning({ notify, services }) {
     .filter((b) => b.status === 'confirmed' && b.phone)
     .map((b) => (b.date === tomorrow && !b.reminded?.reminder1 ? { b, kind: 'reminder1' } : b.date === today && b.start > nowMin && !b.reminded?.reminder2 ? { b, kind: 'reminder2' } : null))
     .filter(Boolean)
-    .sort((x, y) => (x.b.date + String(x.b.start).padStart(4, '0')).localeCompare(y.b.date + String(y.b.start).padStart(4, '0')));
+    .sort((x, y) => byStart(x.b, y.b));
   const reminderHref = (b, kind) => `https://wa.me/${waNumber(b.phone)}?text=${encodeURIComponent(reminderWhatsApp(b, kind))}`;
   const reminded = (b, kind) => () => {
     markReminded(b.id, kind).then(refresh).catch(() => {});
@@ -271,29 +308,52 @@ function Planning({ notify, services }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <button type="button" aria-label="Semaine précédente" onClick={() => setOffset((o) => o - 1)} className="grid h-11 w-11 place-items-center rounded-full border border-gold/40"><ChevronLeft size={18} /></button>
-          <button type="button" onClick={() => setOffset(0)} className={pill(offset === 0)}>Aujourd’hui</button>
-          <button type="button" aria-label="Semaine suivante" onClick={() => setOffset((o) => o + 1)} className="grid h-11 w-11 place-items-center rounded-full border border-gold/40"><ChevronRight size={18} /></button>
+    <div className="space-y-4 md:space-y-6">
+      {/* Téléphone : navigation et « Ajouter » sur une ligne, semaine et demandes en attente dessous */}
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-3">
+        <div className="flex items-center gap-1.5 md:gap-2">
+          <button type="button" aria-label="Semaine précédente" onClick={() => setOffset((o) => o - 1)} className={round}><ChevronLeft size={18} /></button>
+          <button type="button" onClick={() => { setOffset(0); setPick(null); }} className={pill(offset === 0 && day === today)}>Aujourd’hui</button>
+          <button type="button" aria-label="Semaine suivante" onClick={() => setOffset((o) => o + 1)} className={round}><ChevronRight size={18} /></button>
         </div>
-        <p className="font-serif text-2xl text-bordeaux">
-          {formatDate(start, { day: 'numeric', month: 'long' })} – {formatDate(days[6], { day: 'numeric', month: 'long', year: 'numeric' })}
+        <p className="order-3 font-serif text-xl text-bordeaux md:order-none md:mx-auto lg:text-2xl">
+          {weekLabel(start, days[6])}
           {loading && <Loader2 size={16} className="ml-2 inline animate-spin" />}
         </p>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-taupe">{pending ? `${pending} demande${pending > 1 ? 's' : ''} à confirmer` : 'Aucune demande en attente'}</span>
-          <button type="button" onClick={() => setAdding({ date: days.includes(today) ? today : start, start: '10:00' })} className="inline-flex items-center gap-2 rounded-full bg-bordeaux px-5 py-2.5 text-sm text-cream"><Plus size={15} aria-hidden="true" /> Ajouter</button>
-        </div>
+        {pending ? (
+          <button type="button" onClick={() => { setPick(waiting[0].date); setSel(waiting[0].id); }} className="order-4 rounded-full border border-dashed border-gold-dark bg-gold-pale px-3 py-1.5 text-sm text-bordeaux md:order-none">
+            {pending} <span className="hidden lg:inline">demande{pending > 1 ? 's' : ''} </span>à confirmer
+          </button>
+        ) : (
+          <span className="hidden text-sm text-taupe md:inline">Aucune demande en attente</span>
+        )}
+        <button type="button" onClick={() => setAdding({ date: day, start: '10:00' })} className="inline-flex items-center gap-1.5 rounded-full bg-bordeaux px-4 py-2.5 text-sm text-cream md:gap-2 md:px-5"><Plus size={15} aria-hidden="true" /> Ajouter</button>
+      </div>
+
+      {/* Téléphone : les 7 jours de la semaine, un point signale les rendez-vous */}
+      <div className="grid grid-cols-7 gap-1 md:hidden">
+        {days.map((d) => {
+          const on = d === day;
+          const list = bookings.filter((b) => b.date === d && b.status !== 'cancelled');
+          const dot = list.some((b) => b.status === 'pending') ? 'bg-gold' : list.length ? (on ? 'bg-cream' : 'bg-bordeaux') : 'bg-transparent';
+          return (
+            <button type="button" key={d} aria-pressed={on} aria-label={`${formatDate(d)}${list.length ? `, ${list.length} rendez-vous` : ''}`} onClick={() => setPick(d)}
+              className={`flex flex-col items-center rounded-2xl border py-2 transition-colors ${on ? 'border-bordeaux bg-bordeaux text-cream' : d === today ? 'border-gold bg-gold-pale/70 text-bordeaux' : 'border-gold/30 bg-cream text-ink'}`}>
+              <span className={`text-[0.62rem] uppercase tracking-wide ${on ? 'text-cream/80' : 'text-taupe'}`}>{formatDate(d, { weekday: 'short' }).slice(0, 3)}</span>
+              <span className="font-serif text-xl leading-tight">{Number(d.slice(8))}</span>
+              <span aria-hidden="true" className={`mt-1 h-1.5 w-1.5 rounded-full ${dot}`} />
+            </button>
+          );
+        })}
       </div>
 
       {toRemind.length > 0 && (
-        <section className={`${card} !border-gold !py-5`}>
-          <h2 className="flex items-center gap-2 font-serif text-2xl text-bordeaux"><BellRing size={18} strokeWidth={1.4} aria-hidden="true" /> Rappels à envoyer</h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+        // Téléphone : bloc compact, les rappels défilent sur une ligne pour laisser la place à la journée
+        <section className={`${card} !border-gold !p-3 md:!px-6 md:!py-5`}>
+          <h2 className="flex items-center gap-2 font-serif text-xl text-bordeaux md:text-2xl"><BellRing size={18} strokeWidth={1.4} aria-hidden="true" /> Rappels à envoyer</h2>
+          <ul className="mt-2 flex gap-2 overflow-x-auto pb-1 md:mt-3 md:flex-wrap md:overflow-visible md:pb-0">
             {toRemind.map(({ b, kind }) => (
-              <li key={b.id + kind}>
+              <li key={b.id + kind} className="shrink-0">
                 <a href={reminderHref(b, kind)} target="_blank" rel="noopener" onClick={reminded(b, kind)} className={`${pill(false)} inline-flex items-center gap-2`}>
                   <MessageCircle size={14} aria-hidden="true" />
                   {kind === 'reminder1' ? `Demain ${hm(b.start)}` : `Aujourd’hui ${hm(b.start)}`} · {b.name}
@@ -301,13 +361,49 @@ function Planning({ notify, services }) {
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-sm text-taupe">Un clic ouvre WhatsApp avec le message prêt, dans la langue de la cliente. Demain : rappel de la veille. Aujourd’hui : « je serai chez vous à… », à envoyer environ 2 h avant.</p>
+          <p className="mt-2 hidden text-sm text-taupe md:block">Un clic ouvre WhatsApp avec le message prêt, dans la langue de la cliente. Demain : rappel de la veille. Aujourd’hui : « je serai chez vous à… », à envoyer environ 2 h avant.</p>
         </section>
       )}
 
+      {/* Téléphone : la journée choisie, en liste */}
+      <section className="md:hidden">
+        <h2 className="font-serif text-2xl text-bordeaux first-letter:uppercase">{formatDate(day)}</h2>
+        <p className="text-sm text-taupe">{dayOff ? 'Jour fermé à la réservation en ligne' : `Ouvert de ${hm(toMin(dayHours.start))} à ${hm(toMin(dayHours.end))}`}</p>
+        {dayEntries.length === 0 ? (
+          <p className="mt-3 rounded-2xl border border-gold/30 bg-cream p-4 text-taupe">{loading ? 'Chargement…' : 'Aucun rendez-vous ce jour-là.'}</p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {dayEntries.map((e) => (
+              <li key={e.id}>
+                <button type="button" onClick={() => setSel(e.id)}
+                  className={`flex w-full gap-3 rounded-2xl border p-3 text-left ${e.manual ? 'border-taupe/25 bg-[repeating-linear-gradient(135deg,#EADBC9_0_6px,#F6EEE3_6px_12px)]' : e.status === 'pending' ? 'border-dashed border-gold-dark bg-gold-pale' : e.status === 'noshow' ? 'border-taupe/25 bg-sand/50' : 'border-gold/30 border-l-4 border-l-bordeaux bg-cream'}`}>
+                  <span className="w-14 shrink-0 font-serif text-xl leading-tight text-bordeaux">
+                    {hm(e.start)}
+                    <span className="block font-sans text-xs text-taupe">{hm(e.end)}</span>
+                  </span>
+                  {e.manual ? (
+                    <span className="self-center text-taupe">Indisponible {e.series && <Repeat size={12} className="inline" aria-label="répété chaque semaine" />}</span>
+                  ) : (
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-start justify-between gap-2">
+                        <span className={`font-normal text-ink ${e.status === 'noshow' ? 'line-through' : ''}`}>{e.name}</span>
+                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.65rem] uppercase tracking-wide ${e.status === 'confirmed' ? 'bg-bordeaux text-cream' : 'bg-cream text-gold-dark'}`}>{statusLabel[e.status]}</span>
+                      </span>
+                      <span className="block text-sm leading-snug text-taupe">{namesOf(e, services)}</span>
+                      {e.address && <span className="mt-1 flex items-start gap-1 text-sm leading-snug text-taupe"><MapPin size={13} className="mt-0.5 shrink-0" aria-hidden="true" /> {e.address}</span>}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <div className="grid items-start gap-6 xl:grid-cols-[1fr_20rem]">
-        <div className={`${card} overflow-x-auto !p-0`}>
-          <div className="min-w-[820px]">
+        {/* Tablette et ordinateur : la semaine en grille */}
+        <div className={`${card} hidden overflow-x-auto !p-0 md:block`}>
+          <div className="min-w-[680px]">
             <div className="grid grid-cols-[3.5rem_repeat(7,1fr)] border-b border-gold/25">
               <span />
               {days.map((d) => (
@@ -360,7 +456,13 @@ function Planning({ notify, services }) {
           </div>
         </div>
 
-        <aside className={`${card} text-sm`}>
+        {/* Détail : colonne de droite sur grand écran, panneau qui monte du bas de l'écran sinon */}
+        {selected && <button type="button" aria-label="Fermer le détail" onClick={() => setSel(null)} className="fixed inset-0 z-[55] cursor-default bg-bordeaux-deep/40 xl:hidden" />}
+        <aside
+          data-lenis-prevent={selected ? '' : undefined}
+          className={`text-sm ${selected ? 'fixed inset-x-0 bottom-0 z-[56] max-h-[85vh] overflow-y-auto rounded-t-[1.5rem] border border-gold/30 bg-cream p-5 pb-8 shadow-soft xl:static xl:z-auto xl:max-h-none xl:overflow-visible xl:rounded-[1.5rem] xl:p-6 xl:shadow-card' : `${card} hidden md:block`}`}
+        >
+          {selected && <button type="button" aria-label="Fermer" onClick={() => setSel(null)} className="float-right -mr-1 -mt-1 ml-2 grid h-9 w-9 place-items-center rounded-full border border-gold/40 xl:hidden"><X size={15} /></button>}
           {!selected && (
             <>
               <p className="font-serif text-2xl text-bordeaux">Détail</p>
@@ -452,7 +554,7 @@ function Hours({ notify }) {
     setSaving(true);
     try {
       await saveSchedule(s);
-      resetSchedule();
+      refreshSchedule();
       notify('Horaires enregistrés. Ils s’appliquent immédiatement à la réservation en ligne.');
     } catch {
       notify('Enregistrement impossible (droits d’accès ou connexion).');
@@ -578,7 +680,7 @@ function Prestations({ notify, services, reload }) {
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[1.3fr_.7fr]">
       <section className={card}>
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
           <h2 className="font-serif text-2xl text-bordeaux">Carte des prestations</h2>
           <button type="button" onClick={() => setEdit({ ...emptyService })} className="inline-flex items-center gap-2 rounded-full bg-bordeaux px-5 py-2.5 text-sm text-cream"><Plus size={15} aria-hidden="true" /> Nouvelle prestation</button>
         </div>
@@ -588,9 +690,9 @@ function Prestations({ notify, services, reload }) {
             <ul className="mt-2 divide-y divide-gold/20">
               {list.map((s) => (
                 <li key={s.id} className={`flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5 ${s.hidden ? 'opacity-45' : ''}`}>
-                  <span className="min-w-0 flex-1 font-serif text-xl">{s.name}{s.hidden && ' (masquée)'}{s.custom && <span className="ml-2 rounded-full bg-gold-pale px-2 py-0.5 font-sans text-[0.65rem] uppercase tracking-wide text-gold-dark">ajoutée</span>}</span>
+                  <span className="min-w-0 flex-1 basis-full font-serif text-xl leading-tight sm:basis-0">{s.name}{s.hidden && ' (masquée)'}{s.custom && <span className="ml-2 rounded-full bg-gold-pale px-2 py-0.5 font-sans text-[0.65rem] uppercase tracking-wide text-gold-dark">ajoutée</span>}</span>
                   <span className="text-sm text-taupe">{formatDuration(bookingMinutes(s))}</span>
-                  <span className="w-20 text-right font-serif text-xl text-bordeaux">{s.price} CHF</span>
+                  <span className="ml-auto w-20 text-right font-serif text-xl text-bordeaux">{s.price} CHF</span>
                   <button type="button" aria-label={`Modifier ${s.name}`} onClick={() => setEdit({ ...emptyService, ...s, category: s.categoryId || emptyService.category, duration: bookingMinutes(s), description: s.description || '' })} className="grid h-9 w-9 place-items-center rounded-full border border-gold/40"><Pencil size={14} /></button>
                 </li>
               ))}
@@ -600,7 +702,9 @@ function Prestations({ notify, services, reload }) {
       </section>
 
       {edit ? (
-        <form onSubmit={submit} className={`${card} space-y-4 lg:sticky lg:top-28`}>
+        // Fenêtre par-dessus la page sur téléphone et tablette ; colonne de droite sur grand écran
+        <div data-lenis-prevent className="fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-bordeaux-deep/50 p-4 lg:sticky lg:inset-auto lg:top-28 lg:z-auto lg:block lg:overflow-visible lg:bg-transparent lg:p-0">
+        <form onSubmit={submit} className={`${card} w-full max-w-xl space-y-4 lg:max-w-none`}>
           <h2 className="font-serif text-2xl text-bordeaux">{edit.id ? 'Modifier la prestation' : 'Nouvelle prestation'}</h2>
           <label className="block"><span className="kicker">Nom</span>
             <input value={edit.name} disabled={builtin.has(edit.id)} onChange={(e) => setEdit((c) => ({ ...c, name: e.target.value }))} className={`${field} mt-1 w-full disabled:opacity-60`} />
@@ -633,6 +737,7 @@ function Prestations({ notify, services, reload }) {
             {edit.id && <button type="button" onClick={() => { remove(edit); setEdit(null); }} className={`${pill(false)} inline-flex items-center gap-1`}><Trash2 size={13} aria-hidden="true" /> {builtin.has(edit.id) ? 'Rétablir l’origine' : 'Supprimer'}</button>}
           </div>
         </form>
+        </div>
       ) : (
         <p className={`${card} text-sm text-taupe`}>
           La durée sert à calculer automatiquement les heures proposées aux clientes et la fin de chaque rendez-vous.
@@ -648,7 +753,7 @@ export default function Admin() {
   const [tab, setTab] = useState('planning');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
-  const [custom, setCustom] = useState([]);
+  const custom = useCustomServices(true); // prestations de l'espace privé, tenues à jour en direct
 
   useEffect(() => {
     let unsub = () => {};
@@ -659,12 +764,6 @@ export default function Admin() {
       .catch(() => setUser(null));
     return () => unsub();
   }, []);
-
-  const reload = useCallback(() => {
-    resetCustomServices();
-    loadCustomServices().then(setCustom).catch(() => {});
-  }, []);
-  useEffect(reload, [reload]);
 
   const notify = useCallback((msg) => {
     setNote(msg);
@@ -687,7 +786,7 @@ export default function Admin() {
   const bookable = useMemo(() => all.filter((s) => !s.hidden), [all]);
 
   return (
-    <section className="min-h-screen bg-ivory/60 pb-24 pt-32">
+    <section className="min-h-screen bg-ivory/60 pb-24 pt-24 md:pt-32">
       <div className="container-site">
         {user === undefined && !demo && <p className="flex items-center gap-2 text-taupe"><Loader2 size={16} className="animate-spin" /> Chargement…</p>}
         {user === null && !demo && <Login error={error} onError={setError} />}
@@ -699,24 +798,25 @@ export default function Admin() {
         )}
         {allowed && (
           <>
-            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-              <h1 className="display text-4xl">Mon planning</h1>
-              <div className="flex flex-wrap items-center gap-2">
+            {/* Téléphone : titre et déconnexion sur une ligne, les trois onglets sur toute la largeur dessous */}
+            <div className="mb-5 flex flex-wrap items-center gap-x-2 gap-y-3 md:mb-8">
+              <h1 className="display mr-auto text-2xl min-[360px]:text-3xl lg:text-4xl">Mon planning</h1>
+              <div className="order-last grid w-full grid-cols-3 gap-1.5 md:order-none md:flex md:w-auto md:gap-2">
                 {[['planning', 'Planning', CalendarDays], ['horaires', 'Horaires', Clock], ['prestations', 'Prestations', Sparkles]].map(([id, label, Icon]) => (
-                  <button type="button" key={id} aria-pressed={tab === id} onClick={() => setTab(id)} className={`${pill(tab === id)} inline-flex items-center gap-2 !px-5 !py-2.5`}>
-                    <Icon size={15} aria-hidden="true" /> {label}
+                  <button type="button" key={id} aria-pressed={tab === id} onClick={() => setTab(id)} className={`${pill(tab === id)} inline-flex items-center justify-center gap-1.5 !px-2 !py-2.5 md:gap-2 md:!px-4 lg:!px-5`}>
+                    <Icon size={15} aria-hidden="true" className="max-[399px]:hidden" /> {label}
                   </button>
                 ))}
-                <button type="button" onClick={logout} aria-label="Se déconnecter" className="grid h-11 w-11 place-items-center rounded-full border border-gold/40"><LogOut size={16} /></button>
               </div>
+              <button type="button" onClick={logout} aria-label="Se déconnecter" className={round}><LogOut size={16} /></button>
             </div>
             {tab === 'planning' && <Planning notify={notify} services={bookable} />}
             {tab === 'horaires' && <Hours notify={notify} />}
-            {tab === 'prestations' && <Prestations notify={notify} services={all} reload={reload} />}
+            {tab === 'prestations' && <Prestations notify={notify} services={all} reload={refreshCustomServices} />}
           </>
         )}
       </div>
-      <p role="status" className={`fixed bottom-6 left-1/2 z-[80] -translate-x-1/2 rounded-full bg-bordeaux-deep px-6 py-3 text-sm text-cream shadow-soft transition-opacity duration-300 ${note ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>{note}</p>
+      <p role="status" className={`fixed inset-x-4 bottom-6 z-[80] mx-auto w-fit max-w-xl rounded-3xl empty:invisible bg-bordeaux-deep px-5 py-3 text-center text-sm text-cream shadow-soft transition-opacity duration-300 ${note ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>{note}</p>
     </section>
   );
 }

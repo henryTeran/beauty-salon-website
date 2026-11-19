@@ -1,20 +1,13 @@
-import { useEffect, useState } from 'react';
-import { loadCustomServices } from './firebase.js';
+import { loadCustomServices, watchCustomServices } from './firebase.js';
+import { liveStore, useLive } from './liveStore.js';
 
-let cache;
-export const resetCustomServices = () => {
-  cache = undefined;
-};
+const store = liveStore(loadCustomServices, watchCustomServices, []);
 
-/** Prestations gérées dans l'espace privé ; liste vide tant qu'elles ne sont pas chargées ou si Firebase est indisponible */
-export function useCustomServices() {
-  const [custom, setCustom] = useState([]);
-  useEffect(() => {
-    let alive = true;
-    (cache ||= loadCustomServices().catch(() => [])).then((c) => alive && setCustom(c));
-    return () => {
-      alive = false;
-    };
-  }, []);
-  return custom;
-}
+/** À appeler après un enregistrement : la nouvelle carte s'affiche tout de suite, partout */
+export const refreshCustomServices = store.refresh;
+
+/**
+ * Prestations gérées dans l'espace privé, tenues à jour en direct ; liste vide tant qu'elles ne sont pas chargées
+ * ou si Firebase est indisponible. now = true (espace privé, réservation) : en direct dès l'affichage.
+ */
+export const useCustomServices = (now) => useLive(store, now);

@@ -1,21 +1,14 @@
-import { useEffect, useState } from 'react';
-import { loadSchedule } from './firebase.js';
+import { loadSchedule, watchSchedule } from './firebase.js';
 import { defaultSchedule } from './schedule.js';
+import { liveStore, useLive } from './liveStore.js';
 
-let cache;
-export const resetSchedule = () => {
-  cache = undefined;
-};
+const store = liveStore(loadSchedule, watchSchedule, defaultSchedule);
 
-/** Horaires enregistrés dans l'espace privé ; valeurs par défaut tant qu'ils ne sont pas chargés */
-export function useSchedule() {
-  const [schedule, setSchedule] = useState(defaultSchedule);
-  useEffect(() => {
-    let alive = true;
-    (cache ||= loadSchedule().catch(() => defaultSchedule)).then((s) => alive && setSchedule(s));
-    return () => {
-      alive = false;
-    };
-  }, []);
-  return schedule;
-}
+/** À appeler après un enregistrement : la nouvelle valeur s'affiche tout de suite, partout */
+export const refreshSchedule = store.refresh;
+
+/**
+ * Horaires enregistrés dans l'espace privé, tenus à jour en direct ; valeurs par défaut tant qu'ils ne sont pas chargés.
+ * now = true (espace privé, réservation) : en direct dès l'affichage.
+ */
+export const useSchedule = (now) => useLive(store, now);

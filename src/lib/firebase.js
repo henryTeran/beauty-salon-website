@@ -42,6 +42,49 @@ async function range(name, from, to) {
 export const loadBusy = (from, to = from) => range('busy', from, to);
 export const loadBookings = (from, to) => range('bookings', from, to);
 
+/**
+ * Écoute en direct : les changements arrivent sans recharger la page. Elle passe par le SDK Firestore
+ * complet, chargé à part ; les lectures et écritures ponctuelles restent sur la version « lite », plus légère.
+ */
+async function live() {
+  const [app, m] = await Promise.all([getApp(), import('firebase/firestore')]);
+  return { m, db: m.getFirestore(app) };
+}
+
+/** Lance une écoute et renvoie la fonction qui l'arrête */
+function watch(target, onData, onError = () => {}) {
+  let stop = () => {};
+  let stopped = false;
+  live()
+    .then(({ m, db }) => {
+      if (stopped) return;
+      stop = m.onSnapshot(
+        target(m, db),
+        // hors connexion, le SDK renvoie d'abord un résultat vide tiré du cache : on attend la réponse du serveur
+        (snap) => !snap.metadata.fromCache && onData(snap),
+        (err) => !stopped && onError(err)
+      );
+    })
+    .catch(onError);
+  return () => {
+    stopped = true;
+    stop();
+  };
+}
+
+const watchRange = (name) => (from, to, onData, onError) =>
+  watch(
+    (m, db) => m.query(m.collection(db, name), m.where('date', '>=', from), m.where('date', '<=', to)),
+    (snap) => onData(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError
+  );
+export const watchBusy = watchRange('busy');
+export const watchBookings = watchRange('bookings');
+export const watchSchedule = (onData, onError) =>
+  watch((m, db) => m.doc(db, 'settings', 'schedule'), (snap) => onData(mergeSchedule(snap.exists() ? snap.data() : null)), onError);
+export const watchCustomServices = (onData, onError) =>
+  watch((m, db) => m.collection(db, 'services'), (snap) => onData(snap.docs.map((d) => ({ ...d.data(), id: d.id }))), onError);
+
 /** Enregistre la demande et réserve le créneau en une seule écriture */
 export async function createBooking(booking) {
   const { m, db } = await fs();
