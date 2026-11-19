@@ -51,7 +51,13 @@ Mise en service, une seule fois, dans la console Firebase du projet `beautybooke
 Pour autoriser un autre compte : l'ajouter dans `firestore.rules` et dans `src/config/firebase.js` (`adminEmails`).
 
 Version de validation (GitHub Pages) : `npm run build:preview`, puis publier `dist/` sur la branche `gh-pages`.
-Firebase Hosting : `npm run build && firebase deploy --only hosting`.
+Firebase Hosting, adresse actuelle du site : <https://mariafernanda-beaute.web.app> (site `mariafernanda-beaute`, déclaré dans `firebase.json`). Publication, dans Git Bash :
+
+```bash
+VITE_SITE_URL=https://mariafernanda-beaute.web.app VITE_NOINDEX=1 npm run build && firebase deploy --only hosting
+```
+
+`VITE_NOINDEX=1` cache le site aux moteurs de recherche : à retirer au lancement officiel. Avec un nom de domaine (ex. `mariafernanda-beaute.ch`) : l'ajouter dans la console Firebase (Hosting → Ajouter un domaine personnalisé), puis mettre sa valeur dans `VITE_SITE_URL`.
 
 ## Langues (français, espagnol, anglais)
 
